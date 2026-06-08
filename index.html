@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Assignment Venue Centre emergency support page for overseas recruitment, candidate, agent, travel, visa, and documentation inquiries.">
+    <title>Assignment Venue Centre | Emergency Support</title>
+    <link rel="icon" href="assets/favicon.ico">
+    <script src="fallback-config.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #0f172a;
+        --muted: #526173;
+        --line: #d8e0ea;
+        --paper: #ffffff;
+        --wash: #f6f8fb;
+        --red: #b91c1c;
+        --red-soft: #fee2e2;
+        --green: #047857;
+        --green-soft: #d1fae5;
+        --blue: #1d4ed8;
+        --amber: #b45309;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--wash);
+        color: var(--ink);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .top {
+        background:
+          linear-gradient(rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.72)),
+          url("assets/avc-logo-intro-poster.png") center / cover no-repeat;
+        color: #ffffff;
+        min-height: 64vh;
+        display: grid;
+        align-items: center;
+        padding: 24px;
+      }
+
+      .wrap {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 56px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .brand img {
+        width: 56px;
+        height: 56px;
+        object-fit: contain;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 8px;
+        padding: 6px;
+      }
+
+      .brand strong,
+      h1,
+      h2,
+      h3,
+      p {
+        letter-spacing: 0;
+      }
+
+      .brand strong {
+        display: block;
+        font-size: clamp(18px, 2vw, 24px);
+        line-height: 1.1;
+      }
+
+      .brand span {
+        display: block;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #fbbf24;
+        box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.18);
+      }
+
+      .hero {
+        width: min(780px, 100%);
+      }
+
+      .eyebrow {
+        color: #fecaca;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 13px;
+        margin: 0 0 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(36px, 8vw, 78px);
+        line-height: 0.96;
+      }
+
+      .lead {
+        margin: 22px 0 0;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: clamp(17px, 2vw, 21px);
+        line-height: 1.55;
+        max-width: 680px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 13px 18px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        text-decoration: none;
+        font-weight: 850;
+        line-height: 1.2;
+      }
+
+      .button.primary {
+        background: #22c55e;
+        color: #052e16;
+      }
+
+      .button.secondary {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .button.portal {
+        background: #ffffff;
+        color: var(--ink);
+      }
+
+      .button[aria-disabled="true"] {
+        opacity: 0.54;
+        pointer-events: none;
+      }
+
+      main {
+        margin-top: -56px;
+        padding: 0 24px 42px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+        gap: 18px;
+      }
+
+      .panel,
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+      }
+
+      .panel {
+        padding: clamp(20px, 3vw, 30px);
+      }
+
+      .panel h2,
+      .card h3 {
+        margin: 0;
+        color: var(--ink);
+        line-height: 1.15;
+      }
+
+      .panel p {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .service-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .service-list span {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        color: #223047;
+        background: #fbfdff;
+        font-weight: 720;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .health {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .check {
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        padding: 13px;
+        background: #fbfdff;
+      }
+
+      .check strong {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .check small {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .tag {
+        flex: 0 0 auto;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 12px;
+        color: var(--amber);
+        background: #fef3c7;
+      }
+
+      .tag.online {
+        color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .tag.offline {
+        color: var(--red);
+        background: var(--red-soft);
+      }
+
+      .contact {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .contact a {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 760;
+      }
+
+      .note {
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      footer {
+        padding: 28px 24px 36px;
+        color: #64748b;
+        text-align: center;
+        font-size: 13px;
+      }
+
+      @media (max-width: 820px) {
+        .top {
+          min-height: 72vh;
+        }
+
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+          margin-bottom: 40px;
+        }
+
+        .grid,
+        .service-list {
+          grid-template-columns: 1fr;
+        }
+
+        main {
+          margin-top: -34px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="top">
+      <div class="wrap">
+        <nav class="nav" aria-label="Emergency support">
+          <a class="brand" href="./" aria-label="Assignment Venue Centre">
+            <img src="assets/avc-logo.png" alt="AVC logo">
+            <span>
+              <strong>Assignment Venue Centre</strong>
+              <span>Overseas recruitment coordination</span>
+            </span>
+          </a>
+          <div class="status-pill" id="top-status"><span class="dot"></span><span>Emergency support page active</span></div>
+        </nav>
+
+        <div class="hero">
+          <p class="eyebrow">Temporary hosting backup</p>
+          <h1>AVC support is available while the main portal is being restored.</h1>
+          <p class="lead">
+            Candidate, agent, employer, visa, travel, passport, and document inquiries are still being handled by the AVC team. Use WhatsApp for the fastest routing.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://wa.me/911169310518?text=Hello%20AVC%2C%20I%20need%20support%20while%20the%20website%20portal%20is%20under%20maintenance." target="_blank" rel="noopener noreferrer">WhatsApp AVC</a>
+            <a class="button secondary" href="mailto:info@assignmentvenuecentre.me?subject=AVC%20support%20request">Email Support</a>
+            <a class="button portal" id="portal-link" href="https://assignmentvenuecentre.me/" aria-disabled="true">Portal checking...</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <div class="wrap grid">
+        <section class="panel">
+          <h2>Service requests are still open</h2>
+          <p>
+            This page is running from GitHub Pages as a temporary backup while the primary hosting account is unavailable. Registration and login screens may remain limited until the production backend or approved tunnel route is healthy again.
+          </p>
+          <div class="service-list" aria-label="Available service areas">
+            <span>Gulf manpower recruitment</span>
+            <span>Candidate support</span>
+            <span>Agent and client inquiries</span>
+            <span>Visa and travel desk</span>
+            <span>Passport, PCC, ECNR help</span>
+            <span>Document coordination</span>
+          </div>
+        </section>
+
+        <aside class="card">
+          <h3>Live portal status</h3>
+          <div class="health" id="health-list">
+            <div class="check">
+              <strong>Production API <span class="tag">Checking</span></strong>
+              <small>Testing https://api.assignmentvenuecentre.me/api/v1/health</small>
+            </div>
+          </div>
+          <div class="contact">
+            <a href="https://wa.me/911169310518" target="_blank" rel="noopener noreferrer"><span>WhatsApp</span><span>+91 11693 10518</span></a>
+            <a href="mailto:info@assignmentvenuecentre.me"><span>Email</span><span>info@assignmentvenuecentre.me</span></a>
+          </div>
+          <p class="note">
+            If the laptop tunnel is configured, this page can show that route as online. If the laptop is off, this GitHub page remains available as the customer notice.
+          </p>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      Assignment Venue Centre. Temporary GitHub Pages fallback. Last checked: <span id="last-checked">pending</span>.
+    </footer>
+
+    <script>
+      const settings = Object.assign({
+        productionSite: "https://assignmentvenuecentre.me/",
+        productionApi: "https://api.assignmentvenuecentre.me/api/v1/health",
+        laptopSite: "",
+        laptopApi: "",
+        refreshSeconds: 20
+      }, window.AVC_FAILOVER || {});
+
+      const healthList = document.getElementById("health-list");
+      const portalLink = document.getElementById("portal-link");
+      const topStatus = document.getElementById("top-status");
+      const lastChecked = document.getElementById("last-checked");
+
+      function cleanUrl(value) {
+        return String(value || "").trim();
+      }
+
+      function buildTargets() {
+        const targets = [
+          {
+            label: "Production API",
+            api: cleanUrl(settings.productionApi),
+            site: cleanUrl(settings.productionSite),
+            detail: "Vetrihost/cPanel backend"
+          }
+        ];
+
+        if (cleanUrl(settings.laptopApi) && cleanUrl(settings.laptopSite)) {
+          targets.push({
+            label: "Laptop tunnel",
+            api: cleanUrl(settings.laptopApi),
+            site: cleanUrl(settings.laptopSite),
+            detail: "Local backend through public tunnel"
+          });
+        }
+
+        return targets.filter((target) => target.api && target.site);
+      }
+
+      async function probe(target) {
+        const url = target.api + (target.api.includes("?") ? "&" : "?") + "t=" + Date.now();
+        const response = await fetch(url, { cache: "no-store", mode: "cors" });
+        const text = await response.text();
+        const looksSuspended = /account suspended|cpanel|content-type" content="text\/html/i.test(text);
+        const looksHtml = /^\s*<!doctype html|^\s*<html/i.test(text);
+        const looksJson = /^\s*\{/.test(text) || (response.headers.get("content-type") || "").includes("json");
+
+        if (!response.ok || looksSuspended || looksHtml || !looksJson) {
+          return { ok: false, reason: response.ok ? "Hosting page returned instead of API JSON" : "HTTP " + response.status };
+        }
+
+        return { ok: true, reason: "API JSON is reachable" };
+      }
+
+      function render(results) {
+        healthList.innerHTML = results.map((result) => {
+          const cls = result.ok ? "online" : "offline";
+          const label = result.ok ? "Online" : "Limited";
+          return [
+            '<div class="check">',
+            "<strong>" + result.target.label + ' <span class="tag ' + cls + '">' + label + "</span></strong>",
+            "<small>" + result.target.detail + ": " + result.reason + "</small>",
+            "</div>"
+          ].join("");
+        }).join("");
+
+        const firstOnline = results.find((result) => result.ok);
+        if (firstOnline) {
+          portalLink.href = firstOnline.target.site;
+          portalLink.textContent = firstOnline.target.label === "Laptop tunnel" ? "Open temporary portal" : "Open restored portal";
+          portalLink.setAttribute("aria-disabled", "false");
+          topStatus.innerHTML = '<span class="dot" style="background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.18)"></span><span>Full portal route detected</span>';
+        } else {
+          portalLink.href = settings.productionSite || "https://assignmentvenuecentre.me/";
+          portalLink.textContent = "Portal temporarily limited";
+          portalLink.setAttribute("aria-disabled", "true");
+          topStatus.innerHTML = '<span class="dot"></span><span>Emergency support page active</span>';
+        }
+
+        lastChecked.textContent = new Date().toLocaleString();
+      }
+
+      async function checkHealth() {
+        const targets = buildTargets();
+        const results = [];
+        for (const target of targets) {
+          try {
+            results.push({ target, ...(await probe(target)) });
+          } catch (error) {
+            results.push({ target, ok: false, reason: error && error.message ? error.message : "Not reachable" });
+          }
+        }
+        render(results);
+      }
+
+      checkHealth();
+      setInterval(checkHealth, Math.max(10, Number(settings.refreshSeconds) || 20) * 1000);
+    </script>
+  </body>
+</html>
