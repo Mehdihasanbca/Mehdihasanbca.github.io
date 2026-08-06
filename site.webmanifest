@@ -1,0 +1,16 @@
+{
+  "name": "Assignment Venue Center",
+  "short_name": "AVC",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b1f3a",
+  "icons": [
+    {
+      "src": "/assets/avc-logo.png",
+      "sizes": "512x204",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
