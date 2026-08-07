@@ -11,7 +11,7 @@
   const allowedStatuses=new Set(['open','closing-soon']);
   let jobs=[];
 
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const toDate=v=>v?new Date(`${v}T23:59:59`):null;
   const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
   const isCurrent=j=>{
