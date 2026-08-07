@@ -1,0 +1,159 @@
+name: AVC Razorpay Live Deploy Verify
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - payment-live-pr-trigger.txt
+      - worker/payment-api.js
+      - wrangler.toml
+      - .github/workflows/razorpay-live-pr-verify.yml
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-verify:
+    runs-on: ubuntu-latest
+    env:
+      RAZORPAY_LIVE_API_KEY: ${{ secrets.RAZORPAY_LIVE_API_KEY }}
+      RAZORPAY_LIVE_KEY_SECRET: ${{ secrets.RAZORPAY_LIVE_KEY_SECRET }}
+      RAZORPAY_WEBHOOK_SECRET: ${{ secrets.RAZORPAY_WEBHOOK_SECRET }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      RAZORPAY_TRUSTED_BUSINESS_ENABLED: ${{ vars.RAZORPAY_TRUSTED_BUSINESS_ENABLED }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify Razorpay and Cloudflare credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in "${RAZORPAY_LIVE_API_KEY:-}" "${RAZORPAY_LIVE_KEY_SECRET:-}" "${CLOUDFLARE_API_TOKEN:-}" "${RAZORPAY_WEBHOOK_SECRET:-}"; do [ -z "$v" ] || echo "::add-mask::$v"; done
+          test -n "${RAZORPAY_LIVE_API_KEY:-}"
+          test -n "${RAZORPAY_LIVE_KEY_SECRET:-}"
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          [[ "$RAZORPAY_LIVE_API_KEY" == rzp_live_* ]]
+          test "$(curl -sS -o /tmp/rzp.json -w '%{http_code}' -u "${RAZORPAY_LIVE_API_KEY}:${RAZORPAY_LIVE_KEY_SECRET}" 'https://api.razorpay.com/v1/orders?count=1')" = "200"
+          test "$(curl -sS -o /tmp/cf.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/user/tokens/verify')" = "200"
+          grep -Fq '"success":true' /tmp/cf.json
+          accounts="$(curl -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/accounts')"
+          account_id="$(printf '%s' "$accounts" | python -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or []; print(r[0].get('id','') if r else '')")"
+          if [ -z "$account_id" ]; then
+            zones="$(curl -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me')"
+            account_id="$(printf '%s' "$zones" | python -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or []; print(((r[0].get('account') or {}).get('id','')) if r else '')")"
+          fi
+          test -n "$account_id"
+          echo "::add-mask::$account_id"
+          echo "CLOUDFLARE_ACCOUNT_ID=$account_id" >> "$GITHUB_ENV"
+
+      - name: Install Wrangler
+        run: npm install --no-save wrangler@4
+
+      - name: Deploy payment Worker
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
+
+      - name: Set Worker Razorpay secrets
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$RAZORPAY_LIVE_API_KEY" | npx wrangler secret put RAZORPAY_KEY_ID
+          printf '%s' "$RAZORPAY_LIVE_KEY_SECRET" | npx wrangler secret put RAZORPAY_KEY_SECRET
+          if [ -n "${RAZORPAY_WEBHOOK_SECRET:-}" ]; then
+            printf '%s' "$RAZORPAY_WEBHOOK_SECRET" | npx wrangler secret put RAZORPAY_WEBHOOK_SECRET
+          fi
+
+      - name: Verify live health and server tariff
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=no
+          for i in $(seq 1 20); do
+            body="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "https://assignmentvenuecentre.me/api/payments/health?ts=$(date +%s)" 2>/dev/null || true)"
+            if printf '%s' "$body" | grep -Fq '"service":"avc-payment-api"' \
+              && printf '%s' "$body" | grep -Fq '"razorpayConfigured":true' \
+              && printf '%s' "$body" | grep -Fq '"totalPaise":177000' \
+              && printf '%s' "$body" | grep -Fq '"wafidThirdPartyFeeIncluded":false'; then
+              ok=yes; printf '%s' "$body" > /tmp/health.json; break
+            fi
+            sleep 5
+          done
+          test "$ok" = yes
+
+      - name: Create and verify a non-charging live Razorpay Order
+        shell: bash
+        run: |
+          set -euo pipefail
+          case_ref="AVC-MED-LIVEVERIFY-$(date +%s)"
+          response="$(curl -fsSL -X POST 'https://assignmentvenuecentre.me/api/payments/order' -H 'Origin: https://assignmentvenuecentre.me' -H 'Content-Type: application/json' --data "{\"service\":\"wafid_booking_assistance\",\"caseReference\":\"${case_ref}\"}")"
+          printf '%s' "$response" > /tmp/order.json
+          order_id="$(printf '%s' "$response" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('orderId',''))")"
+          amount="$(printf '%s' "$response" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('amount',''))")"
+          currency="$(printf '%s' "$response" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('currency',''))")"
+          test -n "$order_id"
+          test "$amount" = "177000"
+          test "$currency" = "INR"
+          fetched="$(curl -fsSL -u "${RAZORPAY_LIVE_API_KEY}:${RAZORPAY_LIVE_KEY_SECRET}" "https://api.razorpay.com/v1/orders/${order_id}")"
+          test "$(printf '%s' "$fetched" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('amount',''))")" = "177000"
+          test "$(printf '%s' "$fetched" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('currency',''))")" = "INR"
+          test "$(printf '%s' "$fetched" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('receipt',''))")" = "$case_ref"
+          echo "ORDER_TEST=pass" >> "$GITHUB_ENV"
+
+      - name: Record safe live evidence
+        shell: bash
+        run: |
+          trusted=false; [ "${RAZORPAY_TRUSTED_BUSINESS_ENABLED:-}" = true ] && trusted=true
+          webhook_secret=no; [ -n "${RAZORPAY_WEBHOOK_SECRET:-}" ] && webhook_secret=yes
+          cat > /tmp/payment-config.js <<EOF
+          window.AVC_PAYMENT_CONFIG=Object.freeze({
+            mode:'live',
+            checkoutEnabled:true,
+            trustedBusinessClaimEnabled:$trusted,
+            razorpayKeyId:'$RAZORPAY_LIVE_API_KEY',
+            orderEndpoint:'/api/payments/order',
+            verifyEndpoint:'/api/payments/verify',
+            webhookManagedServerSide:true,
+            serviceBasePaise:150000,
+            gstRate:18,
+            gstPaise:27000,
+            serviceTotalPaise:177000,
+            wafidThirdPartyFeeIncluded:false,
+            supportEmail:'info@assignmentvenuecentre.me',
+            supportPhone:'+91 9473286356',
+            note:'AVC service payment ₹1,770. Wafid third-party cost is separate. Razorpay Key Secret remains server-side.'
+          });
+          EOF
+          {
+            echo 'status=success_live_checkout'
+            echo 'razorpay_api_auth=yes'
+            echo 'cloudflare_api_auth=yes'
+            echo 'worker_deployed=yes'
+            echo 'worker_razorpay_secrets_set=yes'
+            echo 'payment_api_health=yes'
+            echo 'live_order_creation_test=yes'
+            echo 'checkout_enabled=true'
+            echo 'razorpay_order_total_paise=177000'
+            echo 'wafid_third_party_fee_included=no'
+            echo "razorpay_webhook_secret_present=$webhook_secret"
+            echo 'razorpay_webhook_endpoint=https://assignmentvenuecentre.me/api/payments/webhook'
+            echo 'razorpay_webhook_subscription=merchant_dashboard_or_partner_api_required'
+            echo 'secret_values_exposed=no'
+          } > /tmp/phase20-live-status.txt
+          cat /tmp/phase20-live-status.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: razorpay-live-evidence
+          path: |
+            /tmp/payment-config.js
+            /tmp/phase20-live-status.txt
+            /tmp/health.json
+            /tmp/order.json
+          if-no-files-found: error
