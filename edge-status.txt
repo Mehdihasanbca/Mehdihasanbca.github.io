@@ -1,0 +1,16 @@
+AVC edge diagnostic
+ssl_mode: full
+apex_records: A:185.199.111.153:proxied=true:ttl=1,A:185.199.110.153:proxied=true:ttl=1,A:185.199.109.153:proxied=true:ttl=1,A:185.199.108.153:proxied=true:ttl=1
+www_records: CNAME:mehdihasanbca.github.io:proxied=true:ttl=1
+dig_system_a: 104.21.18.150,172.67.182.158
+dig_1.1.1.1_a: 104.21.18.150,172.67.182.158
+dig_8.8.8.8_a: 104.21.18.150,172.67.182.158
+dig_system_aaaa: 2606:4700:3031::6815:1296,2606:4700:3034::ac43:b69e
+tls_subject: subject=CN = assignmentvenuecentre.me
+tls_issuer: issuer=C = US, O = Let's Encrypt, CN = YE1
+tls_verify: Verify return code: 0 (ok)
+https_http_code: 200
+server_header: server: cloudflare
+cf_ray: cf-ray: a273bddddf47446c-LAX
+explicit_cloudflare_edges: 104.21.18.150:http=200:tls=Verify return code: 0 (ok);172.67.182.158:http=200:tls=Verify return code: 0 (ok);
+checked_at_utc: 2026-08-07T05:04:38Z
