@@ -1,0 +1,182 @@
+name: AVC Phase 10 Launch Lock
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - phase10-trigger.txt
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-and-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Normalize production asset versions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          replacements={
+            'assets/site.js?v=20260806':'assets/site.js?v=20260807-p10',
+            'assets/site.js?v=20260807':'assets/site.js?v=20260807-p10',
+            'assets/site.css?v=20260806':'assets/site.css?v=20260807-p10',
+            'assets/site.css?v=20260807':'assets/site.css?v=20260807-p10',
+            'assets/company.css?v=20260807':'assets/company.css?v=20260807-p10',
+            'assets/trust.css?v=20260807':'assets/trust.css?v=20260807-p10',
+            'assets/business-pages.css?v=20260807':'assets/business-pages.css?v=20260807-p10',
+            'assets/jobs.css?v=20260807':'assets/jobs.css?v=20260807-p10',
+            'assets/jobs.js?v=20260807':'assets/jobs.js?v=20260807-p10',
+          }
+          changed=[]
+          for path in Path('.').glob('*.html'):
+            text=path.read_text(encoding='utf-8')
+            new=text
+            for old,val in replacements.items(): new=new.replace(old,val)
+            if new!=text:
+              path.write_text(new,encoding='utf-8')
+              changed.append(path.name)
+          print('updated_html=',','.join(changed))
+          PY
+
+      - name: Commit cache-version normalization
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add '*.html'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Lock AVC Phase 10 production asset versions'
+            git push
+          fi
+
+      - name: Wait for fresh GitHub Pages deployment
+        shell: bash
+        run: |
+          set +e
+          fresh=no
+          for i in $(seq 1 12); do
+            body="$(curl -fsSL --connect-timeout 10 --max-time 25 'https://assignmentvenuecentre.me/' 2>/dev/null)"
+            if printf '%s' "$body" | grep -q 'site.js?v=20260807-p10'; then fresh=yes; break; fi
+            sleep 10
+          done
+          echo "fresh_deployment=$fresh" >> "$GITHUB_ENV"
+
+      - name: Final production audit
+        shell: bash
+        run: |
+          set -uo pipefail
+          BASE='https://assignmentvenuecentre.me'
+          status=success
+          failures=()
+          warnings=()
+
+          [ "${fresh_deployment:-no}" = yes ] || failures+=("Fresh Phase 10 deployment marker not observed")
+
+          python3 - <<'PY' > /tmp/static-audit.txt
+          from pathlib import Path
+          import re, json, xml.etree.ElementTree as ET
+          failures=[]; warnings=[]
+          htmls=list(Path('.').glob('*.html'))
+          old_phone='9162530999'
+          current_phone='9473286356'
+          forbidden=['RecruitOS','Emergency Support','former CRM','candidate portal']
+          unsupported=['100% Job Guarantee','Guaranteed Visa','Government Approved Recruitment Agency']
+          canon=[]
+          for p in htmls:
+            t=p.read_text(encoding='utf-8',errors='ignore')
+            if old_phone in t: failures.append(f'{p}: old phone present')
+            for x in forbidden:
+              if x.lower() in t.lower(): failures.append(f'{p}: public internal/old wording: {x}')
+            for x in unsupported:
+              if x.lower() in t.lower(): failures.append(f'{p}: unsupported claim: {x}')
+            if p.name!='404.html':
+              title=re.search(r'<title>(.*?)</title>',t,re.I|re.S)
+              desc=re.search(r'<meta\s+name=["\']description["\']\s+content=["\']([^"\']+)',t,re.I)
+              can=re.search(r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)',t,re.I)
+              if not title or 'Assignment Venue Center' not in title.group(1): failures.append(f'{p}: title missing brand')
+              if not desc: failures.append(f'{p}: meta description missing')
+              if not can: failures.append(f'{p}: canonical missing')
+              else:
+                if not can.group(1).startswith('https://assignmentvenuecentre.me/'): failures.append(f'{p}: bad canonical')
+                canon.append(can.group(1))
+            if 'assets/site.js?v=20260807-p10' not in t and p.name!='404.html': failures.append(f'{p}: Phase 10 JS version missing')
+          if len(canon)!=len(set(canon)): failures.append('Duplicate canonical URLs detected')
+          seo=Path('assets/seo.js').read_text(encoding='utf-8')
+          if current_phone not in seo: failures.append('Current phone missing from SEO schema')
+          if old_phone in seo: failures.append('Old phone remains in SEO schema')
+          polish=Path('assets/final-polish.css')
+          if not polish.exists() or polish.stat().st_size<1000: failures.append('Final polish stylesheet missing/too small')
+          robots=Path('robots.txt').read_text(encoding='utf-8')
+          if 'Sitemap: https://assignmentvenuecentre.me/sitemap.xml' not in robots: failures.append('robots sitemap missing')
+          cname=Path('CNAME').read_text(encoding='utf-8').strip()
+          if cname!='assignmentvenuecentre.me': failures.append('CNAME mismatch')
+          jobs=json.loads(Path('data/jobs.json').read_text(encoding='utf-8'))
+          if 'Only verified AVC vacancies' not in str(jobs): failures.append('Verified jobs policy missing')
+          print('static_html='+str(len(htmls)))
+          print('static_failures='+str(len(failures)))
+          print('static_warnings='+str(len(warnings)))
+          for f in failures: print('FAIL|'+f)
+          for w in warnings: print('WARN|'+w)
+          PY
+
+          while IFS= read -r line; do
+            case "$line" in FAIL\|*) failures+=("${line#FAIL|}");; WARN\|*) warnings+=("${line#WARN|}");; esac
+          done < /tmp/static-audit.txt
+
+          urls=$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root=ET.parse('sitemap.xml').getroot()
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          for loc in root.findall('s:url/s:loc',ns): print(loc.text)
+          PY
+          )
+          live_total=0; live_ok=0; live_fail=0; live_details=''
+          while IFS= read -r url; do
+            [ -z "$url" ] && continue
+            live_total=$((live_total+1))
+            code=$(curl -sS -L -o /dev/null -w '%{http_code}' --connect-timeout 12 --max-time 30 "$url" || true)
+            live_details+="$url -> $code\n"
+            if [ "$code" = 200 ]; then live_ok=$((live_ok+1)); else live_fail=$((live_fail+1)); failures+=("Live $url returned $code"); fi
+          done <<< "$urls"
+
+          for url in "$BASE/robots.txt" "$BASE/sitemap.xml" "$BASE/.well-known/security.txt" "$BASE/assets/final-polish.css?v=20260807-p10"; do
+            code=$(curl -sS -L -o /dev/null -w '%{http_code}' --connect-timeout 12 --max-time 30 "$url" || true)
+            live_details+="$url -> $code\n"
+            [ "$code" = 200 ] || failures+=("Live support asset failed: $url -> $code")
+          done
+          missing_code=$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 12 --max-time 30 "$BASE/phase10-missing-page-4815162342" || true)
+          live_details+="$BASE/phase10-missing-page-4815162342 -> $missing_code\n"
+          [ "$missing_code" = 404 ] || failures+=("404 behavior returned $missing_code")
+
+          home=$(curl -fsSL --connect-timeout 12 --max-time 30 "$BASE/" || true)
+          printf '%s' "$home" | grep -q 'site.js?v=20260807-p10' || failures+=("Live homepage missing Phase 10 cache version")
+          printf '%s' "$home" | grep -q 'Assignment Venue Center' || failures+=("Live homepage missing AVC brand")
+
+          if [ ${#failures[@]} -gt 0 ]; then status=failed; fi
+          {
+            echo 'AVC Phase 10 launch lock'
+            echo "status: $status"
+            echo "fresh_deployment: ${fresh_deployment:-no}"
+            cat /tmp/static-audit.txt | grep -E '^(static_html|static_failures|static_warnings)=' || true
+            echo "live_total: $live_total"
+            echo "live_ok: $live_ok"
+            echo "live_fail: $live_fail"
+            echo "failures: ${#failures[@]}"
+            echo "warnings: ${#warnings[@]}"
+            echo 'failure_details:'
+            printf '%s\n' "${failures[@]:-}"
+            echo 'warning_details:'
+            printf '%s\n' "${warnings[@]:-}"
+            echo 'live_details:'
+            printf '%b' "$live_details"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > phase10-status.txt
+
+          git add phase10-status.txt
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC Phase 10 launch lock'; git push; fi
+          [ "$status" = success ]
