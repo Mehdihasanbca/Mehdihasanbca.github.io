@@ -1,0 +1,169 @@
+name: AVC Verified Jobs Content Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/jobs.json'
+      - 'jobs.html'
+      - 'assets/jobs.js'
+      - 'jobs-content-trigger.txt'
+      - '.github/workflows/jobs-content-gate.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '25 4 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate job publication data
+        id: validate
+        shell: bash
+        run: |
+          set +e
+          python3 - <<'PY' > /tmp/jobs-validation.txt
+          import json, re
+          from datetime import date, datetime
+          from pathlib import Path
+
+          p=Path('data/jobs.json')
+          failures=[]
+          warnings=[]
+          active=0
+          total=0
+          try:
+              data=json.loads(p.read_text(encoding='utf-8'))
+          except Exception as e:
+              print('status=failed')
+              print('total=0')
+              print('active=0')
+              print('failures=1')
+              print('warnings=0')
+              print('detail=Invalid jobs.json: '+str(e).replace('\n',' '))
+              raise SystemExit(1)
+
+          if data.get('schemaVersion') != 2:
+              failures.append('schemaVersion must be 2')
+          jobs=data.get('jobs')
+          if not isinstance(jobs,list):
+              failures.append('jobs must be an array')
+              jobs=[]
+          total=len(jobs)
+          allowed={'open','closing-soon','hold','closed'}
+          active_status={'open','closing-soon'}
+          ids=set()
+          today=date.today()
+          forbidden=['lorem ipsum','example employer','sample job','dummy job','test vacancy','100% job guarantee','guaranteed visa']
+
+          def iso(v, field, jid):
+              if not v:
+                  return None
+              try:return date.fromisoformat(v)
+              except Exception:
+                  failures.append(f'{jid}: {field} must be YYYY-MM-DD')
+                  return None
+
+          for i,j in enumerate(jobs,1):
+              jid=str(j.get('id') or f'job#{i}')
+              if not j.get('id'): failures.append(f'{jid}: id is required')
+              elif not re.fullmatch(r'AVC-[A-Z0-9-]{4,}',str(j['id'])): failures.append(f'{jid}: id must use AVC-... reference format')
+              elif jid in ids: failures.append(f'{jid}: duplicate id')
+              ids.add(jid)
+              status=str(j.get('status') or '').lower()
+              if status not in allowed: failures.append(f'{jid}: invalid status {status!r}')
+              for f in ['title','country','category','summary']:
+                  if not str(j.get(f) or '').strip(): failures.append(f'{jid}: {f} is required')
+              blob=json.dumps(j,ensure_ascii=False).lower()
+              for token in forbidden:
+                  if token in blob: failures.append(f'{jid}: forbidden placeholder/guarantee phrase: {token}')
+              if '9162530999' in blob: failures.append(f'{jid}: old AVC phone number present')
+              posted=iso(j.get('publishedAt'),'publishedAt',jid)
+              verified=iso(j.get('lastVerifiedAt'),'lastVerifiedAt',jid)
+              expiry=iso(j.get('validThrough'),'validThrough',jid)
+              if status in active_status:
+                  active += 1
+                  if not posted: failures.append(f'{jid}: active job requires publishedAt')
+                  if not verified: failures.append(f'{jid}: active job requires lastVerifiedAt')
+                  if not expiry: failures.append(f'{jid}: active job requires validThrough')
+                  if expiry and expiry < today: failures.append(f'{jid}: active job is expired; close/hold it or extend only after re-verification')
+                  if verified:
+                      age=(today-verified).days
+                      if age < 0: failures.append(f'{jid}: lastVerifiedAt cannot be in the future')
+                      elif age > 14: failures.append(f'{jid}: active job has not been re-verified within 14 days')
+              app=j.get('applicationUrl')
+              if app and not str(app).startswith('https://'): failures.append(f'{jid}: applicationUrl must use https')
+              org=j.get('hiringOrganization') or {}
+              if org.get('public') is True and not str(org.get('name') or '').strip(): failures.append(f'{jid}: public hiringOrganization requires name')
+              sal=j.get('baseSalary')
+              if sal and (not sal.get('value') or not sal.get('currency')): failures.append(f'{jid}: baseSalary requires value and currency')
+
+          print('status=' + ('success' if not failures else 'failed'))
+          print(f'total={total}')
+          print(f'active={active}')
+          print(f'failures={len(failures)}')
+          print(f'warnings={len(warnings)}')
+          for x in failures: print('failure='+x)
+          for x in warnings: print('warning='+x)
+          raise SystemExit(1 if failures else 0)
+          PY
+          rc=$?
+          cat /tmp/jobs-validation.txt
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Check live jobs assets
+        shell: bash
+        run: |
+          set +e
+          : > /tmp/jobs-live.txt
+          fail=0
+          for url in \
+            https://assignmentvenuecentre.me/jobs.html \
+            https://assignmentvenuecentre.me/data/jobs.json \
+            https://assignmentvenuecentre.me/assets/jobs.js; do
+            code=$(curl -L -sS -o /tmp/body -w '%{http_code}' --max-time 25 "$url")
+            echo "$url -> $code" >> /tmp/jobs-live.txt
+            [ "$code" = "200" ] || fail=$((fail+1))
+          done
+          echo "live_fail=$fail" >> /tmp/jobs-live.txt
+          exit 0
+
+      - name: Write audit evidence
+        shell: bash
+        run: |
+          status=success
+          if [ "${{ steps.validate.outputs.rc }}" != "0" ]; then status=failed; fi
+          live_fail=$(grep '^live_fail=' /tmp/jobs-live.txt | cut -d= -f2)
+          if [ "${live_fail:-1}" != "0" ]; then status=failed; fi
+          {
+            echo "AVC verified jobs content gate"
+            echo "status: $status"
+            cat /tmp/jobs-validation.txt
+            echo "live_checks:"
+            cat /tmp/jobs-live.txt
+            echo "checked_at_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > jobs-content-status.txt
+
+      - name: Commit evidence
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add jobs-content-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update AVC jobs content gate status'
+            git push
+          fi
+
+      - name: Enforce gate
+        shell: bash
+        run: |
+          grep -q '^status: success$' jobs-content-status.txt
