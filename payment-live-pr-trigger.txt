@@ -1,2 +1,2 @@
-Trigger verified AVC Razorpay live deployment with user/account temporary-token fallbacks.
-Requested: 2026-08-07T22:28:00+05:30
+Trigger verified AVC Razorpay live deployment using updated repository Cloudflare API token.
+Requested: 2026-08-07T23:06:00+05:30
