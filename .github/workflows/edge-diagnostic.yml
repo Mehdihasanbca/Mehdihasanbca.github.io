@@ -1,0 +1,94 @@
+name: AVC Edge TLS Diagnostic
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - edge-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inspect Cloudflare DNS and public TLS
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -uo pipefail
+          DOMAIN=assignmentvenuecentre.me
+          WWW=www.assignmentvenuecentre.me
+          API=https://api.cloudflare.com/client/v4
+          TOKEN="$(python - <<'PY'
+          import os
+          s=os.environ.get('CLOUDFLARE_API_TOKEN','').strip()
+          if s.lower().startswith('bearer '): s=s[7:].strip()
+          if len(s)>=2 and s[0]==s[-1] and s[0] in ('\"', "'"): s=s[1:-1].strip()
+          print(s,end='')
+          PY
+          )"
+          cf(){ curl --globoff -sS --connect-timeout 15 --max-time 30 -H "Authorization: Bearer ${TOKEN}" -H 'Content-Type: application/json' "$@"; }
+
+          zone="$(cf "${API}/zones?name=${DOMAIN}&status=active" || true)"
+          zone_id="$(jq -r '.result[0].id // empty' <<<"$zone" 2>/dev/null || true)"
+          ssl_mode=unknown
+          apex_records=unknown
+          www_records=unknown
+          if [ -n "$zone_id" ]; then
+            ssl_json="$(cf "${API}/zones/${zone_id}/settings/ssl" || true)"
+            ssl_mode="$(jq -r '.result.value // "unknown"' <<<"$ssl_json" 2>/dev/null || true)"
+            apex_json="$(cf "${API}/zones/${zone_id}/dns_records?name=${DOMAIN}&per_page=100" || true)"
+            www_json="$(cf "${API}/zones/${zone_id}/dns_records?name=${WWW}&per_page=100" || true)"
+            apex_records="$(jq -r '[.result[] | select(.type=="A" or .type=="AAAA" or .type=="CNAME") | (.type+":"+.content+":proxied="+(.proxied|tostring)+":ttl="+(.ttl|tostring))] | join(",")' <<<"$apex_json" 2>/dev/null || echo unknown)"
+            www_records="$(jq -r '[.result[] | select(.type=="A" or .type=="AAAA" or .type=="CNAME") | (.type+":"+.content+":proxied="+(.proxied|tostring)+":ttl="+(.ttl|tostring))] | join(",")' <<<"$www_json" 2>/dev/null || echo unknown)"
+          fi
+
+          dig_system_a="$(dig +short A "$DOMAIN" | sort | paste -sd, -)"
+          dig_cf_a="$(dig @1.1.1.1 +short A "$DOMAIN" | sort | paste -sd, -)"
+          dig_google_a="$(dig @8.8.8.8 +short A "$DOMAIN" | sort | paste -sd, -)"
+          dig_system_aaaa="$(dig +short AAAA "$DOMAIN" | sort | paste -sd, -)"
+
+          tls_out="$(timeout 25 openssl s_client -connect "${DOMAIN}:443" -servername "$DOMAIN" -verify_hostname "$DOMAIN" </dev/null 2>&1 || true)"
+          tls_subject="$(awk '/subject=/{print; exit}' <<<"$tls_out" | sed 's/^[[:space:]]*//')"
+          tls_issuer="$(awk '/issuer=/{print; exit}' <<<"$tls_out" | sed 's/^[[:space:]]*//')"
+          tls_verify="$(grep 'Verify return code' <<<"$tls_out" | tail -1 | sed 's/^[[:space:]]*//')"
+          http_code="$(curl -sS -o /tmp/body -D /tmp/headers -w '%{http_code}' --connect-timeout 15 --max-time 30 "https://${DOMAIN}/" || true)"
+          server_header="$(awk 'BEGIN{IGNORECASE=1} /^server:/{gsub(/\r/,""); print $0}' /tmp/headers | tail -1)"
+          cf_ray="$(awk 'BEGIN{IGNORECASE=1} /^cf-ray:/{gsub(/\r/,""); print $0}' /tmp/headers | tail -1)"
+
+          explicit_results=""
+          for ip in 104.21.18.150 172.67.182.158; do
+            code="$(curl --resolve "${DOMAIN}:443:${ip}" -sS -o /dev/null -w '%{http_code}' --connect-timeout 10 --max-time 20 "https://${DOMAIN}/" || true)"
+            v="$(echo | openssl s_client -connect "${ip}:443" -servername "$DOMAIN" -verify_hostname "$DOMAIN" 2>&1 | grep 'Verify return code' | tail -1 | xargs || true)"
+            explicit_results="${explicit_results}${ip}:http=${code}:tls=${v};"
+          done
+
+          {
+            echo 'AVC edge diagnostic'
+            echo "ssl_mode: ${ssl_mode}"
+            echo "apex_records: ${apex_records}"
+            echo "www_records: ${www_records}"
+            echo "dig_system_a: ${dig_system_a:-none}"
+            echo "dig_1.1.1.1_a: ${dig_cf_a:-none}"
+            echo "dig_8.8.8.8_a: ${dig_google_a:-none}"
+            echo "dig_system_aaaa: ${dig_system_aaaa:-none}"
+            echo "tls_subject: ${tls_subject:-none}"
+            echo "tls_issuer: ${tls_issuer:-none}"
+            echo "tls_verify: ${tls_verify:-none}"
+            echo "https_http_code: ${http_code:-none}"
+            echo "server_header: ${server_header:-none}"
+            echo "cf_ray: ${cf_ray:-none}"
+            echo "explicit_cloudflare_edges: ${explicit_results:-none}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > edge-status.txt
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add edge-status.txt
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC edge TLS diagnostic'; git push; fi
