@@ -4,24 +4,29 @@ const siteNav=document.querySelector('[data-site-nav]');
 const loadStyle=(needle,href)=>{if(!document.querySelector(`link[href*="${needle}"]`)){const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)}};
 loadStyle('company.css','assets/company.css?v=20260807');
 loadStyle('phase8.css','assets/phase8.css?v=20260807');
+loadStyle('final-polish.css','assets/final-polish.css?v=20260807-p10');
 
+const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+const isHome=current==='index.html';
 const syncHeaderHeight=()=>{const top=document.querySelector('.topbar')?.offsetHeight||0;const head=document.querySelector('.site-header')?.offsetHeight||0;document.documentElement.style.setProperty('--avc-header-height',`${top+head}px`)};
 syncHeaderHeight();window.addEventListener('resize',syncHeaderHeight,{passive:true});
 
-if(siteNav){
-  const byText=text=>[...siteNav.querySelectorAll('a')].find(a=>a.textContent.trim().toLowerCase()===text.toLowerCase());
-  const ensure=(text,href)=>{const found=byText(text);if(found){found.href=href;return found}const a=document.createElement('a');a.href=href;a.textContent=text;siteNav.appendChild(a);return a};
-  if(!byText('About AVC')){const a=document.createElement('a');a.href='about.html';a.textContent='About AVC';siteNav.querySelector('a')?.after(a)}
-  ensure('Services','services.html');ensure('Jobs','jobs.html');ensure('Trust','trust-center.html');ensure('Contact','contact.html');
+const topbarLinks=document.querySelector('.topbar-links');
+if(topbarLinks){
+  if(!topbarLinks.querySelector('a[href^="tel:"]')){const phone=document.createElement('a');phone.href='tel:+919473286356';phone.textContent='+91 9473286356';topbarLinks.prepend(phone)}
+  if(!topbarLinks.querySelector('a[href^="mailto:"]')){const email=document.createElement('a');email.href='mailto:info@assignmentvenuecentre.me';email.textContent='info@assignmentvenuecentre.me';topbarLinks.appendChild(email)}
+}
 
-  const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
-  siteNav.querySelectorAll('a').forEach(a=>{const href=(a.getAttribute('href')||'').split('#')[0].replace('./','').toLowerCase();if((current==='index.html'&&(href===''||href==='index.html'))||href===current)a.setAttribute('aria-current','page');else if(a.getAttribute('aria-current')==='page')a.removeAttribute('aria-current')});
+if(siteNav){
+  const navItems=[['./','Home','index.html'],['about.html','About AVC','about.html'],['services.html','Services','services.html'],['jobs.html','Jobs','jobs.html'],['office.html','Office','office.html'],['trust-center.html','Trust','trust-center.html'],['contact.html','Contact','contact.html']];
+  siteNav.innerHTML=navItems.map(([href,label,key])=>`<a href="${href}"${current===key?' aria-current="page"':''}>${label}</a>`).join('');
+  siteNav.setAttribute('aria-label','Primary navigation');
 }
 
 const closeNav=(restoreFocus=false)=>{if(!siteNav||!navToggle)return;siteNav.classList.remove('open');document.body.classList.remove('menu-open');navToggle.setAttribute('aria-expanded','false');navToggle.setAttribute('aria-label','Open navigation');navToggle.textContent='☰';if(restoreFocus)navToggle.focus()};
 
 if(navToggle&&siteNav){
-  if(!siteNav.id)siteNav.id='primary-navigation';navToggle.setAttribute('aria-controls',siteNav.id);
+  if(!siteNav.id)siteNav.id='primary-navigation';navToggle.setAttribute('aria-controls',siteNav.id);navToggle.setAttribute('aria-label','Open navigation');
   navToggle.addEventListener('click',()=>{const open=!siteNav.classList.contains('open');if(open){siteNav.classList.add('open');document.body.classList.add('menu-open');navToggle.setAttribute('aria-expanded','true');navToggle.setAttribute('aria-label','Close navigation');navToggle.textContent='×';siteNav.querySelector('a')?.focus()}else closeNav(true)});
   siteNav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>closeNav(false)));
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&siteNav.classList.contains('open'))closeNav(true)});
@@ -38,8 +43,12 @@ document.querySelectorAll('.faq-question').forEach((button,index)=>{
 
 document.querySelectorAll('[data-year]').forEach(node=>{node.textContent=String(new Date().getFullYear())});
 
-// Keep the header/logo eager; defer all other images to reduce initial work.
 document.querySelectorAll('img').forEach((img,index)=>{img.decoding='async';const critical=img.closest('.site-header')||img.closest('.hero')||img.closest('.about-hero')||img.closest('.business-hero')||img.closest('.trust-hero')||index===0;if(!critical)img.loading='lazy'});
+
+if(isHome){
+  const heroCopy=document.querySelector('.hero .hero-grid>div:first-child');
+  if(heroCopy&&!heroCopy.querySelector('.avc-launch-badge')){const badge=document.createElement('div');badge.className='avc-launch-badge';badge.textContent='Official AVC website • Darbhanga, Bihar';heroCopy.insertBefore(badge,heroCopy.firstElementChild)}
+}
 
 const homeServices=document.querySelector('#services');
 if(homeServices&&!document.querySelector('.company-snapshot')){
@@ -56,7 +65,13 @@ const opportunitySection=document.querySelector('#opportunities');if(opportunity
 const officeSection=document.querySelector('#office');if(officeSection&&!officeSection.querySelector('a[href="office.html"]')){const panel=officeSection.querySelector('.office-panel');if(panel){const link=document.createElement('a');link.className='button light';link.href='office.html';link.textContent='Office & interview information';link.style.marginTop='18px';panel.appendChild(link)}}
 const trustSection=document.querySelector('#trust');if(trustSection&&!trustSection.querySelector('a[href="trust-center.html"]')){const heading=trustSection.querySelector('.section-heading');if(heading){const link=document.createElement('a');link.className='button light';link.href='trust-center.html';link.textContent='Open Trust Center';link.style.marginTop='18px';heading.appendChild(link)}}
 
-const footerCompanyHeading=[...document.querySelectorAll('.footer h3')].find(el=>el.textContent.trim().toLowerCase()==='company');
-if(footerCompanyHeading){const links=footerCompanyHeading.nextElementSibling;if(links?.classList.contains('footer-links')){const wanted=[['about.html','About AVC'],['company-verification.html','Company verification'],['services.html','Services'],['jobs.html','Jobs'],['office.html','Office'],['media.html','Media'],['trust-center.html','Trust Center'],['contact.html','Contact'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];wanted.reverse().forEach(([href,label])=>{if(!links.querySelector(`a[href="${href}"]`)){const link=document.createElement('a');link.href=href;link.textContent=label;links.prepend(link)}})}}
+const footer=document.querySelector('.footer');
+if(footer){
+  const container=footer.querySelector('.container');
+  if(container&&!footer.querySelector('.footer-grid')){const grid=document.createElement('div');grid.className='footer-grid';grid.innerHTML=`<div class="footer-brand"><img src="assets/avc-logo.png" alt="Assignment Venue Center official logo"><p>Recruitment support for candidates, employers and recruitment partners.</p></div><div><h3>Company</h3><div class="footer-links"><a href="about.html">About AVC</a><a href="company-verification.html">Company verification</a><a href="office.html">Office</a><a href="media.html">Media</a></div></div><div><h3>Services</h3><div class="footer-links"><a href="services.html">All services</a><a href="jobs.html">Jobs</a><a href="candidates.html">Candidates</a><a href="employers.html">Employers</a><a href="partners.html">Recruitment partners</a></div></div><div><h3>Trust & legal</h3><div class="footer-links"><a href="trust-center.html">Trust Center</a><a href="fraud-safety.html">Fraud safety</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a></div></div>`;container.prepend(grid)}
+  const footerCompanyHeading=[...footer.querySelectorAll('h3')].find(el=>el.textContent.trim().toLowerCase()==='company');
+  if(footerCompanyHeading){const links=footerCompanyHeading.nextElementSibling;if(links?.classList.contains('footer-links')){[['about.html','About AVC'],['company-verification.html','Company verification'],['office.html','Office'],['media.html','Media']].forEach(([href,label])=>{if(!links.querySelector(`a[href="${href}"]`)){const link=document.createElement('a');link.href=href;link.textContent=label;links.appendChild(link)}})}}
+  if(container&&!footer.querySelector('.global-contact-strip')){const strip=document.createElement('div');strip.className='global-contact-strip';strip.innerHTML=`<strong>Assignment Venue Center</strong><a href="tel:+919473286356">+91 9473286356</a><a href="mailto:info@assignmentvenuecentre.me">info@assignmentvenuecentre.me</a><span>Kamtaul Road, Madhupur, Tekatar, Darbhanga, Bihar - 847306</span>`;container.appendChild(strip)}
+}
 
-if(!document.querySelector('script[data-avc-seo-loader]')){const seo=document.createElement('script');seo.src='assets/seo.js?v=20260807';seo.defer=true;seo.dataset.avcSeoLoader='true';document.head.appendChild(seo)}
+if(!document.querySelector('script[data-avc-seo-loader]')){const seo=document.createElement('script');seo.src='assets/seo.js?v=20260807-p10';seo.defer=true;seo.dataset.avcSeoLoader='true';document.head.appendChild(seo)}
