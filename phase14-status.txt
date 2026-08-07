@@ -1,0 +1,18 @@
+AVC Phase 14 vacancy content management gate
+status: failed
+total_jobs: 0
+stored_active_status_records: 0
+failures: 1
+warnings: 0
+write_safety: explicit --apply required
+draft_storage: local-only / ignored
+public_source_of_truth: data/jobs.json
+failure_details:
+/robots.txt: live marker missing
+live_details:
+https://assignmentvenuecentre.me/jobs.html -> 200; marker=yes
+https://assignmentvenuecentre.me/data/jobs.json -> 200; marker=yes
+https://assignmentvenuecentre.me/robots.txt -> 200; marker=no
+https://assignmentvenuecentre.me/robots.txt -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap-jobs.xml -> 200; marker=yes
+checked_at_utc: 2026-08-07T11:04:34Z
