@@ -11,7 +11,7 @@
     logo:base+'assets/avc-logo.png',
     image:base+'assets/avc-logo-intro-poster.png',
     email:'info@assignmentvenuecentre.me',
-    telephone:'+91 9162530999',
+    telephone:'+91 9473286356',
     taxID:'10AOVPH3197L1ZI',
     identifier:[{'@type':'PropertyValue',name:'Udyam Registration',value:'UDYAM-BR-10-0047094'}],
     founder:{'@type':'Person',name:'Mehdi Hasan',jobTitle:'Founder & Business Head'},
