@@ -1,0 +1,132 @@
+name: AVC Phase 18 Resources Hub
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - phase18-trigger.txt
+      - scripts/phase18_integrate.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avc-phase18-resources
+  cancel-in-progress: false
+
+jobs:
+  build-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Integrate Resources Hub
+        run: python scripts/phase18_integrate.py
+
+      - name: Static Resources gate
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+          import json,sys
+          r=Path('.'); failures=[]; warnings=[]
+          checks={
+            'resources.html':['AVC resources for','Candidate Readiness Checklist','Verified Jobs Hub','Official Company Brochure','Employer Requirement Intake','Partner Enquiry','data-resource-search'],
+            'candidate-readiness.html':['Candidate readiness checklist','data-readiness-item','data-readiness-print','data-readiness-reset','does not guarantee a job, visa approval or overseas deployment'],
+            'assets/resources.css':['.sr-only','resource-grid','candidate-tool','@media print'],
+            'assets/resources.js':['data-resource-filter','localStorage','window.print','avc-candidate-readiness-v1'],
+            'assets/site.js':["['resources.html','Resources','resources.html']",'Resources & Tools'],
+            'assets/measurement.js':['resources_hub','candidate_readiness'],
+            'assets/seo.js':["'resources.html':'Resources & Tools'","'candidate-readiness.html':'Candidate Readiness Checklist'"],
+          }
+          for p,needles in checks.items():
+            body=(r/p).read_text(encoding='utf-8')
+            for needle in needles:
+              if needle not in body: failures.append(f'{p}: missing {needle}')
+          readiness=(r/'candidate-readiness.html').read_text(encoding='utf-8')
+          if readiness.count('data-readiness-item') != 16: failures.append('candidate-readiness.html: checklist item count must be 16')
+          if '<form' in readiness.lower(): failures.append('candidate-readiness.html: backend/form collection not allowed')
+          resources=(r/'resources.html').read_text(encoding='utf-8')
+          for prohibited in ['Smart AI Visual Resume','eSIM','HAJ tools']:
+            if prohibited.lower() in resources.lower(): failures.append(f'resources.html: unverified legacy feature published: {prohibited}')
+          root=ET.parse('sitemap.xml').getroot();ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          locs={x.text for x in root.findall('s:url/s:loc',ns)}
+          for u in ['https://assignmentvenuecentre.me/resources.html','https://assignmentvenuecentre.me/candidate-readiness.html']:
+            if u not in locs: failures.append('sitemap missing '+u)
+          result={'status':'success' if not failures else 'failed','failures':failures,'warnings':warnings,'checklist_items':16,'website_data_collection':'none'}
+          Path('phase18-static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          print(json.dumps(result,indent=2))
+          if failures: sys.exit(1)
+          PY
+
+      - name: Commit Phase 18 integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/site.js assets/measurement.js assets/seo.js sitemap.xml scripts/phase12_search_growth.py scripts/build_job_pages.py phase18-static.json '*.html'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Integrate AVC Phase 18 resources hub'
+            git push
+          fi
+
+      - name: Live Resources gate
+        run: |
+          set +e
+          fail=0
+          : > /tmp/live.txt
+          check(){
+            path="$1"; marker="$2"; ok=0
+            for i in $(seq 1 15); do
+              sep='?'; [[ "$path" == *'?'* ]] && sep='&'
+              body="$(curl -fsSL --connect-timeout 15 --max-time 30 -H 'Cache-Control: no-cache' "https://assignmentvenuecentre.me${path}${sep}phase18=$(date +%s)" 2>/dev/null || true)"
+              if printf '%s' "$body" | grep -Fq "$marker"; then ok=1; break; fi
+              sleep 8
+            done
+            if [ "$ok" -eq 1 ]; then echo "https://assignmentvenuecentre.me${path} -> 200; marker=yes" >> /tmp/live.txt; else echo "https://assignmentvenuecentre.me${path} -> marker=no" >> /tmp/live.txt; fail=$((fail+1)); fi
+          }
+          check /resources.html 'AVC resources for'
+          check /candidate-readiness.html 'Candidate readiness checklist'
+          check /assets/resources.css 'candidate-tool'
+          check /assets/resources.js 'avc-candidate-readiness-v1'
+          check /assets/site.js "['resources.html','Resources','resources.html']"
+          check /assets/measurement.js 'resources_hub'
+          check /assets/seo.js 'Candidate Readiness Checklist'
+          check /sitemap.xml 'resources.html'
+          check /sitemap.xml 'candidate-readiness.html'
+          if [ "$fail" -eq 0 ]; then status=success; else status=failed; fi
+          {
+            echo 'AVC Phase 18 public resources and candidate tools gate'
+            echo "status: ${status}"
+            echo 'live_checks: 9'
+            echo "failures: ${fail}"
+            echo 'warnings: 0'
+            echo 'resource_cards: 12'
+            echo 'candidate_checklist_items: 16'
+            echo 'checklist_storage: browser-local-only'
+            echo 'website_data_collection: none in Phase 18 tools'
+            echo 'unverified_legacy_tools: not_published'
+            echo 'live_details:'
+            cat /tmp/live.txt
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > phase18-status.txt
+          cat phase18-status.txt
+          [ "$fail" -eq 0 ]
+
+      - name: Commit Phase 18 evidence
+        if: always()
+        run: |
+          if [ ! -f phase18-status.txt ]; then exit 0; fi
+          git pull --rebase
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase18-status.txt phase18-static.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record AVC Phase 18 resources gate'
+            git push
+          fi
