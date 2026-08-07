@@ -40,37 +40,32 @@ jobs:
           python scripts/vacancy_manager.py validate | tee phase14-manager-validation.json
           python scripts/vacancy_manager.py list > phase14-manager-list.json
           python - <<'PY'
-          import json, re, subprocess, sys
+          import json, subprocess, sys
           from pathlib import Path
 
           failures=[]
           warnings=[]
           root=Path('.')
 
-          # Schema must remain machine-readable.
           schema=json.loads((root/'docs/vacancy-input-schema.json').read_text(encoding='utf-8'))
           if schema.get('title')!='AVC Verified Vacancy Input':
               failures.append('vacancy input schema title mismatch')
 
-          # Public DB is the only committed vacancy data source.
           db=json.loads((root/'data/jobs.json').read_text(encoding='utf-8'))
           jobs=db.get('jobs') or []
           if not isinstance(jobs,list):
               failures.append('data/jobs.json jobs must be an array')
 
-          # Local drafts must remain ignored.
           ignore=(root/'.gitignore').read_text(encoding='utf-8')
           for token in ['.avc-vacancy-drafts/','.avc-preview/','*.vacancy-draft.json']:
               if token not in ignore:
                   failures.append(f'.gitignore missing {token}')
 
-          # Operator documentation must explain dry-run and lifecycle actions.
           guide=(root/'VACANCY-PUBLISHING.md').read_text(encoding='utf-8').lower()
           for token in ['dry run','--apply','hold','close','reverify','single source of truth']:
               if token not in guide:
                   failures.append(f'publishing guide missing {token}')
 
-          # Manager must expose explicit apply switches on every write command.
           for cmd in ['publish','hold','close','reverify']:
               help_text=subprocess.check_output([sys.executable,'scripts/vacancy_manager.py',cmd,'--help'],text=True)
               if '--apply' not in help_text:
@@ -115,18 +110,29 @@ jobs:
               ('/sitemap-jobs.xml','<urlset'),
           ]
           failures=[]; live=[]
+
+          def check(path, needle, attempts=12):
+              last=''
+              for n in range(attempts):
+                  url=base+path+'?phase14='+str(int(time.time()))+'-'+str(n)
+                  try:
+                      req=urllib.request.Request(url,headers={'User-Agent':'AVC-Phase14-Gate/1.1','Cache-Control':'no-cache, no-store','Pragma':'no-cache'})
+                      with urllib.request.urlopen(req,timeout=25) as r:
+                          body=r.read().decode('utf-8','replace')
+                          if r.status==200 and needle in body:
+                              return r.status, True, n+1
+                          last=f'HTTP {r.status}; marker missing'
+                  except Exception as e:
+                      last=str(e)
+                  if n < attempts-1:
+                      time.sleep(10)
+              return 0, False, attempts
+
           for path,needle in checks:
-              url=base+path+'?phase14='+str(int(time.time()))
-              try:
-                  req=urllib.request.Request(url,headers={'User-Agent':'AVC-Phase14-Gate/1.0','Cache-Control':'no-cache'})
-                  with urllib.request.urlopen(req,timeout=25) as r:
-                      body=r.read().decode('utf-8','replace')
-                      ok=(r.status==200 and needle in body)
-                      live.append(f'{base+path} -> {r.status}; marker={"yes" if ok else "no"}')
-                      if not ok: failures.append(f'{path}: live marker missing')
-              except Exception as e:
-                  failures.append(f'{path}: {e}')
-                  live.append(f'{base+path} -> failed')
+              code,ok,attempts=check(path,needle)
+              live.append(f'{base+path} -> {code if code else "failed"}; marker={"yes" if ok else "no"}; attempts={attempts}')
+              if not ok:
+                  failures.append(f'{path}: live marker missing after {attempts} attempts')
 
           status='success' if not failures else 'failed'
           lines=[
