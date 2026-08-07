@@ -8,7 +8,7 @@
     name:'Assignment Venue Center',
     alternateName:'AVC',
     url:base,
-    logo:base+'assets/avc-logo.png',
+    logo:{'@type':'ImageObject',url:base+'assets/avc-logo.png'},
     image:base+'assets/avc-logo-intro-poster.png',
     email:'info@assignmentvenuecentre.me',
     telephone:'+91 9473286356',
@@ -16,6 +16,7 @@
     identifier:[{'@type':'PropertyValue',name:'Udyam Registration',value:'UDYAM-BR-10-0047094'}],
     founder:{'@type':'Person',name:'Mehdi Hasan',jobTitle:'Founder & Business Head'},
     address:{'@type':'PostalAddress',streetAddress:'Ground Floor, Assignment Venue Center, Kamtaul Road, Madhupur, Tekatar',addressLocality:'Darbhanga',addressRegion:'Bihar',postalCode:'847306',addressCountry:'IN'},
+    contactPoint:{'@type':'ContactPoint',telephone:'+91 9473286356',email:'info@assignmentvenuecentre.me',contactType:'customer support',areaServed:'IN',availableLanguage:['en','hi','ur']},
     description:'Recruitment support, candidate sourcing, application coordination, CV/profile support, document readiness, interview coordination and manpower coordination.',
     sameAs:[
       'https://www.youtube.com/@AssignmentvenueCentre',
@@ -28,6 +29,7 @@
     '@id':base+'#website',
     url:base,
     name:'Assignment Venue Center',
+    alternateName:'AVC',
     publisher:{'@id':orgId},
     inLanguage:'en-IN'
   }];
