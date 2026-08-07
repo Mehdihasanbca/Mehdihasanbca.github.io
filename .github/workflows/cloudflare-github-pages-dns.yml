@@ -37,33 +37,51 @@ jobs:
           detail="unknown failure"
           ok=1
 
-          cf() {
-            curl --silent --show-error \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              -H "Content-Type: application/json" \
-              "$@"
-          }
-
           fail() {
             ok=0
             detail="$1"
             echo "DNS repair: ${detail}"
           }
 
-          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
-            fail "GitHub secret CLOUDFLARE_API_TOKEN is missing"
+          CF_TOKEN="$(python - <<'PY'
+          import os
+          s = os.environ.get('CLOUDFLARE_API_TOKEN', '').strip()
+          if s.lower().startswith('bearer '):
+              s = s[7:].strip()
+          if len(s) >= 2 and s[0] == s[-1] and s[0] in ('\"', "'"):
+              s = s[1:-1].strip()
+          print(s, end='')
+          PY
+          )"
+
+          if [ -z "${CF_TOKEN}" ]; then
+            fail "GitHub secret CLOUDFLARE_API_TOKEN is missing or empty"
+          elif [[ "${CF_TOKEN}" =~ [[:space:]] ]]; then
+            fail "GitHub secret contains whitespace; paste only the Cloudflare API token value"
+          elif [ "${#CF_TOKEN}" -lt 20 ]; then
+            fail "GitHub secret does not look like a complete Cloudflare API token"
           fi
+
+          cf() {
+            curl --globoff --silent --show-error --connect-timeout 15 --max-time 30 \
+              -H "Authorization: Bearer ${CF_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "$@"
+          }
 
           zone_id=""
           if [ "${ok}" -eq 1 ]; then
-            zone_json="$(cf "${CF_API}/zones?name=${DOMAIN}&status=active" || true)"
-            if ! jq -e '.success == true' >/dev/null 2>&1 <<<"${zone_json}"; then
+            zone_json="$(cf "${CF_API}/zones?name=${DOMAIN}&status=active" 2>/tmp/cf-curl-error || true)"
+            curl_error="$(cat /tmp/cf-curl-error 2>/dev/null || true)"
+            if [ -n "${curl_error}" ] && [ -z "${zone_json}" ]; then
+              fail "Cloudflare request could not be sent; check that the GitHub secret contains only the token value"
+            elif ! jq -e '.success == true' >/dev/null 2>&1 <<<"${zone_json}"; then
               msg="$(jq -r '.errors[0].message // "Cloudflare zone query failed"' 2>/dev/null <<<"${zone_json}" || true)"
               fail "Cloudflare authentication/Zone Read failed: ${msg:-unknown error}"
             else
               zone_id="$(jq -r '.result[0].id // empty' <<<"${zone_json}")"
               if [ -z "${zone_id}" ]; then
-                fail "assignmentvenuecentre.me zone was not returned; check token zone scope"
+                fail "assignmentvenuecentre.me zone was not returned; check token Zone resources scope"
               fi
             fi
           fi
@@ -134,13 +152,6 @@ jobs:
             git commit -m "Record AVC DNS repair result"
             git push
           fi
-
-          echo "Expected successful DNS records:"
-          echo "A ${DOMAIN} -> 185.199.108.153"
-          echo "A ${DOMAIN} -> 185.199.109.153"
-          echo "A ${DOMAIN} -> 185.199.110.153"
-          echo "A ${DOMAIN} -> 185.199.111.153"
-          echo "CNAME ${WWW_DOMAIN} -> ${PAGES_HOST}"
 
           if [ "${ok}" -ne 1 ]; then
             exit 1
