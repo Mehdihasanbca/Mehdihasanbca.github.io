@@ -1,0 +1,134 @@
+name: AVC Phase 17 Digital Brochure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'phase17-trigger.txt'
+      - 'scripts/phase17_integrate.py'
+      - 'brochure.html'
+      - 'assets/brochure.css'
+      - 'assets/brochure.js'
+      - 'assets/qr-apply.svg'
+      - 'assets/qr-website.svg'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avc-phase17-brochure
+  cancel-in-progress: false
+
+jobs:
+  integrate-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Integrate brochure discovery
+        run: python scripts/phase17_integrate.py
+
+      - name: Validate brochure source
+        shell: python
+        run: |
+          from pathlib import Path
+          import json,sys,xml.etree.ElementTree as ET
+          r=Path('.')
+          failures=[]
+          def need(path,*markers):
+              body=(r/path).read_text(encoding='utf-8')
+              for m in markers:
+                  if m not in body: failures.append(f'{path}: missing {m}')
+              return body
+          b=need('brochure.html','Assignment Venue Center','Mehdi Hasan','10AOVPH3197L1ZI','UDYAM-BR-10-0047094','+91 9473286356','assets/qr-apply.svg','assets/qr-website.svg','Recruitment responsibility','Print / Save as PDF')
+          css=need('assets/brochure.css','@media print','size:A4','210mm','297mm')
+          need('assets/brochure.js','window.print','navigator.clipboard')
+          need('assets/site.js','brochure.html','Company brochure')
+          need('assets/measurement.js','company_brochure')
+          need('assets/seo.js',"'brochure.html':'Company Brochure'")
+          need('media.html','Open company brochure','brochure.html')
+          for q in ['assets/qr-apply.svg','assets/qr-website.svg']:
+              body=need(q,'<svg','<path')
+              if 'http://' in body: failures.append(f'{q}: insecure dependency')
+          if '<form' in b.lower(): failures.append('brochure.html: unexpected data collection form')
+          if '9162530999' in b: failures.append('brochure.html: old phone number present')
+          for bad in ['100% Job Guarantee','Guaranteed Visa','Government Approved Recruitment Agency','RecruitOS']:
+              if bad.lower() in b.lower(): failures.append(f'brochure.html: prohibited/unsupported wording {bad}')
+          tree=ET.parse('sitemap.xml');root=tree.getroot();ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          locs={x.text for x in root.findall('s:url/s:loc',ns)}
+          if 'https://assignmentvenuecentre.me/brochure.html' not in locs: failures.append('sitemap.xml: brochure missing')
+          result={'status':'success' if not failures else 'failed','failures':failures,'warnings':[],'brochure_pages':b.count('class="brochure-page')}
+          Path('phase17-static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          print(json.dumps(result,indent=2))
+          if failures: sys.exit(1)
+
+      - name: Commit brochure integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/site.js assets/measurement.js assets/seo.js media.html sitemap.xml scripts/build_job_pages.py scripts/phase12_search_growth.py phase17-static.json '*.html'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Integrate AVC official digital brochure'
+            git push
+          fi
+
+      - name: Verify live brochure
+        shell: bash
+        run: |
+          set +e
+          fail=0
+          : > /tmp/live.txt
+          check(){
+            path="$1"; marker="$2"; ok=0
+            for i in $(seq 1 15); do
+              url="https://assignmentvenuecentre.me${path}"
+              sep='?'; [[ "$url" == *'?'* ]] && sep='&'
+              body="$(curl -fsSL --connect-timeout 15 --max-time 30 -H 'Cache-Control: no-cache' "${url}${sep}phase17=$(date +%s)" 2>/dev/null || true)"
+              if printf '%s' "$body" | grep -Fq "$marker"; then ok=1; break; fi
+              sleep 8
+            done
+            if [ "$ok" -eq 1 ]; then echo "https://assignmentvenuecentre.me${path} -> 200; marker=yes" >> /tmp/live.txt; else echo "https://assignmentvenuecentre.me${path} -> marker=no" >> /tmp/live.txt; fail=$((fail+1)); fi
+          }
+          check /brochure.html 'Official company brochure'
+          check /brochure.html '10AOVPH3197L1ZI'
+          check /assets/brochure.css '@media print'
+          check /assets/brochure.js 'window.print'
+          check /assets/qr-apply.svg '<svg'
+          check /assets/qr-website.svg '<svg'
+          check /media.html 'Open company brochure'
+          check /assets/site.js 'Company brochure'
+          check /assets/seo.js "'brochure.html':'Company Brochure'"
+          check /sitemap.xml 'brochure.html'
+          if [ "$fail" -eq 0 ]; then status=success; else status=failed; fi
+          {
+            echo 'AVC Phase 17 official digital brochure gate'
+            echo "status: ${status}"
+            echo 'live_checks: 10'
+            echo "failures: ${fail}"
+            echo 'warnings: 0'
+            echo 'brochure_type: current verified AVC digital company brochure'
+            echo 'print_ready: A4 browser print/save-as-PDF'
+            echo 'qr_assets: local SVG; no external QR service'
+            echo 'website_data_collection: none'
+            echo 'live_details:'
+            cat /tmp/live.txt
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > phase17-status.txt
+          cat phase17-status.txt
+          [ "$fail" -eq 0 ]
+
+      - name: Commit Phase 17 evidence
+        if: always()
+        run: |
+          if [ ! -f phase17-status.txt ]; then exit 0; fi
+          git pull --rebase
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase17-status.txt phase17-static.json
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC Phase 17 brochure gate'; git push; fi
