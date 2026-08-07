@@ -1,0 +1,154 @@
+name: AVC Phase 19 Knowledge Center
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - phase19-trigger.txt
+      - scripts/phase19_integrate.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avc-phase19-knowledge
+  cancel-in-progress: false
+
+jobs:
+  build-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Integrate Knowledge Center
+        run: python scripts/phase19_integrate.py
+
+      - name: Static Knowledge gate
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from xml.etree import ElementTree as ET
+          import json,re,sys
+          r=Path('.'); failures=[]; warnings=[]
+          html=(r/'knowledge.html').read_text(encoding='utf-8')
+          required=['Knowledge & FAQ Center','data-knowledge-search','data-knowledge-filter','FAQPage','Registration with AVC does not guarantee selection','registered Recruiting Agent','+91 9473286356','info@assignmentvenuecentre.me']
+          for x in required:
+              if x not in html: failures.append('knowledge.html missing '+x)
+          if '<form' in html.lower(): failures.append('knowledge.html: form/data-submission UI not allowed')
+          if 'chatbot' in html.lower(): failures.append('knowledge.html: chatbot claim not allowed')
+          visible_count=html.count('data-knowledge-item')
+          if visible_count != 29: failures.append(f'knowledge.html: expected 29 visible FAQ items, found {visible_count}')
+          summaries=re.findall(r'<summary>(.*?)</summary>',html,re.S|re.I)
+          summaries=[re.sub(r'<[^>]+>','',x).strip() for x in summaries]
+          if len(summaries)!=29: failures.append(f'knowledge.html: expected 29 summaries, found {len(summaries)}')
+          if len(set(summaries))!=len(summaries): failures.append('knowledge.html: duplicate FAQ questions')
+          scripts=re.findall(r'<script type="application/ld\+json">(.*?)</script>',html,re.S|re.I)
+          faq=None
+          for raw in scripts:
+              try:
+                  obj=json.loads(raw)
+              except Exception:
+                  continue
+              if obj.get('@type')=='FAQPage': faq=obj; break
+          if not faq: failures.append('knowledge.html: FAQPage JSON-LD missing/invalid')
+          else:
+              entities=faq.get('mainEntity',[])
+              if len(entities)!=29: failures.append(f'FAQPage: expected 29 entities, found {len(entities)}')
+              schema_q=[x.get('name','').strip() for x in entities]
+              if schema_q!=summaries: failures.append('FAQPage questions do not match visible FAQ order/text')
+              for i,x in enumerate(entities,1):
+                  ans=x.get('acceptedAnswer',{}).get('text','').strip()
+                  if not ans: failures.append(f'FAQPage entity {i}: empty answer')
+          checks={
+            'assets/knowledge.css':['knowledge-toolbar','knowledge-item','knowledge-filter'],
+            'assets/knowledge.js':['data-knowledge-search','data-knowledge-filter','answers shown'],
+            'resources.html':['Knowledge & FAQ Center','knowledge.html'],
+            'assets/site.js':['Knowledge & FAQ','knowledge.html'],
+            'assets/measurement.js':['knowledge_hub'],
+            'assets/seo.js':["'knowledge.html':'Knowledge & FAQ Center'"],
+          }
+          for p,needles in checks.items():
+              body=(r/p).read_text(encoding='utf-8')
+              for n in needles:
+                  if n not in body: failures.append(f'{p}: missing {n}')
+          root=ET.parse('sitemap.xml').getroot(); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          locs={x.text for x in root.findall('s:url/s:loc',ns)}
+          if 'https://assignmentvenuecentre.me/knowledge.html' not in locs: failures.append('sitemap: knowledge.html missing')
+          result={'status':'success' if not failures else 'failed','failures':failures,'warnings':warnings,'faq_items':29,'faq_schema_items':29,'website_data_collection':'none'}
+          Path('phase19-static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          print(json.dumps(result,indent=2))
+          if failures: sys.exit(1)
+          PY
+
+      - name: Commit Phase 19 integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/site.js assets/measurement.js assets/seo.js resources.html sitemap.xml scripts/phase12_search_growth.py scripts/build_job_pages.py phase19-static.json '*.html'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Integrate AVC Phase 19 Knowledge Center'
+            git push
+          fi
+
+      - name: Live Knowledge gate
+        run: |
+          set +e
+          fail=0
+          : > /tmp/live.txt
+          check(){
+            path="$1"; marker="$2"; ok=0
+            for i in $(seq 1 15); do
+              sep='?'; [[ "$path" == *'?'* ]] && sep='&'
+              body="$(curl -fsSL --connect-timeout 15 --max-time 30 -H 'Cache-Control: no-cache' "https://assignmentvenuecentre.me${path}${sep}phase19=$(date +%s)" 2>/dev/null || true)"
+              if printf '%s' "$body" | grep -Fq "$marker"; then ok=1; break; fi
+              sleep 8
+            done
+            if [ "$ok" -eq 1 ]; then echo "https://assignmentvenuecentre.me${path} -> 200; marker=yes" >> /tmp/live.txt; else echo "https://assignmentvenuecentre.me${path} -> marker=no" >> /tmp/live.txt; fail=$((fail+1)); fi
+          }
+          check /knowledge.html 'Knowledge & FAQ Center'
+          check /knowledge.html 'FAQPage'
+          check /assets/knowledge.css 'knowledge-toolbar'
+          check /assets/knowledge.js 'answers shown'
+          check /resources.html 'Knowledge & FAQ Center'
+          check /assets/site.js 'Knowledge & FAQ'
+          check /assets/measurement.js 'knowledge_hub'
+          check /assets/seo.js 'Knowledge & FAQ Center'
+          check /sitemap.xml 'knowledge.html'
+          if [ "$fail" -eq 0 ]; then status=success; else status=failed; fi
+          {
+            echo 'AVC Phase 19 Knowledge and FAQ Center gate'
+            echo "status: ${status}"
+            echo 'live_checks: 9'
+            echo "failures: ${fail}"
+            echo 'warnings: 0'
+            echo 'faq_items: 29'
+            echo 'faq_schema_items: 29'
+            echo 'search_and_filters: client-side'
+            echo 'question_submission: none'
+            echo 'website_data_collection: none in Knowledge Center'
+            echo 'live_details:'
+            cat /tmp/live.txt
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > phase19-status.txt
+          cat phase19-status.txt
+          [ "$fail" -eq 0 ]
+
+      - name: Commit Phase 19 evidence
+        if: always()
+        run: |
+          if [ ! -f phase19-status.txt ]; then exit 0; fi
+          git pull --rebase
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase19-status.txt phase19-static.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record AVC Phase 19 Knowledge gate'
+            git push
+          fi
