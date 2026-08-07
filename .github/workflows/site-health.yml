@@ -1,0 +1,55 @@
+name: AVC Public Website Health
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - health-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify live AVC pages
+        shell: bash
+        run: |
+          set -uo pipefail
+          BASE='https://assignmentvenuecentre.me'
+          status=success
+          detail='Homepage and company profile are reachable with expected AVC content'
+
+          home_code="$(curl -sS -L -o /tmp/home.html -w '%{http_code}' --connect-timeout 15 --max-time 35 "${BASE}/" || true)"
+          about_code="$(curl -sS -L -o /tmp/about.html -w '%{http_code}' --connect-timeout 15 --max-time 35 "${BASE}/about.html" || true)"
+
+          home_brand=no; about_brand=no; about_founder=no
+          grep -qi 'Assignment Venue Center' /tmp/home.html 2>/dev/null && home_brand=yes
+          grep -qi 'Assignment Venue Center' /tmp/about.html 2>/dev/null && about_brand=yes
+          grep -qi 'Mehdi Hasan' /tmp/about.html 2>/dev/null && about_founder=yes
+
+          if [ "$home_code" != 200 ] || [ "$about_code" != 200 ] || [ "$home_brand" != yes ] || [ "$about_brand" != yes ] || [ "$about_founder" != yes ]; then
+            status=failed
+            detail='One or more live page checks did not match the expected AVC content'
+          fi
+
+          {
+            echo 'AVC public website health'
+            echo "status: ${status}"
+            echo "detail: ${detail}"
+            echo "homepage_http: ${home_code}"
+            echo "homepage_brand_present: ${home_brand}"
+            echo "about_http: ${about_code}"
+            echo "about_brand_present: ${about_brand}"
+            echo "about_founder_present: ${about_founder}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > site-health-status.txt
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site-health-status.txt
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC public website health'; git push; fi
+          [ "$status" = success ]
