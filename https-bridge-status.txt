@@ -1,0 +1,7 @@
+AVC Cloudflare HTTPS bridge status
+status: failed
+detail: Cloudflare proxy test failed (HTTP 526; TLS Verify return code: 0 (ok)); rolling back to DNS-only
+edge_ip: 104.21.18.150
+https_http_code: 526
+tls_verify: Verify return code: 0 (ok)
+checked_at_utc: 2026-08-07T04:39:11Z
