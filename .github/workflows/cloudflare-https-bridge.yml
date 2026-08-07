@@ -1,0 +1,134 @@
+name: Enable AVC Cloudflare HTTPS Bridge
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - https-bridge-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    env:
+      DOMAIN: assignmentvenuecentre.me
+      WWW_DOMAIN: www.assignmentvenuecentre.me
+      CF_API: https://api.cloudflare.com/client/v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable Cloudflare proxy, verify HTTPS, rollback on failure
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          CF_TOKEN="$(python - <<'PY'
+          import os
+          s = os.environ.get('CLOUDFLARE_API_TOKEN', '').strip()
+          if s.lower().startswith('bearer '):
+              s = s[7:].strip()
+          if len(s) >= 2 and s[0] == s[-1] and s[0] in ('\"', "'"):
+              s = s[1:-1].strip()
+          print(s, end='')
+          PY
+          )"
+
+          cf() {
+            curl --globoff --silent --show-error --connect-timeout 15 --max-time 30 \
+              -H "Authorization: Bearer ${CF_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "$@"
+          }
+
+          status="failed"
+          detail="unknown"
+          edge_ip=""
+          http_code=""
+          tls_verify=""
+          changed=0
+
+          if [ -z "${CF_TOKEN}" ]; then
+            detail="Cloudflare token missing"
+          else
+            zone_json="$(cf "${CF_API}/zones?name=${DOMAIN}&status=active" || true)"
+            zone_id="$(jq -r '.result[0].id // empty' <<<"${zone_json}" 2>/dev/null || true)"
+            if [ -z "${zone_id}" ]; then
+              detail="Cloudflare zone lookup failed"
+            else
+              ids=()
+              for host in "${DOMAIN}" "${WWW_DOMAIN}"; do
+                records="$(cf "${CF_API}/zones/${zone_id}/dns_records?name=${host}&per_page=100" || true)"
+                while IFS= read -r rid; do
+                  [ -n "${rid}" ] && ids+=("${rid}")
+                done < <(jq -r '.result[] | select(.type == "A" or .type == "AAAA" or .type == "CNAME") | .id' <<<"${records}" 2>/dev/null)
+              done
+
+              if [ "${#ids[@]}" -eq 0 ]; then
+                detail="No AVC web DNS records found"
+              else
+                proxy_ok=1
+                for rid in "${ids[@]}"; do
+                  response="$(cf -X PATCH --data '{"proxied":true}' "${CF_API}/zones/${zone_id}/dns_records/${rid}" || true)"
+                  if ! jq -e '.success == true' >/dev/null 2>&1 <<<"${response}"; then
+                    proxy_ok=0
+                    detail="Cloudflare could not enable proxy on a web DNS record"
+                    break
+                  fi
+                done
+
+                if [ "${proxy_ok}" -eq 1 ]; then
+                  changed=1
+                  sleep 12
+                  for i in 1 2 3 4 5 6; do
+                    edge_ip="$(dig @1.1.1.1 +short A "${DOMAIN}" | grep -Ev '^185\.199\.(108|109|110|111)\.153$' | head -n1 || true)"
+                    [ -n "${edge_ip}" ] && break
+                    sleep 8
+                  done
+
+                  if [ -z "${edge_ip}" ]; then
+                    detail="Cloudflare proxy enabled but public resolver has not returned an edge IP yet"
+                  else
+                    tls_verify="$(timeout 20 openssl s_client -connect "${edge_ip}:443" -servername "${DOMAIN}" -verify_hostname "${DOMAIN}" </dev/null 2>&1 | grep 'Verify return code' | tail -n1 || true)"
+                    http_code="$(curl -sS -L -o /dev/null -w '%{http_code}' --connect-timeout 10 --max-time 30 --resolve "${DOMAIN}:443:${edge_ip}" "https://${DOMAIN}/" || true)"
+                    if grep -q 'Verify return code: 0' <<<"${tls_verify}" && [[ "${http_code}" =~ ^(2|3)[0-9][0-9]$ ]]; then
+                      status="success"
+                      detail="Cloudflare HTTPS bridge is active and serving a valid certificate while GitHub Pages provisions the custom-domain certificate"
+                    else
+                      detail="Cloudflare proxy test failed (HTTP ${http_code:-none}; TLS ${tls_verify:-unknown}); rolling back to DNS-only"
+                    fi
+                  fi
+                fi
+
+                if [ "${status}" != "success" ] && [ "${changed}" -eq 1 ]; then
+                  for rid in "${ids[@]}"; do
+                    cf -X PATCH --data '{"proxied":false}' "${CF_API}/zones/${zone_id}/dns_records/${rid}" >/dev/null 2>&1 || true
+                  done
+                fi
+              fi
+            fi
+          fi
+
+          {
+            echo "AVC Cloudflare HTTPS bridge status"
+            echo "status: ${status}"
+            echo "detail: ${detail}"
+            echo "edge_ip: ${edge_ip:-none}"
+            echo "https_http_code: ${http_code:-none}"
+            echo "tls_verify: ${tls_verify:-none}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > https-bridge-status.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add https-bridge-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AVC Cloudflare HTTPS bridge result"
+            git push
+          fi
+
+          [ "${status}" = "success" ]
