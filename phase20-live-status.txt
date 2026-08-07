@@ -1,0 +1,26 @@
+AVC Phase 20.1 Razorpay live deployment
+status=blocked_not_live
+razorpay_api_auth=yes
+cloudflare_api_auth=yes
+cloudflare_current_token_workers_deploy_permission=no
+cloudflare_user_api_tokens_permission=no
+cloudflare_account_api_tokens_permission=no
+cloudflare_probe_user_permission_groups_http=403
+cloudflare_probe_account_permission_groups_http=403
+worker_deployed=no
+worker_razorpay_secrets_set=no
+payment_api_health=no
+live_order_creation_test=no
+checkout_enabled=false
+avc_service_base_paise=150000
+gst_rate_percent=18
+gst_paise=27000
+razorpay_order_total_paise=177000
+wafid_third_party_fee_included=no
+razorpay_webhook_secret_present=no
+razorpay_webhook_endpoint=https://assignmentvenuecentre.me/api/payments/webhook
+razorpay_webhook_subscription=merchant_dashboard_or_partner_api_required
+key_secret_public=no
+secret_values_exposed=no
+last_verified_run_id=31201208227
+checked_at_utc=2026-08-07T17:12:48Z
