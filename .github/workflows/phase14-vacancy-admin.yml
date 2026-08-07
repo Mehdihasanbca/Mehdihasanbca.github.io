@@ -1,0 +1,162 @@
+name: AVC Phase 14 Vacancy Admin Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/vacancy_manager.py'
+      - 'data/jobs.json'
+      - 'docs/vacancy-input-schema.json'
+      - 'VACANCY-PUBLISHING.md'
+      - '.gitignore'
+      - 'robots.txt'
+      - '.github/workflows/phase14-vacancy-admin.yml'
+      - 'phase14-trigger.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avc-phase14-vacancy-admin
+  cancel-in-progress: false
+
+jobs:
+  validate-and-record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate vacancy manager and content contract
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/vacancy_manager.py
+          python scripts/vacancy_manager.py validate | tee phase14-manager-validation.json
+          python scripts/vacancy_manager.py list > phase14-manager-list.json
+          python - <<'PY'
+          import json, re, subprocess, sys
+          from pathlib import Path
+
+          failures=[]
+          warnings=[]
+          root=Path('.')
+
+          # Schema must remain machine-readable.
+          schema=json.loads((root/'docs/vacancy-input-schema.json').read_text(encoding='utf-8'))
+          if schema.get('title')!='AVC Verified Vacancy Input':
+              failures.append('vacancy input schema title mismatch')
+
+          # Public DB is the only committed vacancy data source.
+          db=json.loads((root/'data/jobs.json').read_text(encoding='utf-8'))
+          jobs=db.get('jobs') or []
+          if not isinstance(jobs,list):
+              failures.append('data/jobs.json jobs must be an array')
+
+          # Local drafts must remain ignored.
+          ignore=(root/'.gitignore').read_text(encoding='utf-8')
+          for token in ['.avc-vacancy-drafts/','.avc-preview/','*.vacancy-draft.json']:
+              if token not in ignore:
+                  failures.append(f'.gitignore missing {token}')
+
+          # Operator documentation must explain dry-run and lifecycle actions.
+          guide=(root/'VACANCY-PUBLISHING.md').read_text(encoding='utf-8').lower()
+          for token in ['dry run','--apply','hold','close','reverify','single source of truth']:
+              if token not in guide:
+                  failures.append(f'publishing guide missing {token}')
+
+          # Manager must expose explicit apply switches on every write command.
+          for cmd in ['publish','hold','close','reverify']:
+              help_text=subprocess.check_output([sys.executable,'scripts/vacancy_manager.py',cmd,'--help'],text=True)
+              if '--apply' not in help_text:
+                  failures.append(f'{cmd}: --apply safety switch missing')
+
+          top_help=subprocess.check_output([sys.executable,'scripts/vacancy_manager.py','--help'],text=True).lower()
+          if 'dry-run' not in top_help and 'dry run' not in top_help:
+              failures.append('manager help does not state dry-run behavior')
+
+          robots=(root/'robots.txt').read_text(encoding='utf-8')
+          for token in ['Disallow: /scripts/','Disallow: /docs/','Disallow: /data/','Disallow: /phase','Sitemap: https://assignmentvenuecentre.me/sitemap-jobs.xml']:
+              if token not in robots:
+                  failures.append(f'robots.txt missing {token}')
+
+          public={'open','closing-soon'}
+          active=sum(1 for j in jobs if str(j.get('status') or '').lower() in public)
+          result={
+              'status':'success' if not failures else 'failed',
+              'total_jobs':len(jobs),
+              'stored_active_status_records':active,
+              'failures':failures,
+              'warnings':warnings,
+          }
+          Path('phase14-static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          print(json.dumps(result,indent=2))
+          if failures: raise SystemExit(1)
+          PY
+
+      - name: Verify live public content operations boundary
+        run: |
+          python - <<'PY'
+          import json, time, urllib.request
+          from pathlib import Path
+
+          base='https://assignmentvenuecentre.me'
+          static=json.loads(Path('phase14-static.json').read_text(encoding='utf-8'))
+          checks=[
+              ('/jobs.html','Current opportunities'),
+              ('/data/jobs.json','"schemaVersion"'),
+              ('/robots.txt','Disallow: /scripts/'),
+              ('/robots.txt','Sitemap: https://assignmentvenuecentre.me/sitemap-jobs.xml'),
+              ('/sitemap-jobs.xml','<urlset'),
+          ]
+          failures=[]; live=[]
+          for path,needle in checks:
+              url=base+path+'?phase14='+str(int(time.time()))
+              try:
+                  req=urllib.request.Request(url,headers={'User-Agent':'AVC-Phase14-Gate/1.0','Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(req,timeout=25) as r:
+                      body=r.read().decode('utf-8','replace')
+                      ok=(r.status==200 and needle in body)
+                      live.append(f'{base+path} -> {r.status}; marker={"yes" if ok else "no"}')
+                      if not ok: failures.append(f'{path}: live marker missing')
+              except Exception as e:
+                  failures.append(f'{path}: {e}')
+                  live.append(f'{base+path} -> failed')
+
+          status='success' if not failures else 'failed'
+          lines=[
+              'AVC Phase 14 vacancy content management gate',
+              f'status: {status}',
+              f'total_jobs: {static["total_jobs"]}',
+              f'stored_active_status_records: {static["stored_active_status_records"]}',
+              f'failures: {len(failures)}',
+              f'warnings: {len(static.get("warnings",[]))}',
+              'write_safety: explicit --apply required',
+              'draft_storage: local-only / ignored',
+              'public_source_of_truth: data/jobs.json',
+              'failure_details:',*failures,
+              'live_details:',*live,
+              'checked_at_utc: '+time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),
+          ]
+          Path('phase14-status.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          print('\n'.join(lines))
+          if failures: raise SystemExit(1)
+          PY
+
+      - name: Commit Phase 14 evidence
+        if: always()
+        run: |
+          if [ ! -f phase14-status.txt ]; then exit 0; fi
+          git pull --rebase
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add phase14-status.txt phase14-static.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AVC Phase 14 vacancy admin gate"
+            git push
+          fi
