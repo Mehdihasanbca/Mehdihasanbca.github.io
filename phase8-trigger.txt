@@ -1,2 +1,3 @@
 Run AVC Phase 8 quality gate.
-Requested: 2026-08-07T15:42:00+05:30
+Requested: 2026-08-07T15:49:00+05:30
+Reason: recheck after accessibility warning fixes
