@@ -1,5 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /scripts/
+Disallow: /docs/
+Disallow: /data/
+Disallow: /.github/
+Disallow: /phase
 
 Sitemap: https://assignmentvenuecentre.me/sitemap.xml
 Sitemap: https://assignmentvenuecentre.me/sitemap-jobs.xml
