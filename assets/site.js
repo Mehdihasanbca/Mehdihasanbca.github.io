@@ -129,3 +129,11 @@ if(footerCompanyHeading){
     });
   }
 }
+
+if(!document.querySelector('script[data-avc-seo-loader]')){
+  const seo=document.createElement('script');
+  seo.src='assets/seo.js?v=20260807';
+  seo.defer=true;
+  seo.dataset.avcSeoLoader='true';
+  document.head.appendChild(seo);
+}
