@@ -1,0 +1,23 @@
+AVC Phase 15 conversion flow gate
+status: success
+live_checks: 12
+failures: 0
+warnings: 0
+candidate_submission: official external form only
+employer_intake: official email only
+partner_intake: official email only
+website_data_collection: none in Phase 15
+live_details:
+https://assignmentvenuecentre.me/apply.html -> 200; marker=yes
+https://assignmentvenuecentre.me/employer-requirement.html -> 200; marker=yes
+https://assignmentvenuecentre.me/partner-enquiry.html -> 200; marker=yes
+https://assignmentvenuecentre.me/candidates.html -> 200; marker=yes
+https://assignmentvenuecentre.me/employers.html -> 200; marker=yes
+https://assignmentvenuecentre.me/partners.html -> 200; marker=yes
+https://assignmentvenuecentre.me/jobs.html -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/jobs.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/conversion.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/measurement.js -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap.xml -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap.xml -> 200; marker=yes
+checked_at_utc: 2026-08-07T11:43:00Z
