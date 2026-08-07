@@ -1,5 +1,5 @@
 AVC temporary SSL bridge status
-status: failed
-detail: Could not set Cloudflare SSL mode to Full: Unauthorized to access requested resource
+status: success
+detail: Cloudflare Full SSL bridge active; HTTPS validates at the edge while GitHub custom certificate provisions
 previous_ssl_mode: strict
-checked_at_utc: 2026-08-07T04:45:21Z
+checked_at_utc: 2026-08-07T05:00:38Z
