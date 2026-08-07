@@ -18,7 +18,7 @@ if(topbarLinks){
 }
 
 if(siteNav){
-  const navItems=[['./','Home','index.html'],['about.html','About AVC','about.html'],['services.html','Services','services.html'],['jobs.html','Jobs','jobs.html'],['office.html','Office','office.html'],['trust-center.html','Trust','trust-center.html'],['contact.html','Contact','contact.html']];
+  const navItems=[['./','Home','index.html'],['about.html','About AVC','about.html'],['services.html','Services','services.html'],['jobs.html','Jobs','jobs.html'],['access.html','Access','access.html'],['trust-center.html','Trust','trust-center.html'],['contact.html','Contact','contact.html']];
   siteNav.innerHTML=navItems.map(([href,label,key])=>`<a href="${href}"${current===key?' aria-current="page"':''}>${label}</a>`).join('');
   siteNav.setAttribute('aria-label','Primary navigation');
 }
@@ -75,3 +75,16 @@ if(footer){
 }
 
 if(!document.querySelector('script[data-avc-seo-loader]')){const seo=document.createElement('script');seo.src='assets/seo.js?v=20260807-p10';seo.defer=true;seo.dataset.avcSeoLoader='true';document.head.appendChild(seo)}
+
+
+// Phase 16 access integration
+if(current==='candidates.html'){
+  const actions=document.querySelector('.about-hero .hero-actions');
+  if(actions&&!actions.querySelector('a[href="access.html"]')){const a=document.createElement('a');a.className='button secondary';a.href='access.html';a.textContent='Access Center';actions.appendChild(a)}
+}
+if(footer){
+  const serviceHeading=[...footer.querySelectorAll('h3')].find(el=>el.textContent.trim().toLowerCase()==='services');
+  const companyHeading=[...footer.querySelectorAll('h3')].find(el=>el.textContent.trim().toLowerCase()==='company');
+  const target=(serviceHeading?.nextElementSibling?.classList.contains('footer-links')?serviceHeading.nextElementSibling:(companyHeading?.nextElementSibling?.classList.contains('footer-links')?companyHeading.nextElementSibling:null));
+  if(target&&!target.querySelector('a[href="access.html"]')){const a=document.createElement('a');a.href='access.html';a.textContent='Access Center';target.appendChild(a)}
+}

@@ -7,6 +7,9 @@
   const classify=(a)=>{
     const href=(a.getAttribute('href')||'').trim();
     if(!href)return null;
+    if(href.includes('access.html'))return 'access_center';
+    if(href.includes('portal/candidate/login'))return 'legacy_candidate_access';
+    if(href.includes('register/candidate'))return 'legacy_candidate_register';
     if(href.includes('apply.html'))return 'apply_gateway';
     if(href.includes('employer-requirement.html'))return 'employer_requirement';
     if(href.includes('partner-enquiry.html'))return 'partner_enquiry';

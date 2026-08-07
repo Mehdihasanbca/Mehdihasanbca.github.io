@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "failures": [],
+  "warnings": [],
+  "legacy_feature_inventory": {
+    "smart_ai_visual_resume": "source_not_found_not_published",
+    "brochure_html": "source_not_found_not_published",
+    "esim": "source_not_found_not_published",
+    "haj_tools": "source_not_found_not_published",
+    "candidate_registration": "compatibility_route_recovered",
+    "candidate_account_login": "compatibility_guidance_only_no_fake_login",
+    "employer_access": "verified_intake_route",
+    "partner_access": "verified_intake_route",
+    "admin_access": "not_published_on_public_site"
+  }
+}
