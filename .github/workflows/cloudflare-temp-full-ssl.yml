@@ -1,0 +1,111 @@
+name: Temporary Cloudflare Full SSL Bridge
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ssl-bridge-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable temporary Full SSL bridge safely
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -uo pipefail
+          DOMAIN=assignmentvenuecentre.me
+          WWW=www.assignmentvenuecentre.me
+          API=https://api.cloudflare.com/client/v4
+          TOKEN="$(python - <<'PY'
+          import os
+          s=os.environ.get('CLOUDFLARE_API_TOKEN','').strip()
+          if s.lower().startswith('bearer '): s=s[7:].strip()
+          if len(s)>=2 and s[0]==s[-1] and s[0] in ('\"', "'"): s=s[1:-1].strip()
+          print(s,end='')
+          PY
+          )"
+
+          status=failed
+          detail='unknown failure'
+          previous_ssl=unknown
+          zone_id=''
+
+          cf(){ curl --globoff -sS --connect-timeout 15 --max-time 30 -H "Authorization: Bearer ${TOKEN}" -H 'Content-Type: application/json' "$@"; }
+
+          zone="$(cf "${API}/zones?name=${DOMAIN}&status=active" || true)"
+          zone_id="$(jq -r '.result[0].id // empty' <<<"$zone" 2>/dev/null || true)"
+          if [ -z "$zone_id" ]; then
+            detail='Zone lookup failed'
+          else
+            current="$(cf "${API}/zones/${zone_id}/settings/ssl" || true)"
+            previous_ssl="$(jq -r '.result.value // "unknown"' <<<"$current" 2>/dev/null || true)"
+            setssl="$(cf -X PATCH --data '{"value":"full"}' "${API}/zones/${zone_id}/settings/ssl" || true)"
+            if ! jq -e '.success == true' >/dev/null 2>&1 <<<"$setssl"; then
+              msg="$(jq -r '.errors[0].message // "Zone Settings Edit permission required"' <<<"$setssl" 2>/dev/null || true)"
+              detail="Could not set Cloudflare SSL mode to Full: ${msg}"
+            else
+              ok=1
+              for host in "$DOMAIN" "$WWW"; do
+                recs="$(cf "${API}/zones/${zone_id}/dns_records?name=${host}&per_page=100" || true)"
+                mapfile -t ids < <(jq -r '.result[] | select(.type=="A" or .type=="AAAA" or .type=="CNAME") | .id' <<<"$recs" 2>/dev/null)
+                for id in "${ids[@]}"; do
+                  rec="$(cf "${API}/zones/${zone_id}/dns_records/${id}" || true)"
+                  type="$(jq -r '.result.type // empty' <<<"$rec")"
+                  name="$(jq -r '.result.name // empty' <<<"$rec")"
+                  content="$(jq -r '.result.content // empty' <<<"$rec")"
+                  ttl="$(jq -r '.result.ttl // 1' <<<"$rec")"
+                  payload="$(jq -nc --arg type "$type" --arg name "$name" --arg content "$content" --argjson ttl "$ttl" '{type:$type,name:$name,content:$content,ttl:$ttl,proxied:true}')"
+                  upd="$(cf -X PUT --data "$payload" "${API}/zones/${zone_id}/dns_records/${id}" || true)"
+                  if ! jq -e '.success == true' >/dev/null 2>&1 <<<"$upd"; then ok=0; fi
+                done
+              done
+
+              sleep 12
+              http_code="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 15 --max-time 30 "https://${DOMAIN}/" || true)"
+              tls="$(echo | openssl s_client -connect "${DOMAIN}:443" -servername "$DOMAIN" -verify_hostname "$DOMAIN" 2>&1 | grep 'Verify return code' | tail -1 || true)"
+              if [ "$ok" -eq 1 ] && [[ "$http_code" =~ ^(200|301|302)$ ]] && grep -q 'Verify return code: 0' <<<"$tls"; then
+                status=success
+                detail="Cloudflare Full SSL bridge active; HTTPS validates at the edge while GitHub custom certificate provisions"
+              else
+                detail="Bridge test failed: HTTP ${http_code:-none}; ${tls:-no TLS result}"
+                for host in "$DOMAIN" "$WWW"; do
+                  recs="$(cf "${API}/zones/${zone_id}/dns_records?name=${host}&per_page=100" || true)"
+                  mapfile -t ids < <(jq -r '.result[] | select(.type=="A" or .type=="AAAA" or .type=="CNAME") | .id' <<<"$recs" 2>/dev/null)
+                  for id in "${ids[@]}"; do
+                    rec="$(cf "${API}/zones/${zone_id}/dns_records/${id}" || true)"
+                    type="$(jq -r '.result.type // empty' <<<"$rec")"
+                    name="$(jq -r '.result.name // empty' <<<"$rec")"
+                    content="$(jq -r '.result.content // empty' <<<"$rec")"
+                    ttl="$(jq -r '.result.ttl // 1' <<<"$rec")"
+                    payload="$(jq -nc --arg type "$type" --arg name "$name" --arg content "$content" --argjson ttl "$ttl" '{type:$type,name:$name,content:$content,ttl:$ttl,proxied:false}')"
+                    cf -X PUT --data "$payload" "${API}/zones/${zone_id}/dns_records/${id}" >/dev/null || true
+                  done
+                done
+                if [ "$previous_ssl" != unknown ]; then cf -X PATCH --data "{\"value\":\"${previous_ssl}\"}" "${API}/zones/${zone_id}/settings/ssl" >/dev/null || true; fi
+              fi
+            fi
+          fi
+
+          {
+            echo 'AVC temporary SSL bridge status'
+            echo "status: ${status}"
+            echo "detail: ${detail}"
+            echo "previous_ssl_mode: ${previous_ssl}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > temp-ssl-bridge-status.txt
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add temp-ssl-bridge-status.txt
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC temporary SSL bridge result'; git push; fi
+
+          [ "$status" = success ]
