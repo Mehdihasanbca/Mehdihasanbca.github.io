@@ -1,0 +1,4 @@
+Contact: mailto:info@assignmentvenuecentre.me
+Canonical: https://assignmentvenuecentre.me/.well-known/security.txt
+Preferred-Languages: en, hi
+Expires: 2027-08-07T00:00:00.000Z
