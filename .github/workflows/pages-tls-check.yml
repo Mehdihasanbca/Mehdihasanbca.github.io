@@ -1,0 +1,67 @@
+name: Check AVC GitHub Pages TLS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - tls-trigger.txt
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  check-tls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inspect Pages, DNS and direct TLS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          DOMAIN=assignmentvenuecentre.me
+          REPO="${GITHUB_REPOSITORY}"
+
+          pages_json="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/${REPO}/pages" || true)"
+          cname="$(jq -r '.cname // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          https_enforced="$(jq -r '.https_enforced // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          cert_state="$(jq -r '.https_certificate.state // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          cert_desc="$(jq -r '.https_certificate.description // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          protected_state="$(jq -r '.protected_domain_state // empty' <<<"${pages_json}" 2>/dev/null || true)"
+
+          dns_a="$(dig +short A "${DOMAIN}" | paste -sd, -)"
+          dns_aaaa="$(dig +short AAAA "${DOMAIN}" | paste -sd, -)"
+
+          direct_subject="$(timeout 20 openssl s_client -connect 185.199.108.153:443 -servername "${DOMAIN}" </dev/null 2>/dev/null | openssl x509 -noout -subject 2>/dev/null || true)"
+          direct_issuer="$(timeout 20 openssl s_client -connect 185.199.108.153:443 -servername "${DOMAIN}" </dev/null 2>/dev/null | openssl x509 -noout -issuer 2>/dev/null || true)"
+          direct_verify="$(timeout 20 openssl s_client -connect 185.199.108.153:443 -servername "${DOMAIN}" -verify_hostname "${DOMAIN}" </dev/null 2>&1 | grep -E 'Verify return code|verify error' | tail -n 2 | tr '\n' ';' || true)"
+          curl_code="$(curl -k -L -sS -o /dev/null -w '%{http_code}' --connect-timeout 10 --max-time 25 "https://${DOMAIN}/" || true)"
+
+          {
+            echo "AVC GitHub Pages TLS status"
+            echo "domain: ${DOMAIN}"
+            echo "pages_cname: ${cname:-unknown}"
+            echo "https_enforced: ${https_enforced:-unknown}"
+            echo "certificate_state: ${cert_state:-unknown}"
+            echo "certificate_description: ${cert_desc:-unknown}"
+            echo "protected_domain_state: ${protected_state:-unknown}"
+            echo "dns_a: ${dns_a:-none}"
+            echo "dns_aaaa: ${dns_aaaa:-none}"
+            echo "direct_subject: ${direct_subject:-none}"
+            echo "direct_issuer: ${direct_issuer:-none}"
+            echo "direct_verify: ${direct_verify:-none}"
+            echo "https_http_code_ignore_cert: ${curl_code:-none}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > tls-status.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tls-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AVC GitHub Pages TLS status"
+            git push
+          fi
