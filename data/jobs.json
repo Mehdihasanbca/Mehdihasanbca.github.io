@@ -1,5 +1,13 @@
 {
+  "schemaVersion": 2,
   "updatedAt": "2026-08-07",
-  "sourcePolicy": "Only verified AVC vacancies should be published here. Do not add invented employers, salaries, vacancies, counters, deadlines or claims.",
+  "sourcePolicy": "Publish only current AVC vacancies whose public details have been verified from the concerned recruitment source. Do not invent employers, salaries, vacancy counts, deadlines, benefits, licences or selection claims.",
+  "lifecycle": {
+    "publicStatuses": ["open", "closing-soon"],
+    "nonPublicStatuses": ["hold", "closed"],
+    "expiryRule": "Open and closing-soon jobs require validThrough. The website automatically hides a job after validThrough.",
+    "freshnessRule": "Every public job must carry lastVerifiedAt and should be rechecked before continued publication.",
+    "schemaRule": "JobPosting structured data is generated only when the actual hiring organization and required location/date facts are available. AVC is not substituted as the employer."
+  },
   "jobs": []
 }
