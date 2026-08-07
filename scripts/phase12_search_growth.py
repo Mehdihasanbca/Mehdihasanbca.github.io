@@ -16,9 +16,11 @@ META_PATTERNS = [
     r'<link\s+rel="alternate"\s+hreflang="[^"]+"[^>]*>\s*',
 ]
 
+
 def attr(text, pattern):
     m = re.search(pattern, text, flags=re.I | re.S)
     return m.group(1).strip() if m else ''
+
 
 for path in sorted(ROOT.glob('*.html')):
     if path.name == '404.html':
@@ -27,14 +29,18 @@ for path in sorted(ROOT.glob('*.html')):
     title = attr(text, r'<title>(.*?)</title>')
     desc = attr(text, r'<meta\s+name="description"\s+content="([^"]*)"')
     canonical = attr(text, r'<link\s+rel="canonical"\s+href="([^"]+)"')
+    existing_robots = attr(text, r'<meta\s+name="robots"\s+content="([^"]*)"')
     if not (title and desc and canonical):
         raise SystemExit(f'{path.name}: missing title/description/canonical')
 
     for pattern in META_PATTERNS:
         text = re.sub(pattern, '', text, flags=re.I)
 
-    # Normalize robots for indexable public pages.
-    robots = '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'
+    # Preserve intentional noindex pages such as the application gateway.
+    if 'noindex' in existing_robots.lower():
+        robots = '<meta name="robots" content="noindex,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'
+    else:
+        robots = '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'
     if re.search(r'<meta\s+name="robots"[^>]*>', text, flags=re.I):
         text = re.sub(r'<meta\s+name="robots"[^>]*>', robots, text, count=1, flags=re.I)
     else:
