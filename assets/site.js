@@ -8,12 +8,14 @@ if(!document.querySelector('link[href*="company.css"]')){
   document.head.appendChild(companyStyles);
 }
 
-if(siteNav&&!siteNav.querySelector('a[href="about.html"]')){
-  const aboutLink=document.createElement('a');
-  aboutLink.href='about.html';
-  aboutLink.textContent='About AVC';
-  const firstLink=siteNav.querySelector('a');
-  if(firstLink&&firstLink.nextSibling){siteNav.insertBefore(aboutLink,firstLink.nextSibling)}else{siteNav.appendChild(aboutLink)}
+if(siteNav){
+  const byText=text=>[...siteNav.querySelectorAll('a')].find(a=>a.textContent.trim().toLowerCase()===text.toLowerCase());
+  const about=byText('About AVC');
+  if(!about){const a=document.createElement('a');a.href='about.html';a.textContent='About AVC';const first=siteNav.querySelector('a');first?.after(a)}
+  const services=byText('Services');
+  if(services){services.href='services.html'}else{const a=document.createElement('a');a.href='services.html';a.textContent='Services';siteNav.appendChild(a)}
+  const jobs=byText('Jobs');
+  if(jobs){jobs.href='jobs.html'}else{const a=document.createElement('a');a.href='jobs.html';a.textContent='Jobs';siteNav.appendChild(a)}
 }
 
 if(navToggle&&siteNav){
@@ -79,11 +81,29 @@ document.querySelectorAll('.audience-card').forEach(card=>{
   if(journey){link.href=journey.href;link.removeAttribute('target');link.removeAttribute('rel');link.textContent=journey.label;}
 });
 
+const servicePages=['candidate-sourcing.html','application-coordination.html','cv-profile-support.html','document-guidance.html','interview-coordination.html','employer-manpower-support.html'];
+document.querySelectorAll('#services .service-card').forEach((card,index)=>{
+  if(!servicePages[index]||card.querySelector('.text-link'))return;
+  const link=document.createElement('a');
+  link.className='text-link';
+  link.href=servicePages[index];
+  link.textContent='View service →';
+  link.style.display='inline-block';
+  link.style.marginTop='16px';
+  card.appendChild(link);
+});
+
+const opportunitySection=document.querySelector('#opportunities');
+if(opportunitySection&&!opportunitySection.querySelector('a[href="jobs.html"]')){
+  const heading=opportunitySection.querySelector('.section-heading');
+  if(heading){const link=document.createElement('a');link.className='button outline';link.href='jobs.html';link.textContent='Open verified jobs hub';link.style.marginTop='18px';heading.appendChild(link)}
+}
+
 const footerCompanyHeading=[...document.querySelectorAll('.footer h3')].find(el=>el.textContent.trim().toLowerCase()==='company');
 if(footerCompanyHeading){
   const links=footerCompanyHeading.nextElementSibling;
   if(links&&links.classList.contains('footer-links')){
-    const wanted=[['about.html','About AVC'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];
+    const wanted=[['about.html','About AVC'],['services.html','Services'],['jobs.html','Jobs'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];
     wanted.reverse().forEach(([href,label])=>{
       if(!links.querySelector(`a[href="${href}"]`)){
         const link=document.createElement('a');
