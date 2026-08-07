@@ -7,6 +7,7 @@
   const classify=(a)=>{
     const href=(a.getAttribute('href')||'').trim();
     if(!href)return null;
+    if(href.includes('knowledge.html'))return 'knowledge_hub';
     if(href.includes('candidate-readiness.html'))return 'candidate_readiness';
     if(href.includes('resources.html'))return 'resources_hub';
     if(href.includes('brochure.html'))return 'company_brochure';
