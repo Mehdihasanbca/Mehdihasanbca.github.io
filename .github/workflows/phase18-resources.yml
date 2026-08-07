@@ -6,6 +6,7 @@ on:
     paths:
       - phase18-trigger.txt
       - scripts/phase18_integrate.py
+      - '.github/workflows/phase18-resources.yml'
   workflow_dispatch:
 
 permissions:
@@ -38,7 +39,7 @@ jobs:
           r=Path('.'); failures=[]; warnings=[]
           checks={
             'resources.html':['AVC resources for','Candidate Readiness Checklist','Verified Jobs Hub','Official Company Brochure','Employer Requirement Intake','Partner Enquiry','data-resource-search'],
-            'candidate-readiness.html':['Candidate readiness checklist','data-readiness-item','data-readiness-print','data-readiness-reset','does not guarantee a job, visa approval or overseas deployment'],
+            'candidate-readiness.html':['Candidate Readiness Checklist','data-readiness-item','data-readiness-print','data-readiness-reset','does not guarantee a job, visa approval or overseas deployment'],
             'assets/resources.css':['.sr-only','resource-grid','candidate-tool','@media print'],
             'assets/resources.js':['data-resource-filter','localStorage','window.print','avc-candidate-readiness-v1'],
             'assets/site.js':["['resources.html','Resources','resources.html']",'Resources & Tools'],
@@ -91,7 +92,7 @@ jobs:
             if [ "$ok" -eq 1 ]; then echo "https://assignmentvenuecentre.me${path} -> 200; marker=yes" >> /tmp/live.txt; else echo "https://assignmentvenuecentre.me${path} -> marker=no" >> /tmp/live.txt; fail=$((fail+1)); fi
           }
           check /resources.html 'AVC resources for'
-          check /candidate-readiness.html 'Candidate readiness checklist'
+          check /candidate-readiness.html 'Candidate Readiness Checklist'
           check /assets/resources.css 'candidate-tool'
           check /assets/resources.js 'avc-candidate-readiness-v1'
           check /assets/site.js "['resources.html','Resources','resources.html']"
