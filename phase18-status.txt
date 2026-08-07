@@ -1,0 +1,21 @@
+AVC Phase 18 public resources and candidate tools gate
+status: success
+live_checks: 9
+failures: 0
+warnings: 0
+resource_cards: 12
+candidate_checklist_items: 16
+checklist_storage: browser-local-only
+website_data_collection: none in Phase 18 tools
+unverified_legacy_tools: not_published
+live_details:
+https://assignmentvenuecentre.me/resources.html -> 200; marker=yes
+https://assignmentvenuecentre.me/candidate-readiness.html -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/resources.css -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/resources.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/site.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/measurement.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/seo.js -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap.xml -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap.xml -> 200; marker=yes
+checked_at_utc: 2026-08-07T12:32:15Z
