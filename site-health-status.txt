@@ -1,0 +1,9 @@
+AVC public website health
+status: success
+detail: Homepage and company profile are reachable with expected AVC content
+homepage_http: 200
+homepage_brand_present: yes
+about_http: 200
+about_brand_present: yes
+about_founder_present: yes
+checked_at_utc: 2026-08-07T05:12:16Z
