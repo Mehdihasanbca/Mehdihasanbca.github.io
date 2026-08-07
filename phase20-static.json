@@ -1,0 +1,10 @@
+{
+  "status": "success",
+  "failures": [],
+  "warnings": [],
+  "resource_cards": 15,
+  "checkout_enabled": false,
+  "razorpay_key_id_configured": false,
+  "trusted_business_claim": false,
+  "money_back_promise_claim": false
+}
