@@ -1,0 +1,187 @@
+name: AVC Phase 9 Production Audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - phase9-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit static and live production site
+        shell: bash
+        run: |
+          set -uo pipefail
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urljoin, urlparse
+          import json, re, subprocess, time, xml.etree.ElementTree as ET
+
+          ROOT=Path('.')
+          BASE='https://assignmentvenuecentre.me/'
+          failures=[]; warnings=[]
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.title=''; self.in_title=False; self.metas=[]; self.links=[]; self.images=[]; self.visible=[]; self.canonical=None
+              def handle_starttag(self,tag,attrs):
+                  d=dict(attrs)
+                  if tag=='title': self.in_title=True
+                  if tag=='meta': self.metas.append(d)
+                  if tag=='link' and d.get('rel')=='canonical': self.canonical=d.get('href')
+                  if tag=='a' and d.get('href'): self.links.append(d.get('href'))
+                  if tag=='img': self.images.append(d)
+                  if tag in ('script','style'): pass
+              def handle_endtag(self,tag):
+                  if tag=='title': self.in_title=False
+              def handle_data(self,data):
+                  if self.in_title: self.title+=data
+                  self.visible.append(data)
+
+          html_files=sorted(ROOT.glob('*.html'))
+          banned=[
+            r'\bRecruitOS\b', r'\bMaster Data Bank\b', r'Powered by RecruitOS',
+            r'Government Approved Recruitment Agency', r'MEA Approved',
+            r'100% Job Guarantee', r'Guaranteed Visa', r'\bCRM\b', r'\bERP\b'
+          ]
+          old_phone='9162530999'; new_phone='9473286356'
+          canonical_count=0; image_count=0; https_attr_count=0
+
+          for f in html_files:
+              txt=f.read_text(encoding='utf-8')
+              p=P(); p.feed(txt)
+              visible=' '.join(p.visible)
+              if old_phone in txt: failures.append(f'{f}: old contact number remains')
+              for pat in banned:
+                  if re.search(pat, visible, re.I): failures.append(f'{f}: prohibited/internal public wording matched {pat}')
+              if re.search(r'Assignment Venue Centre', visible, re.I): failures.append(f'{f}: public brand uses Centre instead of Center')
+              if not p.title.strip(): failures.append(f'{f}: missing title')
+              viewport=any(m.get('name','').lower()=='viewport' for m in p.metas)
+              if not viewport: failures.append(f'{f}: missing viewport')
+              desc=any(m.get('name','').lower()=='description' and m.get('content','').strip() for m in p.metas)
+              if f.name!='404.html' and not desc: failures.append(f'{f}: missing meta description')
+              if f.name!='404.html':
+                  expected=BASE if f.name=='index.html' else BASE+f.name
+                  if p.canonical!=expected: failures.append(f'{f}: canonical mismatch {p.canonical!r} expected {expected}')
+                  else: canonical_count+=1
+              else:
+                  noindex=any(m.get('name','').lower()=='robots' and 'noindex' in m.get('content','').lower() for m in p.metas)
+                  if not noindex: failures.append('404.html: must be noindex')
+              for img in p.images:
+                  image_count+=1
+                  if not img.get('alt','').strip(): failures.append(f'{f}: image missing alt text')
+              for href in p.links:
+                  if href.startswith('http://'): failures.append(f'{f}: insecure HTTP link {href}')
+                  if href.startswith('https://'): https_attr_count+=1
+              if 'tel:+91' in txt and new_phone not in txt: failures.append(f'{f}: tel link does not use current AVC number')
+
+          required={
+            'CNAME':'assignmentvenuecentre.me',
+            'robots.txt':'Sitemap: https://assignmentvenuecentre.me/sitemap.xml',
+            '.well-known/security.txt':'Contact: mailto:info@assignmentvenuecentre.me',
+            'assets/seo.js':'+91 9473286356',
+            'company-verification.html':'UDYAM-BR-10-0047094',
+            'contact.html':'+91 9473286356',
+            'trust-center.html':'10AOVPH3197L1ZI',
+          }
+          for path,marker in required.items():
+              q=ROOT/path
+              if not q.exists(): failures.append(f'missing required file: {path}'); continue
+              content=q.read_text(encoding='utf-8')
+              if marker not in content: failures.append(f'{path}: required marker missing')
+              if old_phone in content: failures.append(f'{path}: old phone remains')
+          if not (ROOT/'.nojekyll').exists(): failures.append('.nojekyll missing')
+          if (ROOT/'CNAME').exists() and (ROOT/'CNAME').read_text().strip()!='assignmentvenuecentre.me': failures.append('CNAME incorrect')
+
+          robots=(ROOT/'robots.txt').read_text(encoding='utf-8') if (ROOT/'robots.txt').exists() else ''
+          if 'User-agent: *' not in robots or 'Allow: /' not in robots: failures.append('robots.txt indexing directives incomplete')
+
+          sitemap_urls=[]
+          try:
+              tree=ET.parse('sitemap.xml')
+              ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+              sitemap_urls=[x.text.strip() for x in tree.findall('.//s:loc',ns) if x.text]
+          except Exception as e: failures.append(f'sitemap parse failed: {e}')
+          if not sitemap_urls: failures.append('sitemap has no URLs')
+          for u in sitemap_urls:
+              if not u.startswith(BASE): failures.append(f'sitemap non-canonical URL: {u}')
+
+          try:
+              jobs=json.loads((ROOT/'data/jobs.json').read_text(encoding='utf-8'))
+              if 'Only verified AVC vacancies' not in jobs.get('sourcePolicy',''): failures.append('jobs policy is not verification-gated')
+              if not isinstance(jobs.get('jobs'),list): failures.append('jobs data is not a list')
+          except Exception as e: failures.append(f'jobs data invalid: {e}')
+
+          terms=(ROOT/'terms.html').read_text(encoding='utf-8')
+          disc=(ROOT/'disclaimer.html').read_text(encoding='utf-8')
+          for name,content in [('terms.html',terms),('disclaimer.html',disc)]:
+              if 'registered Recruiting Agent' not in content and 'authorized recruitment stakeholders' not in content:
+                  failures.append(f'{name}: recruitment responsibility boundary missing')
+              if 'guarantee' not in content.lower(): warnings.append(f'{name}: no explicit no-guarantee wording found')
+
+          seo=(ROOT/'assets/seo.js').read_text(encoding='utf-8')
+          for marker in ['Assignment Venue Center','+91 9473286356','10AOVPH3197L1ZI','UDYAM-BR-10-0047094','847306']:
+              if marker not in seo: failures.append(f'SEO schema missing {marker}')
+
+          def curl_code(url, retries=6):
+              code='000'
+              for i in range(retries):
+                  r=subprocess.run(['curl','-sS','-L','-o','/tmp/avc-live','-w','%{http_code}','--connect-timeout','15','--max-time','35',url],capture_output=True,text=True)
+                  code=r.stdout.strip()[-3:] if r.stdout.strip() else '000'
+                  if code in ('200','404'): return code
+                  time.sleep(8)
+              return code
+
+          live_ok=0; live_fail=0
+          live_lines=[]
+          for u in sitemap_urls:
+              code=curl_code(u)
+              live_lines.append(f'{u} -> {code}')
+              if code=='200': live_ok+=1
+              else: live_fail+=1; failures.append(f'live URL failed: {u} -> {code}')
+
+          for u,expected in [(BASE+'robots.txt','200'),(BASE+'sitemap.xml','200'),(BASE+'.well-known/security.txt','200')]:
+              code=curl_code(u)
+              live_lines.append(f'{u} -> {code}')
+              if code!=expected: failures.append(f'production support file failed: {u} -> {code}')
+
+          missing_url=BASE+'phase9-this-page-must-not-exist-92741'
+          missing_code=curl_code(missing_url)
+          live_lines.append(f'{missing_url} -> {missing_code}')
+          if missing_code!='404': failures.append(f'custom missing-page behavior expected 404, got {missing_code}')
+
+          status='success' if not failures else 'failed'
+          report=[
+              'AVC Phase 9 production trust audit',
+              f'status: {status}',
+              f'html_files: {len(html_files)}',
+              f'canonical_pages: {canonical_count}',
+              f'images_checked: {image_count}',
+              f'https_external_links_seen: {https_attr_count}',
+              f'sitemap_urls: {len(sitemap_urls)}',
+              f'live_ok: {live_ok}',
+              f'live_fail: {live_fail}',
+              f'failures: {len(failures)}',
+              f'warnings: {len(warnings)}',
+              'failure_details:', *[f'- {x}' for x in failures],
+              'warning_details:', *[f'- {x}' for x in warnings],
+              'live_details:', *live_lines,
+              f'checked_at_utc: {time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}'
+          ]
+          Path('phase9-status.txt').write_text('\n'.join(report)+'\n',encoding='utf-8')
+          if failures: raise SystemExit(1)
+          PY
+          rc=$?
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase9-status.txt
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC Phase 9 production audit'; git push; fi
+          exit $rc
