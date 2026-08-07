@@ -1,0 +1,161 @@
+name: AVC Phase 16 Legacy Public Recovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'phase16-trigger.txt'
+      - 'scripts/phase16_integrate.py'
+      - 'access.html'
+      - 'assets/access.css'
+      - 'register/candidate/index.html'
+      - 'portal/candidate/login/index.html'
+      - '.github/workflows/phase16-legacy-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avc-phase16-legacy-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Integrate verified public access routes
+        run: |
+          python scripts/phase16_integrate.py
+          python scripts/build_job_pages.py
+
+      - name: Validate recovery policy and static routes
+        shell: python
+        run: |
+          from pathlib import Path
+          import json, sys, xml.etree.ElementTree as ET
+          root=Path('.')
+          failures=[]
+          warnings=[]
+          def body(path): return (root/path).read_text(encoding='utf-8')
+
+          required={
+            'access.html':['Official AVC Access Center','Candidate application','Employer requirement','Recruitment partner enquiry','Internal administration'],
+            'register/candidate/index.html':['noindex,follow','legacy-register','This registration address has moved.'],
+            'portal/candidate/login/index.html':['noindex,follow','compatibility route','authenticated candidate portal endpoint has not been verified as live'],
+            'assets/site.js':["['access.html','Access','access.html']",'Phase 16 access integration'],
+            'assets/measurement.js':['access_center','legacy_candidate_access','legacy_candidate_register'],
+            'assets/seo.js':["'access.html':'Access Center'"],
+            'scripts/build_job_pages.py':['site.js?v=20260807-p16'],
+          }
+          for path,needles in required.items():
+            text=body(path)
+            for needle in needles:
+              if needle not in text: failures.append(f'{path}: missing {needle}')
+
+          login=body('portal/candidate/login/index.html').lower()
+          if '<input' in login and 'password' in login: failures.append('legacy candidate compatibility page must not present a password login form')
+          if (root/'admin/login/index.html').exists(): failures.append('public admin login compatibility page must not be created')
+
+          access=body('access.html').lower()
+          for unsupported in ['smart ai visual resume','esim','haj tools']:
+            if unsupported in access: failures.append(f'access.html must not publish unsupported legacy feature: {unsupported}')
+
+          tree=ET.parse(root/'sitemap.xml'); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          locs={n.text for n in tree.getroot().findall('s:url/s:loc',ns)}
+          if 'https://assignmentvenuecentre.me/access.html' not in locs: failures.append('sitemap missing Access Center')
+          for legacy in ['https://assignmentvenuecentre.me/register/candidate','https://assignmentvenuecentre.me/portal/candidate/login','https://assignmentvenuecentre.me/apply.html']:
+            if legacy in locs: failures.append(f'noindex/compatibility route must stay out of sitemap: {legacy}')
+
+          result={
+            'status':'success' if not failures else 'failed',
+            'failures':failures,
+            'warnings':warnings,
+            'legacy_feature_inventory':{
+              'smart_ai_visual_resume':'source_not_found_not_published',
+              'brochure_html':'source_not_found_not_published',
+              'esim':'source_not_found_not_published',
+              'haj_tools':'source_not_found_not_published',
+              'candidate_registration':'compatibility_route_recovered',
+              'candidate_account_login':'compatibility_guidance_only_no_fake_login',
+              'employer_access':'verified_intake_route',
+              'partner_access':'verified_intake_route',
+              'admin_access':'not_published_on_public_site'
+            }
+          }
+          Path('phase16-static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          print(json.dumps(result,indent=2))
+          if failures: sys.exit(1)
+
+      - name: Commit Phase 16 integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add '*.html' assets/site.js assets/measurement.js assets/seo.js sitemap.xml scripts/build_job_pages.py scripts/phase12_search_growth.py sitemap-jobs.xml phase16-static.json
+          if [ -d vacancies ]; then git add -A vacancies; fi
+          if ! git diff --cached --quiet; then git commit -m 'Integrate AVC Phase 16 verified access recovery'; git push; fi
+
+      - name: Verify live Phase 16 routes
+        shell: bash
+        run: |
+          set +e
+          fail=0
+          : > /tmp/phase16-live.txt
+          check(){
+            path="$1"; marker="$2"; expected="$3"; ok=0; seen=''
+            for i in $(seq 1 15); do
+              code="$(curl -L -sS -o /tmp/p16body -w '%{http_code}' --connect-timeout 15 --max-time 30 -H 'Cache-Control: no-cache' "https://assignmentvenuecentre.me${path}?phase16=$(date +%s)" 2>/dev/null || echo 000)"
+              seen="$code"
+              if [ "$code" = "$expected" ]; then
+                if [ -z "$marker" ] || grep -Fq "$marker" /tmp/p16body; then ok=1; break; fi
+              fi
+              sleep 8
+            done
+            if [ "$ok" -eq 1 ]; then echo "https://assignmentvenuecentre.me${path} -> ${seen}; marker=yes" >> /tmp/phase16-live.txt; else echo "https://assignmentvenuecentre.me${path} -> ${seen}; marker=no" >> /tmp/phase16-live.txt; fail=$((fail+1)); fi
+          }
+          check '/access.html' 'Official AVC Access Center' 200
+          check '/register/candidate/' 'This registration address has moved.' 200
+          check '/portal/candidate/login/' 'compatibility route' 200
+          check '/assets/access.css' '.access-grid' 200
+          check '/assets/site.js' "['access.html','Access','access.html']" 200
+          check '/assets/measurement.js' 'access_center' 200
+          check '/sitemap.xml' 'https://assignmentvenuecentre.me/access.html' 200
+          check '/admin/login' '' 404
+          if [ "$fail" -eq 0 ]; then status=success; else status=failed; fi
+          {
+            echo 'AVC Phase 16 legacy public feature recovery gate'
+            echo "status: ${status}"
+            echo 'live_checks: 8'
+            echo "failures: ${fail}"
+            echo 'warnings: 0'
+            echo 'access_center: live'
+            echo 'candidate_registration_legacy_route: recovered_to_current_application'
+            echo 'candidate_login_legacy_route: compatibility_guidance_only'
+            echo 'admin_public_login: intentionally_not_published'
+            echo 'smart_ai_visual_resume: source_not_found_not_published'
+            echo 'brochure_html: source_not_found_not_published'
+            echo 'esim: source_not_found_not_published'
+            echo 'haj_tools: source_not_found_not_published'
+            echo 'live_details:'
+            cat /tmp/phase16-live.txt
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > phase16-status.txt
+          cat phase16-status.txt
+          [ "$fail" -eq 0 ]
+
+      - name: Commit Phase 16 evidence
+        if: always()
+        run: |
+          if [ ! -f phase16-status.txt ]; then exit 0; fi
+          git pull --rebase
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase16-status.txt phase16-static.json
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC Phase 16 legacy recovery gate'; git push; fi
