@@ -1,0 +1,23 @@
+AVC Phase 16 legacy public feature recovery gate
+status: success
+live_checks: 8
+failures: 0
+warnings: 0
+access_center: live
+candidate_registration_legacy_route: recovered_to_current_application
+candidate_login_legacy_route: compatibility_guidance_only
+admin_public_login: intentionally_not_published
+smart_ai_visual_resume: source_not_found_not_published
+brochure_html: source_not_found_not_published
+esim: source_not_found_not_published
+haj_tools: source_not_found_not_published
+live_details:
+https://assignmentvenuecentre.me/access.html -> 200; marker=yes
+https://assignmentvenuecentre.me/register/candidate/ -> 200; marker=yes
+https://assignmentvenuecentre.me/portal/candidate/login/ -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/access.css -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/site.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/measurement.js -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap.xml -> 200; marker=yes
+https://assignmentvenuecentre.me/admin/login -> 404; marker=yes
+checked_at_utc: 2026-08-07T12:07:37Z
