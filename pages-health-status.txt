@@ -1,0 +1,7 @@
+AVC GitHub Pages DNS health request
+http_status: 403
+message: Resource not accessible by integration
+domain: none
+alt_domain: none
+enforce_https: unknown
+checked_at_utc: 2026-08-07T04:42:02Z
