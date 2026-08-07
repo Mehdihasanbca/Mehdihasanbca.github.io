@@ -1,0 +1,69 @@
+name: Check AVC Pages Certificate Status
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - cert-trigger.txt
+
+permissions:
+  contents: write
+  pages: read
+
+jobs:
+  cert-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read GitHub Pages certificate and DNS state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          DOMAIN=assignmentvenuecentre.me
+          REPO="${GITHUB_REPOSITORY}"
+          API="https://api.github.com/repos/${REPO}/pages"
+
+          pages_json="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" "${API}" || true)"
+          api_message="$(jq -r '.message // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          cname="$(jq -r '.cname // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          https_enforced="$(jq -r 'if has("https_enforced") then .https_enforced else empty end' <<<"${pages_json}" 2>/dev/null || true)"
+          cert_state="$(jq -r '.https_certificate.state // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          cert_desc="$(jq -r '.https_certificate.description // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          cert_domains="$(jq -r '.https_certificate.domains // [] | join(",")' <<<"${pages_json}" 2>/dev/null || true)"
+          pending="$(jq -r '.pending_domain_unverified_at // empty' <<<"${pages_json}" 2>/dev/null || true)"
+          protected_state="$(jq -r '.protected_domain_state // empty' <<<"${pages_json}" 2>/dev/null || true)"
+
+          dns_a="$(dig +short A "${DOMAIN}" | paste -sd, -)"
+          dns_caa="$(dig +short CAA "${DOMAIN}" | paste -sd, -)"
+          direct_subject="$(timeout 20 openssl s_client -connect 185.199.108.153:443 -servername "${DOMAIN}" </dev/null 2>/dev/null | openssl x509 -noout -subject 2>/dev/null || true)"
+          direct_verify="$(timeout 20 openssl s_client -connect 185.199.108.153:443 -servername "${DOMAIN}" -verify_hostname "${DOMAIN}" </dev/null 2>&1 | grep 'Verify return code' | tail -n1 || true)"
+
+          {
+            echo "AVC GitHub Pages certificate status"
+            echo "domain: ${DOMAIN}"
+            echo "api_message: ${api_message:-none}"
+            echo "pages_cname: ${cname:-unknown}"
+            echo "https_enforced: ${https_enforced:-unknown}"
+            echo "certificate_state: ${cert_state:-unknown}"
+            echo "certificate_description: ${cert_desc:-unknown}"
+            echo "certificate_domains: ${cert_domains:-none}"
+            echo "pending_domain_unverified_at: ${pending:-none}"
+            echo "protected_domain_state: ${protected_state:-unknown}"
+            echo "dns_a: ${dns_a:-none}"
+            echo "dns_caa: ${dns_caa:-none}"
+            echo "direct_subject: ${direct_subject:-none}"
+            echo "direct_verify: ${direct_verify:-none}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > cert-status.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cert-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AVC Pages certificate status"
+            git push
+          fi
