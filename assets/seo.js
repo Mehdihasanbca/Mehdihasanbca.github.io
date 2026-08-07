@@ -16,7 +16,7 @@
     identifier:[{'@type':'PropertyValue',name:'Udyam Registration',value:'UDYAM-BR-10-0047094'}],
     founder:{'@type':'Person',name:'Mehdi Hasan',jobTitle:'Founder & Business Head'},
     address:{'@type':'PostalAddress',streetAddress:'Ground Floor, Assignment Venue Center, Kamtaul Road, Madhupur, Tekatar',addressLocality:'Darbhanga',addressRegion:'Bihar',postalCode:'847306',addressCountry:'IN'},
-    contactPoint:{'@type':'ContactPoint',telephone:'+91 9473286356',email:'info@assignmentvenuecentre.me',contactType:'customer support',areaServed:'IN',availableLanguage:['en','hi','ur']},
+    contactPoint:{'@type':'ContactPoint',telephone:'+91 9473286356',email:'info@assignmentvenuecentre.me',contactType:'business enquiries',areaServed:'IN'},
     description:'Recruitment support, candidate sourcing, application coordination, CV/profile support, document readiness, interview coordination and manpower coordination.',
     sameAs:[
       'https://www.youtube.com/@AssignmentvenueCentre',
