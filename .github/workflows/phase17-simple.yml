@@ -41,7 +41,7 @@ jobs:
               if '<svg' not in qbody or '<path' not in qbody:f.append(q+': invalid svg source')
           root=ET.parse('sitemap.xml').getroot();ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
           if 'https://assignmentvenuecentre.me/brochure.html' not in {x.text for x in root.findall('s:url/s:loc',ns)}:f.append('sitemap: brochure missing')
-          result={'status':'success' if not f else 'failed','failures':f,'warnings':[],'brochure_pages':b.count('class="brochure-page')}
+          result={'status':'success' if not f else 'failed','failures':f,'warnings':[],'brochure_pages':b.count('<section class="brochure-page')}
           Path('phase17-static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
           print(json.dumps(result,indent=2))
           if f:sys.exit(1)
