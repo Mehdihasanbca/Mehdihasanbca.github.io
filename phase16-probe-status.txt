@@ -1,5 +1,0 @@
-AVC Phase 16 legacy route probe
-/portal/candidate/login -> 404; title=Page Not Found | Assignment Venue Center 
-/register/candidate -> 404; title=Page Not Found | Assignment Venue Center 
-/admin/login -> 404; title=Page Not Found | Assignment Venue Center 
-checked_at_utc: 2026-08-07T12:01:02Z
