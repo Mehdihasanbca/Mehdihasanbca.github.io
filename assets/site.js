@@ -63,7 +63,7 @@ if(homeServices&&!document.querySelector('.company-snapshot')){
         <article class="snapshot-fact"><span>Founder & Business Head</span><strong>Mehdi Hasan</strong><p>Business development, recruitment-support operations and partner coordination.</p></article>
         <article class="snapshot-fact"><span>Registrations</span><strong>GSTIN 10AOVPH3197L1ZI</strong><p>Udyam Registration: UDYAM-BR-10-0047094.</p></article>
         <article class="snapshot-fact"><span>Office</span><strong>Darbhanga, Bihar - 847306</strong><p>Kamtaul Road, Madhupur, Tekatar. <a href="office.html">View office details</a>.</p></article>
-        <article class="snapshot-fact"><span>Official contact</span><strong>+91 9162530999</strong><p><a href="mailto:info@assignmentvenuecentre.me">info@assignmentvenuecentre.me</a></p></article>
+        <article class="snapshot-fact"><span>Official contact</span><strong>+91 9473286356</strong><p><a href="mailto:info@assignmentvenuecentre.me">info@assignmentvenuecentre.me</a></p></article>
         <article class="snapshot-fact"><span>Core role</span><strong>Candidate sourcing & recruitment coordination</strong><p>Applications, screening support, interviews and document guidance.</p></article>
         <article class="snapshot-fact"><span>Market focus</span><strong>Gulf / GCC and verified international requirements</strong><p>Including Oman, Saudi Arabia, UAE and Qatar according to available approved demands.</p></article>
       </div>
