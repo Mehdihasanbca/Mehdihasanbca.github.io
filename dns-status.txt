@@ -1,6 +1,6 @@
 AVC Cloudflare DNS repair status
 status: failed
-detail: GitHub secret contains whitespace; paste only the Cloudflare API token value
+detail: DNS Read failed for assignmentvenuecentre.me: Authentication error
 domain: assignmentvenuecentre.me
-run_id: 31147326503
-checked_at_utc: 2026-08-07T04:24:44Z
+run_id: 31147534387
+checked_at_utc: 2026-08-07T04:28:46Z
