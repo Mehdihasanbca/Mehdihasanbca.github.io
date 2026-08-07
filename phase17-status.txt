@@ -1,0 +1,20 @@
+AVC Phase 17 official digital brochure gate
+status: success
+live_checks: 9
+failures: 0
+warnings: 0
+brochure_pages: 6
+print_ready: A4 browser print/save-as-PDF
+qr_assets: local SVG
+website_data_collection: none
+live_details:
+https://assignmentvenuecentre.me/brochure.html -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/brochure.css -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/brochure.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/qr-apply.svg -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/qr-website.svg -> 200; marker=yes
+https://assignmentvenuecentre.me/media.html -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/site.js -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/seo.js -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap.xml -> 200; marker=yes
+checked_at_utc: 2026-08-07T12:21:10Z
