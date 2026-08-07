@@ -66,13 +66,31 @@ if(homeServices&&!document.querySelector('.company-snapshot')){
   homeServices.parentNode.insertBefore(section,homeServices);
 }
 
+const journeyPages={
+  'for candidates':{href:'candidates.html',label:'Candidate information →'},
+  'for employers':{href:'employers.html',label:'Employer manpower support →'},
+  'for agencies':{href:'partners.html',label:'Recruitment partnership →'}
+};
+document.querySelectorAll('.audience-card').forEach(card=>{
+  const heading=card.querySelector('h3');
+  const link=card.querySelector('.text-link');
+  if(!heading||!link)return;
+  const journey=journeyPages[heading.textContent.trim().toLowerCase()];
+  if(journey){link.href=journey.href;link.removeAttribute('target');link.removeAttribute('rel');link.textContent=journey.label;}
+});
+
 const footerCompanyHeading=[...document.querySelectorAll('.footer h3')].find(el=>el.textContent.trim().toLowerCase()==='company');
 if(footerCompanyHeading){
   const links=footerCompanyHeading.nextElementSibling;
-  if(links&&links.classList.contains('footer-links')&&!links.querySelector('a[href="about.html"]')){
-    const link=document.createElement('a');
-    link.href='about.html';
-    link.textContent='About AVC';
-    links.prepend(link);
+  if(links&&links.classList.contains('footer-links')){
+    const wanted=[['about.html','About AVC'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];
+    wanted.reverse().forEach(([href,label])=>{
+      if(!links.querySelector(`a[href="${href}"]`)){
+        const link=document.createElement('a');
+        link.href=href;
+        link.textContent=label;
+        links.prepend(link);
+      }
+    });
   }
 }
