@@ -1,0 +1,8 @@
+name = "avc-payment-api"
+main = "worker/payment-api.js"
+compatibility_date = "2026-08-07"
+workers_dev = true
+
+routes = [
+  { pattern = "assignmentvenuecentre.me/api/payments/*", zone_name = "assignmentvenuecentre.me" }
+]
