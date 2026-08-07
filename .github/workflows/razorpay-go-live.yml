@@ -1,10 +1,21 @@
 name: AVC Razorpay GO LIVE
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - razorpay-go-live-trigger.txt
+      - .github/workflows/razorpay-go-live.yml
+      - worker/payment-api.js
+      - wrangler.toml
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: avc-razorpay-go-live
+  cancel-in-progress: false
 
 jobs:
   go-live:
@@ -13,6 +24,8 @@ jobs:
       RAZORPAY_LIVE_API_KEY: ${{ secrets.RAZORPAY_LIVE_API_KEY }}
       RAZORPAY_LIVE_KEY_SECRET: ${{ secrets.RAZORPAY_LIVE_KEY_SECRET }}
       RAZORPAY_WEBHOOK_SECRET: ${{ secrets.RAZORPAY_WEBHOOK_SECRET }}
+      RAZORPAY_ACCOUNT_ID: ${{ secrets.RAZORPAY_ACCOUNT_ID }}
+      RAZORPAY_ACCOUNT_ID_VAR: ${{ vars.RAZORPAY_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       RAZORPAY_TRUSTED_BUSINESS_ENABLED: ${{ vars.RAZORPAY_TRUSTED_BUSINESS_ENABLED }}
     steps:
@@ -24,7 +37,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Verify live credentials and resolve Cloudflare account
+      - name: Verify credentials and resolve Cloudflare account
         id: verify
         shell: bash
         run: |
@@ -52,6 +65,22 @@ jobs:
           echo "CLOUDFLARE_ACCOUNT_ID=$account_id" >> "$GITHUB_ENV"
           echo 'credentials_ready=true' >> "$GITHUB_OUTPUT"
 
+      - name: Probe documented Razorpay webhook API capability
+        id: webhook_api
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          account_id="${RAZORPAY_ACCOUNT_ID:-${RAZORPAY_ACCOUNT_ID_VAR:-}}"
+          capability=merchant_dashboard_required
+          if [ -n "$account_id" ]; then
+            echo "::add-mask::$account_id"
+            code="$(curl -sS -o /tmp/rzp-webhooks.json -w '%{http_code}' -u "${RAZORPAY_LIVE_API_KEY}:${RAZORPAY_LIVE_KEY_SECRET}" "https://api.razorpay.com/v2/accounts/${account_id}/webhooks?count=1" || true)"
+            if [ "$code" = 200 ]; then capability=partner_api_available; fi
+          fi
+          echo "capability=$capability" >> "$GITHUB_OUTPUT"
+          echo "RZP_WEBHOOK_API_CAPABILITY=$capability" >> "$GITHUB_ENV"
+
       - name: Install Wrangler
         run: npm install --no-save wrangler@4
 
@@ -60,9 +89,23 @@ jobs:
         continue-on-error: true
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler deploy
+        shell: bash
+        run: |
+          set +e
+          npx wrangler deploy > /tmp/wrangler-deploy.log 2>&1
+          rc=$?
+          cat /tmp/wrangler-deploy.log
+          reason=none
+          if [ "$rc" -ne 0 ]; then
+            reason=cloudflare_deploy_failed
+            grep -Eqi 'permission|not authorized|forbidden|authentication' /tmp/wrangler-deploy.log && reason=cloudflare_permission
+            grep -Eqi 'route|zone' /tmp/wrangler-deploy.log && reason=cloudflare_route
+            grep -Eqi 'account' /tmp/wrangler-deploy.log && reason=cloudflare_account
+          fi
+          echo "deploy_reason=$reason" >> "$GITHUB_OUTPUT"
+          [ "$rc" -eq 0 ]
 
-      - name: Set Worker secrets
+      - name: Set Worker Razorpay secrets
         id: worker_secrets
         if: steps.deploy.outcome == 'success'
         continue-on-error: true
@@ -105,6 +148,10 @@ jobs:
           deploy='${{ steps.deploy.outcome }}'
           secrets='${{ steps.worker_secrets.outcome }}'
           health='${{ steps.health.outcome }}'
+          deploy_reason='${{ steps.deploy.outputs.deploy_reason }}'
+          webhook_api='${{ steps.webhook_api.outputs.capability }}'
+          [ -n "$deploy_reason" ] || deploy_reason=not_run
+          [ -n "$webhook_api" ] || webhook_api=merchant_dashboard_required
           checkout=false
           status=blocked_not_live
           if [ "$deploy" = success ] && [ "$secrets" = success ] && [ "$health" = success ]; then
@@ -140,6 +187,7 @@ jobs:
             echo 'razorpay_mode=live'
             echo 'razorpay_api_auth=verified_before_deploy'
             echo "worker_deployed=$([ "$deploy" = success ] && echo yes || echo no)"
+            echo "worker_deploy_reason=$deploy_reason"
             echo "worker_razorpay_secrets_set=$([ "$secrets" = success ] && echo yes || echo no)"
             echo "payment_api_health=$([ "$health" = success ] && echo yes || echo no)"
             echo "checkout_enabled=$checkout"
@@ -149,6 +197,8 @@ jobs:
             echo 'razorpay_order_total_paise=177000'
             echo 'wafid_third_party_fee_included=no'
             echo "razorpay_webhook_secret_present=$([ -n "${RAZORPAY_WEBHOOK_SECRET:-}" ] && echo yes || echo no)"
+            echo "razorpay_webhook_api_capability=$webhook_api"
+            echo "razorpay_webhook_endpoint=https://assignmentvenuecentre.me/api/payments/webhook"
             echo "trusted_business_claim_enabled=$trusted"
             echo 'key_secret_public=no'
             echo "checked_at_utc=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
