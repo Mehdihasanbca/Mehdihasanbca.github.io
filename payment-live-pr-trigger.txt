@@ -1,2 +1,2 @@
-Trigger verified AVC Razorpay live deployment.
-Requested: 2026-08-07T22:20:00+05:30
+Trigger verified AVC Razorpay live deployment with temporary Workers-token fallback.
+Requested: 2026-08-07T22:24:00+05:30
