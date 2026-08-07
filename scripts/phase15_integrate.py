@@ -28,3 +28,10 @@ replace('partners.html','assets/measurement.js?v=20260807-p12','assets/measureme
 replace('jobs.html',f'href="{FORM}" target="_blank" rel="noopener noreferrer"','href="apply.html?source=jobs"',1)
 replace('jobs.html','assets/jobs.js?v=20260807-p13','assets/jobs.js?v=20260807-p15',1)
 replace('jobs.html','assets/measurement.js?v=20260807-p12','assets/measurement.js?v=20260807-p15',1)
+
+# Breadcrumb labels for indexable intake pages.
+replace('assets/seo.js',"'employers.html':'Employers','partners.html':'Recruitment Partners'","'employers.html':'Employers','employer-requirement.html':'Employer Requirement','partners.html':'Recruitment Partners','partner-enquiry.html':'Partner Enquiry'",1)
+
+# Search discovery: index employer/partner intake pages; keep apply.html noindex and out of sitemap.
+replace('sitemap.xml','  <url><loc>https://assignmentvenuecentre.me/employers.html</loc><changefreq>monthly</changefreq><priority>0.8</priority><lastmod>2026-08-07</lastmod></url>','  <url><loc>https://assignmentvenuecentre.me/employers.html</loc><changefreq>monthly</changefreq><priority>0.8</priority><lastmod>2026-08-07</lastmod></url>\n  <url><loc>https://assignmentvenuecentre.me/employer-requirement.html</loc><changefreq>monthly</changefreq><priority>0.75</priority><lastmod>2026-08-07</lastmod></url>',1)
+replace('sitemap.xml','  <url><loc>https://assignmentvenuecentre.me/partners.html</loc><changefreq>monthly</changefreq><priority>0.8</priority><lastmod>2026-08-07</lastmod></url>','  <url><loc>https://assignmentvenuecentre.me/partners.html</loc><changefreq>monthly</changefreq><priority>0.8</priority><lastmod>2026-08-07</lastmod></url>\n  <url><loc>https://assignmentvenuecentre.me/partner-enquiry.html</loc><changefreq>monthly</changefreq><priority>0.75</priority><lastmod>2026-08-07</lastmod></url>',1)
