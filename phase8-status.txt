@@ -11,12 +11,5 @@ https://assignmentvenuecentre.me/ -> 200\nhttps://assignmentvenuecentre.me/about
   "internal_links_checked": 282,
   "images_checked": 55,
   "failures": [],
-  "warnings": [
-    "application-coordination.html: missing skip link",
-    "candidate-sourcing.html: missing skip link",
-    "cv-profile-support.html: missing skip link",
-    "document-guidance.html: missing skip link",
-    "employer-manpower-support.html: missing skip link",
-    "interview-coordination.html: missing skip link"
-  ]
-}checked_at_utc: 2026-08-07T10:15:35Z
+  "warnings": []
+}checked_at_utc: 2026-08-07T10:18:26Z
