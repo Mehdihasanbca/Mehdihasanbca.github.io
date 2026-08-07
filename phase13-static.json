@@ -1,0 +1,9 @@
+{
+  "status": "success",
+  "total_jobs": 0,
+  "active_jobs": 0,
+  "generated_pages": 0,
+  "jobposting_eligible": 0,
+  "failures": [],
+  "warnings": []
+}
