@@ -1,0 +1,37 @@
+AVC Phase 12 search growth readiness
+status: success
+live_ok: 26
+live_fail: 0
+failures: 0
+AVC search ownership verification
+google_configured: no
+bing_configured: no
+status: pending_external_verification
+live_details:
+https://assignmentvenuecentre.me/ -> 200
+https://assignmentvenuecentre.me/about.html -> 200
+https://assignmentvenuecentre.me/company-verification.html -> 200
+https://assignmentvenuecentre.me/services.html -> 200
+https://assignmentvenuecentre.me/candidate-sourcing.html -> 200
+https://assignmentvenuecentre.me/application-coordination.html -> 200
+https://assignmentvenuecentre.me/cv-profile-support.html -> 200
+https://assignmentvenuecentre.me/document-guidance.html -> 200
+https://assignmentvenuecentre.me/interview-coordination.html -> 200
+https://assignmentvenuecentre.me/employer-manpower-support.html -> 200
+https://assignmentvenuecentre.me/jobs.html -> 200
+https://assignmentvenuecentre.me/candidates.html -> 200
+https://assignmentvenuecentre.me/employers.html -> 200
+https://assignmentvenuecentre.me/partners.html -> 200
+https://assignmentvenuecentre.me/office.html -> 200
+https://assignmentvenuecentre.me/media.html -> 200
+https://assignmentvenuecentre.me/trust-center.html -> 200
+https://assignmentvenuecentre.me/contact.html -> 200
+https://assignmentvenuecentre.me/privacy.html -> 200
+https://assignmentvenuecentre.me/terms.html -> 200
+https://assignmentvenuecentre.me/disclaimer.html -> 200
+https://assignmentvenuecentre.me/fraud-safety.html -> 200
+https://assignmentvenuecentre.me/sitemap.xml -> 200
+https://assignmentvenuecentre.me/robots.txt -> 200
+https://assignmentvenuecentre.me/assets/measurement.js?v=20260807-p12 -> 200
+https://assignmentvenuecentre.me/assets/seo.js -> 200
+checked_at_utc: 2026-08-07T10:48:05Z
