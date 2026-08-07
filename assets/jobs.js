@@ -6,7 +6,6 @@
   const category=document.querySelector('[data-job-category]');
   const count=document.querySelector('[data-job-count]');
   const empty=document.querySelector('[data-jobs-empty]');
-  const defaultForm='https://forms.gle/1nVwzXHiHV9Cjw4A9';
   const channel='https://whatsapp.com/channel/0029Vb7mJuWF1YlQJ0sKSn06';
   const allowedStatuses=new Set(['open','closing-soon']);
   let jobs=[];
@@ -22,7 +21,6 @@
   };
   const displayStatus=status=>status==='closing-soon'?'Closing soon':'Open';
   const fmtDate=v=>{if(!v)return'';const d=new Date(`${v}T00:00:00`);return Number.isNaN(d.getTime())?v:d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})};
-  const safeUrl=v=>{try{const u=new URL(v);return u.protocol==='https:'?u.href:''}catch{return''}};
   const safeSlug=v=>/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(v||''))?String(v):'';
 
   const render=()=>{
@@ -38,13 +36,13 @@
       const article=document.createElement('article');
       article.className='job-card';
       article.id=`job-${esc(j.id)}`;
-      const apply=safeUrl(j.applicationUrl)||defaultForm;
       const slug=safeSlug(j.slug);
       const detailUrl=slug?`vacancies/${encodeURIComponent(slug)}.html`:'';
+      const applyUrl=`apply.html?source=jobs&job=${encodeURIComponent(String(j.id||''))}`;
       const employer=j.hiringOrganization?.public===true&&j.hiringOrganization?.name?`<p><strong>Hiring organization:</strong> ${esc(j.hiringOrganization.name)}</p>`:'';
       const recruiter=j.recruitingAgent?.public===true&&j.recruitingAgent?.name?`<p><strong>Recruitment stakeholder:</strong> ${esc(j.recruitingAgent.name)}</p>`:'';
       const detail=detailUrl?`<a class="button outline" href="${detailUrl}">View vacancy details</a>`:'';
-      article.innerHTML=`<div class="job-card-top"><div><p class="job-ref">${esc(j.id)}</p><h3>${esc(j.title)}</h3><p>${esc(j.summary||'Verified AVC vacancy')}</p></div><span class="job-chip active">${esc(displayStatus(j.status))}</span></div><div class="job-meta">${j.country?`<span class="job-chip">${esc(j.country)}</span>`:''}${j.city?`<span class="job-chip">${esc(j.city)}</span>`:''}${j.category?`<span class="job-chip">${esc(j.category)}</span>`:''}${j.salaryDisplay?`<span class="job-chip">${esc(j.salaryDisplay)}</span>`:''}</div>${employer}${recruiter}${j.requirements?`<p><strong>Key requirements:</strong> ${esc(j.requirements)}</p>`:''}${j.benefits?`<p><strong>Benefits:</strong> ${esc(j.benefits)}</p>`:''}${j.validThrough?`<p><strong>Apply by / validity:</strong> ${esc(fmtDate(j.validThrough))}</p>`:''}${j.lastVerifiedAt?`<p class="job-verified"><strong>Last verified:</strong> ${esc(fmtDate(j.lastVerifiedAt))}</p>`:''}<div class="job-actions">${detail}<a class="button primary" href="${esc(apply)}" target="_blank" rel="noopener noreferrer">Apply now</a><a class="button outline" href="${channel}" target="_blank" rel="noopener noreferrer">Official updates</a></div>`;
+      article.innerHTML=`<div class="job-card-top"><div><p class="job-ref">${esc(j.id)}</p><h3>${esc(j.title)}</h3><p>${esc(j.summary||'Verified AVC vacancy')}</p></div><span class="job-chip active">${esc(displayStatus(j.status))}</span></div><div class="job-meta">${j.country?`<span class="job-chip">${esc(j.country)}</span>`:''}${j.city?`<span class="job-chip">${esc(j.city)}</span>`:''}${j.category?`<span class="job-chip">${esc(j.category)}</span>`:''}${j.salaryDisplay?`<span class="job-chip">${esc(j.salaryDisplay)}</span>`:''}</div>${employer}${recruiter}${j.requirements?`<p><strong>Key requirements:</strong> ${esc(j.requirements)}</p>`:''}${j.benefits?`<p><strong>Benefits:</strong> ${esc(j.benefits)}</p>`:''}${j.validThrough?`<p><strong>Apply by / validity:</strong> ${esc(fmtDate(j.validThrough))}</p>`:''}${j.lastVerifiedAt?`<p class="job-verified"><strong>Last verified:</strong> ${esc(fmtDate(j.lastVerifiedAt))}</p>`:''}<div class="job-actions">${detail}<a class="button primary" href="${esc(applyUrl)}">Apply now</a><a class="button outline" href="${channel}" target="_blank" rel="noopener noreferrer">Official updates</a></div>`;
       list.appendChild(article);
     });
   };
