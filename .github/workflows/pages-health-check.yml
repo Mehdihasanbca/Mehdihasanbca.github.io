@@ -1,0 +1,51 @@
+name: AVC Pages DNS Health Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - pages-health-trigger.txt
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Request GitHub Pages DNS health check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          url="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/health"
+          body_file=/tmp/pages-health.json
+          code="$(curl -sS -o "${body_file}" -w '%{http_code}' \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "${url}" || true)"
+          message="$(jq -r '.message // empty' "${body_file}" 2>/dev/null || true)"
+          domain="$(jq -r '.domain // empty' "${body_file}" 2>/dev/null || true)"
+          alt_domain="$(jq -r '.alt_domain // empty' "${body_file}" 2>/dev/null || true)"
+          enforce_https="$(jq -r 'if has("enforce_https") then .enforce_https else empty end' "${body_file}" 2>/dev/null || true)"
+          {
+            echo "AVC GitHub Pages DNS health request"
+            echo "http_status: ${code:-none}"
+            echo "message: ${message:-none}"
+            echo "domain: ${domain:-none}"
+            echo "alt_domain: ${alt_domain:-none}"
+            echo "enforce_https: ${enforce_https:-unknown}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > pages-health-status.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pages-health-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AVC Pages DNS health check"
+            git push
+          fi
