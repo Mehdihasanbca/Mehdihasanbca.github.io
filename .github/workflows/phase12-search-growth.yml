@@ -1,0 +1,140 @@
+name: AVC Phase 12 Search Growth
+
+on:
+  push:
+    paths:
+      - 'phase12-trigger.txt'
+      - 'scripts/phase12_search_growth.py'
+      - 'assets/measurement.js'
+      - '.github/workflows/phase12-search-growth.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avc-phase12-search-growth
+  cancel-in-progress: false
+
+jobs:
+  build-audit:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
+      BING_SITE_VERIFICATION: ${{ secrets.BING_SITE_VERIFICATION }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build search metadata
+        run: python scripts/phase12_search_growth.py
+
+      - name: Apply optional search ownership verification
+        shell: python
+        run: |
+          from pathlib import Path
+          import os,re
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          text=re.sub(r'<meta\s+name="google-site-verification"[^>]*>','',text,flags=re.I)
+          text=re.sub(r'<meta\s+name="msvalidate\.01"[^>]*>','',text,flags=re.I)
+          google=os.getenv('GOOGLE_SITE_VERIFICATION','').strip()
+          bing=os.getenv('BING_SITE_VERIFICATION','').strip()
+          tags=''
+          if google:
+              tags+=f'<meta name="google-site-verification" content="{google}">'
+          if bing:
+              tags+=f'<meta name="msvalidate.01" content="{bing}">'
+          text=text.replace('</head>',tags+'</head>',1)
+          p.write_text(text,encoding='utf-8')
+          Path('search-verification-status.txt').write_text(
+              'AVC search ownership verification\n'
+              +f'google_configured: {"yes" if google else "no"}\n'
+              +f'bing_configured: {"yes" if bing else "no"}\n'
+              +'status: '+('configured' if google and bing else 'pending_external_verification')+'\n',
+              encoding='utf-8')
+
+      - name: Static search audit
+        shell: python
+        run: |
+          from pathlib import Path
+          import re,xml.etree.ElementTree as ET,sys
+          failures=[]; pages=0
+          for p in sorted(Path('.').glob('*.html')):
+              if p.name=='404.html': continue
+              pages+=1
+              t=p.read_text(encoding='utf-8')
+              needed=['rel="canonical"','property="og:title"','property="og:description"','property="og:image"','name="twitter:card"','hreflang="en-IN"','hreflang="x-default"','assets/measurement.js']
+              for n in needed:
+                  if n not in t: failures.append(f'{p.name}: missing {n}')
+              if 'http://' in t: failures.append(f'{p.name}: insecure http reference')
+              if '9162530999' in t: failures.append(f'{p.name}: old phone')
+          tree=ET.parse('sitemap.xml'); root=tree.getroot(); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          urls=root.findall('s:url',ns)
+          for u in urls:
+              if u.find('s:lastmod',ns) is None: failures.append('sitemap url missing lastmod')
+          seo=Path('assets/seo.js').read_text(encoding='utf-8')
+          for required in ['Assignment Venue Center','+91 9473286356','10AOVPH3197L1ZI','UDYAM-BR-10-0047094','ProfessionalService']:
+              if required not in seo: failures.append(f'seo.js missing {required}')
+          Path('phase12-static.txt').write_text(f'pages={pages}\nsitemap_urls={len(urls)}\nfailures={len(failures)}\n'+'\n'.join(failures),encoding='utf-8')
+          if failures:
+              print('\n'.join(failures)); sys.exit(1)
+
+      - name: Commit Phase 12 build
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html' sitemap.xml search-verification-status.txt phase12-static.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Apply AVC Phase 12 search growth metadata"
+            git push
+          fi
+
+      - name: Wait for GitHub Pages and Cloudflare
+        run: sleep 20
+
+      - name: Live search readiness audit
+        shell: bash
+        run: |
+          set -u
+          failures=0
+          live_ok=0
+          live_fail=0
+          details=""
+          urls=$(python - <<'PY'
+          import xml.etree.ElementTree as ET
+          root=ET.parse('sitemap.xml').getroot(); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          for loc in root.findall('s:url/s:loc',ns): print(loc.text)
+          PY
+          )
+          for url in $urls; do
+            code=$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 20 "$url" || echo 000)
+            details+="$url -> $code\n"
+            if [ "$code" = "200" ]; then live_ok=$((live_ok+1)); else live_fail=$((live_fail+1)); failures=$((failures+1)); fi
+          done
+          for url in \
+            https://assignmentvenuecentre.me/sitemap.xml \
+            https://assignmentvenuecentre.me/robots.txt \
+            https://assignmentvenuecentre.me/assets/measurement.js?v=20260807-p12 \
+            https://assignmentvenuecentre.me/assets/seo.js; do
+            code=$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 20 "$url" || echo 000)
+            details+="$url -> $code\n"
+            if [ "$code" = "200" ]; then live_ok=$((live_ok+1)); else live_fail=$((live_fail+1)); failures=$((failures+1)); fi
+          done
+          verification=$(cat search-verification-status.txt)
+          printf 'AVC Phase 12 search growth readiness\nstatus: %s\nlive_ok: %s\nlive_fail: %s\nfailures: %s\n%s\nlive_details:\n%bchecked_at_utc: %s\n' \
+            "$([ "$failures" -eq 0 ] && echo success || echo failed)" "$live_ok" "$live_fail" "$failures" "$verification" "$details" "$(date -u +%FT%TZ)" > phase12-status.txt
+          test "$failures" -eq 0
+
+      - name: Commit Phase 12 evidence
+        if: always()
+        run: |
+          git pull --rebase
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add phase12-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AVC Phase 12 search growth status"
+            git push
+          fi
