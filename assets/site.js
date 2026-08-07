@@ -55,13 +55,15 @@ if(homeServices&&!document.querySelector('.company-snapshot')){
     <div class="container snapshot-grid">
       <article class="snapshot-intro">
         <span class="section-kicker">About AVC</span>
-        <h2 id="company-snapshot-title">Assignment Venue Center is a recruitment-support and manpower coordination business based in Bihar, India.</h2>
+        <h2 id="company-snapshot-title">Assignment Venue Center is a registered recruitment-support and manpower coordination business based in Darbhanga, Bihar.</h2>
         <p>AVC supports Indian candidates, employers and recruitment partners with sourcing, applications, profile preparation, interviews and document readiness while keeping final overseas recruitment and deployment responsibilities with the concerned authorized stakeholders.</p>
-        <a class="button light" href="about.html">View complete company profile</a>
+        <div class="hero-actions"><a class="button light" href="about.html">View company profile</a><a class="button light" href="company-verification.html">Verify AVC</a></div>
       </article>
       <div class="snapshot-facts">
         <article class="snapshot-fact"><span>Founder & Business Head</span><strong>Mehdi Hasan</strong><p>Business development, recruitment-support operations and partner coordination.</p></article>
-        <article class="snapshot-fact"><span>Base</span><strong>Darbhanga, Bihar, India</strong><p>AVC operates as an India-based recruitment-support service business.</p></article>
+        <article class="snapshot-fact"><span>Registrations</span><strong>GSTIN 10AOVPH3197L1ZI</strong><p>Udyam Registration: UDYAM-BR-10-0047094.</p></article>
+        <article class="snapshot-fact"><span>Office</span><strong>Darbhanga, Bihar - 847306</strong><p>Kamtaul Road, Madhupur, Tekatar. <a href="office.html">View office details</a>.</p></article>
+        <article class="snapshot-fact"><span>Official contact</span><strong>+91 9162530999</strong><p><a href="mailto:info@assignmentvenuecentre.me">info@assignmentvenuecentre.me</a></p></article>
         <article class="snapshot-fact"><span>Core role</span><strong>Candidate sourcing & recruitment coordination</strong><p>Applications, screening support, interviews and document guidance.</p></article>
         <article class="snapshot-fact"><span>Market focus</span><strong>Gulf / GCC and verified international requirements</strong><p>Including Oman, Saudi Arabia, UAE and Qatar according to available approved demands.</p></article>
       </div>
@@ -116,7 +118,7 @@ const footerCompanyHeading=[...document.querySelectorAll('.footer h3')].find(el=
 if(footerCompanyHeading){
   const links=footerCompanyHeading.nextElementSibling;
   if(links&&links.classList.contains('footer-links')){
-    const wanted=[['about.html','About AVC'],['company-verification.html','Company verification'],['services.html','Services'],['jobs.html','Jobs'],['office.html','Office'],['trust-center.html','Trust Center'],['contact.html','Contact'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];
+    const wanted=[['about.html','About AVC'],['company-verification.html','Company verification'],['services.html','Services'],['jobs.html','Jobs'],['office.html','Office'],['media.html','Media'],['trust-center.html','Trust Center'],['contact.html','Contact'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];
     wanted.reverse().forEach(([href,label])=>{
       if(!links.querySelector(`a[href="${href}"]`)){
         const link=document.createElement('a');
