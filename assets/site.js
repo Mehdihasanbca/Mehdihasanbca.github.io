@@ -10,12 +10,13 @@ if(!document.querySelector('link[href*="company.css"]')){
 
 if(siteNav){
   const byText=text=>[...siteNav.querySelectorAll('a')].find(a=>a.textContent.trim().toLowerCase()===text.toLowerCase());
+  const ensure=(text,href)=>{const found=byText(text);if(found){found.href=href;return found}const a=document.createElement('a');a.href=href;a.textContent=text;siteNav.appendChild(a);return a};
   const about=byText('About AVC');
   if(!about){const a=document.createElement('a');a.href='about.html';a.textContent='About AVC';const first=siteNav.querySelector('a');first?.after(a)}
-  const services=byText('Services');
-  if(services){services.href='services.html'}else{const a=document.createElement('a');a.href='services.html';a.textContent='Services';siteNav.appendChild(a)}
-  const jobs=byText('Jobs');
-  if(jobs){jobs.href='jobs.html'}else{const a=document.createElement('a');a.href='jobs.html';a.textContent='Jobs';siteNav.appendChild(a)}
+  ensure('Services','services.html');
+  ensure('Jobs','jobs.html');
+  ensure('Trust','trust-center.html');
+  ensure('Contact','contact.html');
 }
 
 if(navToggle&&siteNav){
@@ -99,11 +100,23 @@ if(opportunitySection&&!opportunitySection.querySelector('a[href="jobs.html"]'))
   if(heading){const link=document.createElement('a');link.className='button outline';link.href='jobs.html';link.textContent='Open verified jobs hub';link.style.marginTop='18px';heading.appendChild(link)}
 }
 
+const officeSection=document.querySelector('#office');
+if(officeSection&&!officeSection.querySelector('a[href="office.html"]')){
+  const panel=officeSection.querySelector('.office-panel');
+  if(panel){const link=document.createElement('a');link.className='button light';link.href='office.html';link.textContent='Office & interview information';link.style.marginTop='18px';panel.appendChild(link)}
+}
+
+const trustSection=document.querySelector('#trust');
+if(trustSection&&!trustSection.querySelector('a[href="trust-center.html"]')){
+  const heading=trustSection.querySelector('.section-heading');
+  if(heading){const link=document.createElement('a');link.className='button light';link.href='trust-center.html';link.textContent='Open Trust Center';link.style.marginTop='18px';heading.appendChild(link)}
+}
+
 const footerCompanyHeading=[...document.querySelectorAll('.footer h3')].find(el=>el.textContent.trim().toLowerCase()==='company');
 if(footerCompanyHeading){
   const links=footerCompanyHeading.nextElementSibling;
   if(links&&links.classList.contains('footer-links')){
-    const wanted=[['about.html','About AVC'],['services.html','Services'],['jobs.html','Jobs'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];
+    const wanted=[['about.html','About AVC'],['company-verification.html','Company verification'],['services.html','Services'],['jobs.html','Jobs'],['office.html','Office'],['trust-center.html','Trust Center'],['contact.html','Contact'],['candidates.html','Candidates'],['employers.html','Employers'],['partners.html','Recruitment partners']];
     wanted.reverse().forEach(([href,label])=>{
       if(!links.querySelector(`a[href="${href}"]`)){
         const link=document.createElement('a');
