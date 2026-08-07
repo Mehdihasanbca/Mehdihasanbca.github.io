@@ -1,0 +1,15 @@
+AVC GitHub Pages certificate status
+domain: assignmentvenuecentre.me
+api_message: none
+pages_cname: assignmentvenuecentre.me
+https_enforced: false
+certificate_state: unknown
+certificate_description: unknown
+certificate_domains: none
+pending_domain_unverified_at: none
+protected_domain_state: unknown
+dns_a: 185.199.111.153,185.199.110.153,185.199.108.153,185.199.109.153
+dns_caa: none
+direct_subject: subject=CN = *.github.io
+direct_verify:     Verify return code: 62 (hostname mismatch)
+checked_at_utc: 2026-08-07T04:40:54Z
