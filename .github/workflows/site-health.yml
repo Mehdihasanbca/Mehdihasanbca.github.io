@@ -21,39 +21,50 @@ jobs:
           set -uo pipefail
           BASE='https://assignmentvenuecentre.me'
           status=success
-          detail='Core AVC public pages are reachable with expected company content'
+          detail='Core AVC public pages, services and jobs hub are reachable with expected content'
 
           check_page(){
-            local slug="$1" marker="$2" file="/tmp/${slug:-home}.html"
+            local slug="$1" marker="$2" key="$3" file="/tmp/${key}.html"
             local url="${BASE}/${slug}"
             [ -z "$slug" ] && url="${BASE}/"
             local code
             code="$(curl -sS -L -o "$file" -w '%{http_code}' --connect-timeout 15 --max-time 35 "$url" || true)"
             local present=no
             grep -qi "$marker" "$file" 2>/dev/null && present=yes
-            echo "${code}|${present}"
+            echo "${key}|${code}|${present}"
           }
 
-          IFS='|' read -r home_code home_brand <<<"$(check_page '' 'Assignment Venue Center')"
-          IFS='|' read -r about_code about_founder <<<"$(check_page 'about.html' 'Mehdi Hasan')"
-          IFS='|' read -r candidates_code candidates_marker <<<"$(check_page 'candidates.html' 'candidate journey')"
-          IFS='|' read -r employers_code employers_marker <<<"$(check_page 'employers.html' 'manpower support')"
-          IFS='|' read -r partners_code partners_marker <<<"$(check_page 'partners.html' 'sourcing partnership')"
+          results=()
+          results+=("$(check_page '' 'Assignment Venue Center' home)")
+          results+=("$(check_page 'about.html' 'Mehdi Hasan' about)")
+          results+=("$(check_page 'candidates.html' 'candidate journey' candidates)")
+          results+=("$(check_page 'employers.html' 'manpower support' employers)")
+          results+=("$(check_page 'partners.html' 'sourcing partnership' partners)")
+          results+=("$(check_page 'services.html' 'Service directory' services)")
+          results+=("$(check_page 'candidate-sourcing.html' 'Candidate sourcing' candidate_sourcing)")
+          results+=("$(check_page 'application-coordination.html' 'Application coordination' application_coordination)")
+          results+=("$(check_page 'cv-profile-support.html' 'CV &amp; profile support\|CV & profile support' cv_profile)")
+          results+=("$(check_page 'document-guidance.html' 'Document guidance' document_guidance)")
+          results+=("$(check_page 'interview-coordination.html' 'Interview coordination' interview_coordination)")
+          results+=("$(check_page 'employer-manpower-support.html' 'Employer manpower support' employer_support)")
+          results+=("$(check_page 'jobs.html' 'Verified vacancy hub' jobs)")
 
-          for pair in "$home_code:$home_brand" "$about_code:$about_founder" "$candidates_code:$candidates_marker" "$employers_code:$employers_marker" "$partners_code:$partners_marker"; do
-            code="${pair%%:*}"; marker="${pair##*:}"
-            if [ "$code" != 200 ] || [ "$marker" != yes ]; then status=failed; detail='One or more live AVC page checks failed'; fi
+          jobs_json_code="$(curl -sS -L -o /tmp/jobs.json -w '%{http_code}' --connect-timeout 15 --max-time 35 "${BASE}/data/jobs.json" || true)"
+          jobs_policy=no
+          grep -qi 'Only verified AVC vacancies' /tmp/jobs.json 2>/dev/null && jobs_policy=yes
+
+          for row in "${results[@]}"; do
+            IFS='|' read -r key code present <<<"$row"
+            if [ "$code" != 200 ] || [ "$present" != yes ]; then status=failed; detail="Live page check failed: ${key}"; fi
           done
+          if [ "$jobs_json_code" != 200 ] || [ "$jobs_policy" != yes ]; then status=failed; detail='Verified jobs data source check failed'; fi
 
           {
             echo 'AVC public website health'
             echo "status: ${status}"
             echo "detail: ${detail}"
-            echo "homepage_http: ${home_code}; expected_content: ${home_brand}"
-            echo "about_http: ${about_code}; expected_content: ${about_founder}"
-            echo "candidates_http: ${candidates_code}; expected_content: ${candidates_marker}"
-            echo "employers_http: ${employers_code}; expected_content: ${employers_marker}"
-            echo "partners_http: ${partners_code}; expected_content: ${partners_marker}"
+            for row in "${results[@]}"; do IFS='|' read -r key code present <<<"$row"; echo "${key}_http: ${code}; expected_content: ${present}"; done
+            echo "jobs_data_http: ${jobs_json_code}; verified_policy: ${jobs_policy}"
             echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           } > site-health-status.txt
 
