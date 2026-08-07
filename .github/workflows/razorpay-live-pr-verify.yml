@@ -42,24 +42,116 @@ jobs:
           grep -Fq '"success":true' /tmp/cf.json
           accounts="$(curl -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/accounts')"
           account_id="$(printf '%s' "$accounts" | python -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or []; print(r[0].get('id','') if r else '')")"
+          zones="$(curl -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me')"
+          zone_id="$(printf '%s' "$zones" | python -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or []; print(r[0].get('id','') if r else '')")"
           if [ -z "$account_id" ]; then
-            zones="$(curl -sS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me')"
             account_id="$(printf '%s' "$zones" | python -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or []; print(((r[0].get('account') or {}).get('id','')) if r else '')")"
           fi
           test -n "$account_id"
+          test -n "$zone_id"
           echo "::add-mask::$account_id"
+          echo "::add-mask::$zone_id"
           echo "CLOUDFLARE_ACCOUNT_ID=$account_id" >> "$GITHUB_ENV"
+          echo "CLOUDFLARE_ZONE_ID=$zone_id" >> "$GITHUB_ENV"
+
+      - name: Try creating one-hour Workers deployment token
+        id: temp_token
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          code="$(curl -sS -o /tmp/permission-groups.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/user/tokens/permission_groups?per_page=1000' || true)"
+          if [ "$code" != 200 ]; then
+            echo 'available=no' >> "$GITHUB_OUTPUT"
+            echo 'reason=api_tokens_permission_unavailable' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python - <<'PY'
+          import json, os, sys, urllib.request, urllib.error, datetime
+          src=json.load(open('/tmp/permission-groups.json'))
+          groups=src.get('result') or []
+          by_name={str(g.get('name')):g for g in groups}
+          required=['Workers Scripts Write','Workers Routes Write']
+          missing=[n for n in required if n not in by_name]
+          if missing:
+              print('missing permission groups:', ','.join(missing), file=sys.stderr)
+              sys.exit(3)
+          account_ids=[by_name['Workers Scripts Write']['id']]
+          zone_ids=[by_name['Workers Routes Write']['id']]
+          for optional in ['Account Settings Read']:
+              if optional in by_name: account_ids.append(by_name[optional]['id'])
+          for optional in ['Zone Read']:
+              if optional in by_name: zone_ids.append(by_name[optional]['id'])
+          account=os.environ['CLOUDFLARE_ACCOUNT_ID']
+          zone=os.environ['CLOUDFLARE_ZONE_ID']
+          now=datetime.datetime.now(datetime.timezone.utc)
+          expires=now+datetime.timedelta(hours=1)
+          payload={
+            'name':'AVC temporary Workers deploy '+now.strftime('%Y%m%dT%H%M%SZ'),
+            'not_before':now.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'expires_on':expires.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'policies':[
+              {'effect':'allow','permission_groups':[{'id':i} for i in account_ids],
+               'resources':{f'com.cloudflare.api.account.{account}':'*'}},
+              {'effect':'allow','permission_groups':[{'id':i} for i in zone_ids],
+               'resources':{f'com.cloudflare.api.account.zone.{zone}':'*'}}
+            ]
+          }
+          req=urllib.request.Request('https://api.cloudflare.com/client/v4/user/tokens',
+              data=json.dumps(payload).encode(),method='POST',headers={
+                'Authorization':'Bearer '+os.environ['CLOUDFLARE_API_TOKEN'],
+                'Content-Type':'application/json'})
+          try:
+              with urllib.request.urlopen(req,timeout=30) as r: out=json.load(r)
+          except urllib.error.HTTPError as e:
+              body=e.read().decode('utf-8','replace')
+              print('temporary token create HTTP',e.code, body[:700],file=sys.stderr)
+              sys.exit(4)
+          result=out.get('result') or {}
+          token=result.get('value') or ''
+          token_id=result.get('id') or ''
+          if not token or not token_id:
+              print('temporary token response missing id/value',file=sys.stderr)
+              sys.exit(5)
+          open('/tmp/temp-token','w').write(token)
+          open('/tmp/temp-token-id','w').write(token_id)
+          PY
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo 'available=no' >> "$GITHUB_OUTPUT"
+            echo 'reason=temporary_token_creation_failed' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          temp_token="$(cat /tmp/temp-token)"
+          temp_id="$(cat /tmp/temp-token-id)"
+          echo "::add-mask::$temp_token"
+          echo "::add-mask::$temp_id"
+          echo "TEMP_CLOUDFLARE_API_TOKEN=$temp_token" >> "$GITHUB_ENV"
+          echo "TEMP_CLOUDFLARE_TOKEN_ID=$temp_id" >> "$GITHUB_ENV"
+          echo 'available=yes' >> "$GITHUB_OUTPUT"
+          echo 'reason=created' >> "$GITHUB_OUTPUT"
 
       - name: Install Wrangler
         run: npm install --no-save wrangler@4
 
       - name: Deploy payment Worker
+        id: deploy
+        continue-on-error: true
         env:
+          CLOUDFLARE_API_TOKEN: ${{ env.TEMP_CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          npx wrangler deploy
 
       - name: Set Worker Razorpay secrets
+        id: worker_secrets
+        if: steps.deploy.outcome == 'success'
+        continue-on-error: true
         env:
+          CLOUDFLARE_API_TOKEN: ${{ env.TEMP_CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
         shell: bash
         run: |
@@ -71,6 +163,9 @@ jobs:
           fi
 
       - name: Verify live health and server tariff
+        id: health
+        if: steps.deploy.outcome == 'success' && steps.worker_secrets.outcome == 'success'
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -88,6 +183,9 @@ jobs:
           test "$ok" = yes
 
       - name: Create and verify a non-charging live Razorpay Order
+        id: order_test
+        if: steps.health.outcome == 'success'
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -104,19 +202,31 @@ jobs:
           test "$(printf '%s' "$fetched" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('amount',''))")" = "177000"
           test "$(printf '%s' "$fetched" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('currency',''))")" = "INR"
           test "$(printf '%s' "$fetched" | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('receipt',''))")" = "$case_ref"
-          echo "ORDER_TEST=pass" >> "$GITHUB_ENV"
 
       - name: Record safe live evidence
+        if: always()
         shell: bash
         run: |
+          deploy='${{ steps.deploy.outcome }}'
+          secrets='${{ steps.worker_secrets.outcome }}'
+          health='${{ steps.health.outcome }}'
+          order='${{ steps.order_test.outcome }}'
+          temp='${{ steps.temp_token.outputs.available }}'
+          temp_reason='${{ steps.temp_token.outputs.reason }}'
+          [ -n "$temp" ] || temp=no
+          [ -n "$temp_reason" ] || temp_reason=unknown
+          checkout=false
+          status=blocked_not_live
+          if [ "$deploy" = success ] && [ "$secrets" = success ] && [ "$health" = success ] && [ "$order" = success ]; then checkout=true; status=success_live_checkout; fi
           trusted=false; [ "${RAZORPAY_TRUSTED_BUSINESS_ENABLED:-}" = true ] && trusted=true
           webhook_secret=no; [ -n "${RAZORPAY_WEBHOOK_SECRET:-}" ] && webhook_secret=yes
+          public_key=''; [ "$checkout" = true ] && public_key="$RAZORPAY_LIVE_API_KEY"
           cat > /tmp/payment-config.js <<EOF
           window.AVC_PAYMENT_CONFIG=Object.freeze({
             mode:'live',
-            checkoutEnabled:true,
+            checkoutEnabled:$checkout,
             trustedBusinessClaimEnabled:$trusted,
-            razorpayKeyId:'$RAZORPAY_LIVE_API_KEY',
+            razorpayKeyId:'$public_key',
             orderEndpoint:'/api/payments/order',
             verifyEndpoint:'/api/payments/verify',
             webhookManagedServerSide:true,
@@ -131,14 +241,16 @@ jobs:
           });
           EOF
           {
-            echo 'status=success_live_checkout'
+            echo "status=$status"
             echo 'razorpay_api_auth=yes'
             echo 'cloudflare_api_auth=yes'
-            echo 'worker_deployed=yes'
-            echo 'worker_razorpay_secrets_set=yes'
-            echo 'payment_api_health=yes'
-            echo 'live_order_creation_test=yes'
-            echo 'checkout_enabled=true'
+            echo "temporary_cloudflare_deploy_token=$temp"
+            echo "temporary_token_reason=$temp_reason"
+            echo "worker_deployed=$([ "$deploy" = success ] && echo yes || echo no)"
+            echo "worker_razorpay_secrets_set=$([ "$secrets" = success ] && echo yes || echo no)"
+            echo "payment_api_health=$([ "$health" = success ] && echo yes || echo no)"
+            echo "live_order_creation_test=$([ "$order" = success ] && echo yes || echo no)"
+            echo "checkout_enabled=$checkout"
             echo 'razorpay_order_total_paise=177000'
             echo 'wafid_third_party_fee_included=no'
             echo "razorpay_webhook_secret_present=$webhook_secret"
@@ -146,9 +258,12 @@ jobs:
             echo 'razorpay_webhook_subscription=merchant_dashboard_or_partner_api_required'
             echo 'secret_values_exposed=no'
           } > /tmp/phase20-live-status.txt
+          [ -f /tmp/health.json ] || echo '{}' > /tmp/health.json
+          [ -f /tmp/order.json ] || echo '{}' > /tmp/order.json
           cat /tmp/phase20-live-status.txt
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: razorpay-live-evidence
           path: |
@@ -157,3 +272,10 @@ jobs:
             /tmp/health.json
             /tmp/order.json
           if-no-files-found: error
+
+      - name: Revoke temporary Cloudflare token
+        if: always() && env.TEMP_CLOUDFLARE_TOKEN_ID != ''
+        continue-on-error: true
+        shell: bash
+        run: |
+          curl -fsSL -X DELETE -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/${TEMP_CLOUDFLARE_TOKEN_ID}" >/tmp/revoke.json
