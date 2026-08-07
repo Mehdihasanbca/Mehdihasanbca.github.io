@@ -1,0 +1,43 @@
+name: AVC Phase 16 Legacy Route Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - phase16-probe-trigger.txt
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Probe legacy public routes
+        shell: bash
+        run: |
+          set +e
+          DOMAIN='https://assignmentvenuecentre.me'
+          : > phase16-probe-status.txt
+          echo 'AVC Phase 16 legacy route probe' >> phase16-probe-status.txt
+          probe(){
+            path="$1"
+            code="$(curl -L -sS -o /tmp/body -w '%{http_code}' --connect-timeout 15 --max-time 30 -H 'Cache-Control: no-cache' "${DOMAIN}${path}?phase16=$(date +%s)" 2>/dev/null || echo 000)"
+            title="$(grep -io '<title>[^<]*' /tmp/body 2>/dev/null | head -1 | sed 's/<title>//I' | tr '\n' ' ' || true)"
+            echo "${path} -> ${code}; title=${title:-none}" >> phase16-probe-status.txt
+          }
+          probe '/portal/candidate/login'
+          probe '/register/candidate'
+          probe '/admin/login'
+          echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> phase16-probe-status.txt
+          cat phase16-probe-status.txt
+      - name: Commit probe evidence
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase16-probe-status.txt
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC Phase 16 legacy route probe'; git push; fi
