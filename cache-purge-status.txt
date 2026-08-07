@@ -1,0 +1,4 @@
+AVC targeted content cache purge
+status: failed
+detail: Authentication error
+checked_at_utc: 2026-08-07T11:11:49Z
