@@ -17,89 +17,71 @@ jobs:
   activate:
     runs-on: ubuntu-latest
     env:
-      RZP_ID_1: ${{ secrets.RAZORPAY_KEY_ID }}
-      RZP_ID_2: ${{ secrets.RAZORPAY_API_KEY }}
-      RZP_ID_3: ${{ secrets.RAZORPAY_API_KEY_ID }}
-      RZP_ID_4: ${{ secrets.RAZORPAY_LIVE_KEY_ID }}
-      RZP_ID_5: ${{ secrets.RAZORPAY_KEY }}
-      RZP_SECRET_1: ${{ secrets.RAZORPAY_KEY_SECRET }}
-      RZP_SECRET_2: ${{ secrets.RAZORPAY_API_SECRET }}
-      RZP_SECRET_3: ${{ secrets.RAZORPAY_API_KEY_SECRET }}
-      RZP_SECRET_4: ${{ secrets.RAZORPAY_LIVE_KEY_SECRET }}
-      RZP_SECRET_5: ${{ secrets.RAZORPAY_SECRET }}
-      RZP_COMBINED_1: ${{ secrets.RAZORPAY_API }}
-      RZP_COMBINED_2: ${{ secrets.RAZORPAY_API_CREDENTIALS }}
-      RZP_COMBINED_3: ${{ secrets.API_RAZORPAY }}
+      RZP_ID_1: ${{ secrets.RAZORPAY_LIVE_API_KEY }}
+      RZP_ID_2: ${{ secrets.RAZORPAY_KEY_ID }}
+      RZP_ID_3: ${{ secrets.RAZORPAY_LIVE_KEY_ID }}
+      RZP_ID_4: ${{ secrets.RAZORPAY_API_KEY }}
+      RZP_SECRET_1: ${{ secrets.RAZORPAY_LIVE_KEY_SECRET }}
+      RZP_SECRET_2: ${{ secrets.RAZORPAY_KEY_SECRET }}
+      RZP_SECRET_3: ${{ secrets.RAZORPAY_API_SECRET }}
       RZP_WEBHOOK: ${{ secrets.RAZORPAY_WEBHOOK_SECRET }}
       CF_TOKEN_1: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CF_TOKEN_2: ${{ secrets.CF_API_TOKEN }}
-      CF_ACCOUNT_1: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CF_ACCOUNT_2: ${{ secrets.CF_ACCOUNT_ID }}
-      FEE_1: ${{ secrets.AVC_MEDICAL_TOTAL_PAISE }}
-      FEE_2: ${{ secrets.MEDICAL_TOTAL_PAISE }}
-      FEE_VAR: ${{ vars.AVC_MEDICAL_TOTAL_PAISE }}
       TRUSTED_FLAG: ${{ vars.RAZORPAY_TRUSTED_BUSINESS_ENABLED }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Resolve, deploy if ready, and record safe status
+
+      - name: Authenticate, deploy and record safe activation state
         shell: bash
         run: |
           set +e
-          KEY_ID="${RZP_ID_1:-${RZP_ID_2:-${RZP_ID_3:-${RZP_ID_4:-${RZP_ID_5:-}}}}}"
-          KEY_SECRET="${RZP_SECRET_1:-${RZP_SECRET_2:-${RZP_SECRET_3:-${RZP_SECRET_4:-${RZP_SECRET_5:-}}}}}"
-          COMBINED="${RZP_COMBINED_1:-${RZP_COMBINED_2:-${RZP_COMBINED_3:-}}}"
-          if { [ -z "$KEY_ID" ] || [ -z "$KEY_SECRET" ]; } && [[ "$COMBINED" == *:* ]]; then
-            CID="${COMBINED%%:*}"; CSECRET="${COMBINED#*:}"
-            [ -n "$KEY_ID" ] || KEY_ID="$CID"
-            [ -n "$KEY_SECRET" ] || KEY_SECRET="$CSECRET"
-          fi
+          KEY_ID="${RZP_ID_1:-${RZP_ID_2:-${RZP_ID_3:-${RZP_ID_4:-}}}}"
+          KEY_SECRET="${RZP_SECRET_1:-${RZP_SECRET_2:-${RZP_SECRET_3:-}}}"
           CF_TOKEN="${CF_TOKEN_1:-${CF_TOKEN_2:-}}"
-          CF_ACCOUNT="${CF_ACCOUNT_1:-${CF_ACCOUNT_2:-}}"
-          FEE="${FEE_1:-${FEE_2:-${FEE_VAR:-}}}"
-          for v in "$KEY_ID" "$KEY_SECRET" "$COMBINED" "$RZP_WEBHOOK" "$CF_TOKEN" "$CF_ACCOUNT"; do [ -z "$v" ] || echo "::add-mask::$v"; done
+          for v in "$KEY_ID" "$KEY_SECRET" "$RZP_WEBHOOK" "$CF_TOKEN"; do [ -z "$v" ] || echo "::add-mask::$v"; done
 
-          key_id_present=no; key_secret_present=no; cf_token_present=no; cf_account_present=no; fee_present=no; webhook_present=no; mode=unknown; deployed=no; health=no; checkout=false
+          key_id_present=no; key_secret_present=no; cf_token_present=no; webhook_present=no
+          mode=unknown; razorpay_auth=no; deployed=no; health=no; checkout=false
           [ -n "$KEY_ID" ] && key_id_present=yes
           [ -n "$KEY_SECRET" ] && key_secret_present=yes
           [ -n "$CF_TOKEN" ] && cf_token_present=yes
-          [ -n "$CF_ACCOUNT" ] && cf_account_present=yes
-          [[ "$FEE" =~ ^[1-9][0-9]*$ ]] && fee_present=yes
           [ -n "$RZP_WEBHOOK" ] && webhook_present=yes
           [[ "$KEY_ID" == rzp_live_* ]] && mode=live
           [[ "$KEY_ID" == rzp_test_* ]] && mode=test
 
-          if [ -z "$CF_ACCOUNT" ] && [ -n "$CF_TOKEN" ]; then
-            accounts="$(curl -fsSL -H "Authorization: Bearer $CF_TOKEN" -H 'Content-Type: application/json' https://api.cloudflare.com/client/v4/accounts 2>/dev/null)"
-            CF_ACCOUNT="$(printf '%s' "$accounts" | python -c "import sys,json; d=json.load(sys.stdin); r=d.get('result') or []; print(r[0].get('id','') if r else '')" 2>/dev/null)"
-            if [ -n "$CF_ACCOUNT" ]; then cf_account_present=yes; echo "::add-mask::$CF_ACCOUNT"; fi
+          if [ "$key_id_present" = yes ] && [ "$key_secret_present" = yes ]; then
+            code="$(curl -sS -o /tmp/rzp-auth.json -w '%{http_code}' -u "$KEY_ID:$KEY_SECRET" 'https://api.razorpay.com/v1/orders?count=1' || true)"
+            [ "$code" = 200 ] && razorpay_auth=yes
           fi
 
-          if [ "$key_id_present" = yes ] && [ "$key_secret_present" = yes ] && [ "$cf_token_present" = yes ] && [ "$cf_account_present" = yes ]; then
+          if [ "$razorpay_auth" = yes ] && [ "$mode" = live ] && [ "$cf_token_present" = yes ]; then
             npm install --no-save wrangler@4 >/dev/null 2>&1
-            export CLOUDFLARE_API_TOKEN="$CF_TOKEN" CLOUDFLARE_ACCOUNT_ID="$CF_ACCOUNT"
+            export CLOUDFLARE_API_TOKEN="$CF_TOKEN"
             npx wrangler deploy >/tmp/wrangler-deploy.log 2>&1
             if [ $? -eq 0 ]; then
               printf '%s' "$KEY_ID" | npx wrangler secret put RAZORPAY_KEY_ID >/dev/null 2>&1
+              s1=$?
               printf '%s' "$KEY_SECRET" | npx wrangler secret put RAZORPAY_KEY_SECRET >/dev/null 2>&1
-              if [ "$fee_present" = yes ]; then printf '%s' "$FEE" | npx wrangler secret put MEDICAL_TOTAL_PAISE >/dev/null 2>&1; fi
+              s2=$?
               if [ "$webhook_present" = yes ]; then printf '%s' "$RZP_WEBHOOK" | npx wrangler secret put RAZORPAY_WEBHOOK_SECRET >/dev/null 2>&1; fi
-              deployed=yes
+              [ "$s1" -eq 0 ] && [ "$s2" -eq 0 ] && deployed=yes
             fi
           fi
 
           if [ "$deployed" = yes ]; then
-            for i in $(seq 1 10); do
-              body="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "https://assignmentvenuecentre.me/api/payments/health?ts=$(date +%s)" 2>/dev/null)"
-              if printf '%s' "$body" | grep -Fq '"service":"avc-payment-api"'; then health=yes; break; fi
+            for i in $(seq 1 12); do
+              body="$(curl -fsSL --connect-timeout 10 --max-time 20 -H 'Cache-Control: no-cache' "https://assignmentvenuecentre.me/api/payments/health?ts=$(date +%s)" 2>/dev/null || true)"
+              if printf '%s' "$body" | grep -Fq '"service":"avc-payment-api"' && printf '%s' "$body" | grep -Fq '"razorpayConfigured":true' && printf '%s' "$body" | grep -Fq '"totalPaise":177000' && printf '%s' "$body" | grep -Fq '"wafidThirdPartyFeeIncluded":false'; then health=yes; break; fi
               sleep 6
             done
           fi
 
-          [ "$health" = yes ] && [ "$mode" = live ] && [ "$fee_present" = yes ] && checkout=true
+          [ "$razorpay_auth" = yes ] && [ "$health" = yes ] && [ "$mode" = live ] && checkout=true
           trusted=false; [ "${TRUSTED_FLAG:-}" = true ] && trusted=true
           public_key=''; [ "$checkout" = true ] && public_key="$KEY_ID"
+
           cat > assets/payment-config.js <<EOF
           window.AVC_PAYMENT_CONFIG=Object.freeze({
             mode:'$mode',
@@ -109,20 +91,30 @@ jobs:
             orderEndpoint:'/api/payments/order',
             verifyEndpoint:'/api/payments/verify',
             webhookManagedServerSide:true,
+            serviceBasePaise:150000,
+            gstRate:18,
+            gstPaise:27000,
+            serviceTotalPaise:177000,
+            wafidThirdPartyFeeIncluded:false,
             supportEmail:'info@assignmentvenuecentre.me',
             supportPhone:'+91 9473286356',
-            note:'Public configuration only. Razorpay Key Secret and webhook secret remain server-side.'
+            note:'Public configuration only. Razorpay Key Secret and webhook secret remain server-side. Wafid third-party cost is separate.'
           });
           EOF
+
           {
             echo 'AVC Phase 20.1 Razorpay live activation'
             echo "razorpay_key_id_present=$key_id_present"
             echo "razorpay_key_secret_present=$key_secret_present"
             echo "razorpay_mode=$mode"
+            echo "razorpay_api_auth=$razorpay_auth"
             echo "cloudflare_api_token_present=$cf_token_present"
-            echo "cloudflare_account_id_resolved=$cf_account_present"
-            echo "medical_total_paise_configured=$fee_present"
             echo "razorpay_webhook_secret_present=$webhook_present"
+            echo 'avc_service_base_paise=150000'
+            echo 'gst_rate_percent=18'
+            echo 'gst_paise=27000'
+            echo 'razorpay_order_total_paise=177000'
+            echo 'wafid_third_party_fee_included=no'
             echo "worker_deployed=$deployed"
             echo "payment_api_health=$health"
             echo "checkout_enabled=$checkout"
@@ -132,6 +124,7 @@ jobs:
             echo "checked_at_utc=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           } > phase20-live-status.txt
           cat phase20-live-status.txt
+
       - name: Commit public activation state
         if: always()
         run: |
