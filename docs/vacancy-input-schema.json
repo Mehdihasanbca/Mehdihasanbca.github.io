@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://assignmentvenuecentre.me/docs/vacancy-input-schema.json",
+  "title": "AVC Verified Vacancy Input",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "slug",
+    "title",
+    "summary",
+    "country",
+    "category",
+    "status",
+    "publishedAt",
+    "lastVerifiedAt",
+    "validThrough"
+  ],
+  "properties": {
+    "id": {"type": "string", "minLength": 3},
+    "slug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 2},
+    "summary": {"type": "string", "minLength": 10},
+    "country": {"type": "string", "minLength": 2},
+    "countryCode": {"type": "string", "minLength": 2, "maxLength": 2},
+    "city": {"type": "string"},
+    "category": {"type": "string", "minLength": 2},
+    "status": {"enum": ["open", "closing-soon", "hold", "closed"]},
+    "publishedAt": {"type": "string", "format": "date"},
+    "lastVerifiedAt": {"type": "string", "format": "date"},
+    "validThrough": {"type": "string", "format": "date"},
+    "requirements": {"type": "string"},
+    "benefits": {"type": "string"},
+    "salaryDisplay": {"type": "string"},
+    "employmentType": {"type": "string"},
+    "applicationUrl": {"type": "string", "format": "uri", "pattern": "^https://"},
+    "hiringOrganization": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": {"type": "string"},
+        "public": {"type": "boolean"},
+        "sameAs": {"type": "string", "format": "uri", "pattern": "^https://"}
+      }
+    },
+    "recruitingAgent": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": {"type": "string"},
+        "public": {"type": "boolean"}
+      }
+    },
+    "baseSalary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {"type": ["number", "string"]},
+        "currency": {"type": "string"},
+        "unitText": {"type": "string"}
+      }
+    }
+  }
+}
