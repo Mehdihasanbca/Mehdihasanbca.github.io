@@ -26,75 +26,122 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Cloudflare token
+      - name: Repair DNS and record safe status
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          set -euo pipefail
-          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
-            echo "Missing repository secret CLOUDFLARE_API_TOKEN"
-            exit 1
-          fi
+          set -uo pipefail
 
-      - name: Point domain to GitHub Pages
-        shell: bash
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          set -euo pipefail
+          status="failed"
+          detail="unknown failure"
+          ok=1
 
-          api() {
-            curl --fail --silent --show-error \
+          cf() {
+            curl --silent --show-error \
               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
               -H "Content-Type: application/json" \
               "$@"
           }
 
-          zone_json="$(api "${CF_API}/zones?name=${DOMAIN}&status=active")"
-          zone_id="$(jq -r '.result[0].id // empty' <<<"${zone_json}")"
-          if [ -z "${zone_id}" ]; then
-            echo "Cloudflare zone not found or token lacks Zone Read permission."
-            exit 1
+          fail() {
+            ok=0
+            detail="$1"
+            echo "DNS repair: ${detail}"
+          }
+
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            fail "GitHub secret CLOUDFLARE_API_TOKEN is missing"
           fi
 
-          for host in "${DOMAIN}" "${WWW_DOMAIN}"; do
-            records="$(api "${CF_API}/zones/${zone_id}/dns_records?name=${host}&per_page=100")"
-            jq -r '.result[] | select(.type == "A" or .type == "AAAA" or .type == "CNAME") | .id' <<<"${records}" | while read -r record_id; do
-              [ -n "${record_id}" ] || continue
-              api -X DELETE "${CF_API}/zones/${zone_id}/dns_records/${record_id}" >/dev/null
+          zone_id=""
+          if [ "${ok}" -eq 1 ]; then
+            zone_json="$(cf "${CF_API}/zones?name=${DOMAIN}&status=active" || true)"
+            if ! jq -e '.success == true' >/dev/null 2>&1 <<<"${zone_json}"; then
+              msg="$(jq -r '.errors[0].message // "Cloudflare zone query failed"' 2>/dev/null <<<"${zone_json}" || true)"
+              fail "Cloudflare authentication/Zone Read failed: ${msg:-unknown error}"
+            else
+              zone_id="$(jq -r '.result[0].id // empty' <<<"${zone_json}")"
+              if [ -z "${zone_id}" ]; then
+                fail "assignmentvenuecentre.me zone was not returned; check token zone scope"
+              fi
+            fi
+          fi
+
+          if [ "${ok}" -eq 1 ]; then
+            for host in "${DOMAIN}" "${WWW_DOMAIN}"; do
+              records="$(cf "${CF_API}/zones/${zone_id}/dns_records?name=${host}&per_page=100" || true)"
+              if ! jq -e '.success == true' >/dev/null 2>&1 <<<"${records}"; then
+                msg="$(jq -r '.errors[0].message // "DNS record listing failed"' 2>/dev/null <<<"${records}" || true)"
+                fail "DNS Read failed for ${host}: ${msg:-unknown error}"
+                break
+              fi
+
+              mapfile -t record_ids < <(jq -r '.result[] | select(.type == "A" or .type == "AAAA" or .type == "CNAME") | .id' <<<"${records}")
+              for record_id in "${record_ids[@]}"; do
+                [ -n "${record_id}" ] || continue
+                response="$(cf -X DELETE "${CF_API}/zones/${zone_id}/dns_records/${record_id}" || true)"
+                if ! jq -e '.success == true' >/dev/null 2>&1 <<<"${response}"; then
+                  msg="$(jq -r '.errors[0].message // "DNS delete failed"' 2>/dev/null <<<"${response}" || true)"
+                  fail "DNS Edit failed while removing old ${host} record: ${msg:-unknown error}"
+                  break 2
+                fi
+              done
             done
-          done
-
-          for ip in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
-            payload="$(jq -nc --arg type A --arg name "${DOMAIN}" --arg content "${ip}" '{type:$type,name:$name,content:$content,ttl:1,proxied:false}')"
-            api -X POST --data "${payload}" "${CF_API}/zones/${zone_id}/dns_records" >/dev/null
-          done
-
-          payload="$(jq -nc --arg type CNAME --arg name "${WWW_DOMAIN}" --arg content "${PAGES_HOST}" '{type:$type,name:$name,content:$content,ttl:1,proxied:false}')"
-          api -X POST --data "${payload}" "${CF_API}/zones/${zone_id}/dns_records" >/dev/null
-
-          echo "Cloudflare web DNS now points to GitHub Pages with proxy disabled."
-
-      - name: Restore GitHub Pages custom domain
-        shell: bash
-        run: |
-          set -euo pipefail
-          printf '%s\n' "${DOMAIN}" > CNAME
-          if git diff --quiet -- CNAME; then
-            echo "CNAME already current."
-            exit 0
           fi
+
+          if [ "${ok}" -eq 1 ]; then
+            for ip in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
+              payload="$(jq -nc --arg name "${DOMAIN}" --arg content "${ip}" '{type:"A",name:$name,content:$content,ttl:1,proxied:false}')"
+              response="$(cf -X POST --data "${payload}" "${CF_API}/zones/${zone_id}/dns_records" || true)"
+              if ! jq -e '.success == true' >/dev/null 2>&1 <<<"${response}"; then
+                msg="$(jq -r '.errors[0].message // "A record creation failed"' 2>/dev/null <<<"${response}" || true)"
+                fail "DNS Edit failed creating GitHub Pages A record: ${msg:-unknown error}"
+                break
+              fi
+            done
+          fi
+
+          if [ "${ok}" -eq 1 ]; then
+            payload="$(jq -nc --arg name "${WWW_DOMAIN}" --arg content "${PAGES_HOST}" '{type:"CNAME",name:$name,content:$content,ttl:1,proxied:false}')"
+            response="$(cf -X POST --data "${payload}" "${CF_API}/zones/${zone_id}/dns_records" || true)"
+            if ! jq -e '.success == true' >/dev/null 2>&1 <<<"${response}"; then
+              msg="$(jq -r '.errors[0].message // "CNAME creation failed"' 2>/dev/null <<<"${response}" || true)"
+              fail "DNS Edit failed creating www CNAME: ${msg:-unknown error}"
+            fi
+          fi
+
+          if [ "${ok}" -eq 1 ]; then
+            printf '%s\n' "${DOMAIN}" > CNAME
+            status="success"
+            detail="Cloudflare DNS points to GitHub Pages and the GitHub Pages custom domain file is restored"
+          fi
+
+          {
+            echo "AVC Cloudflare DNS repair status"
+            echo "status: ${status}"
+            echo "detail: ${detail}"
+            echo "domain: ${DOMAIN}"
+            echo "run_id: ${GITHUB_RUN_ID}"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > dns-status.txt
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CNAME
-          git commit -m "Restore AVC custom domain after DNS repair"
-          git push
+          git add dns-status.txt
+          if [ -f CNAME ]; then git add CNAME; fi
+          if ! git diff --cached --quiet; then
+            git commit -m "Record AVC DNS repair result"
+            git push
+          fi
 
-      - name: Show expected records
-        run: |
+          echo "Expected successful DNS records:"
           echo "A ${DOMAIN} -> 185.199.108.153"
           echo "A ${DOMAIN} -> 185.199.109.153"
           echo "A ${DOMAIN} -> 185.199.110.153"
           echo "A ${DOMAIN} -> 185.199.111.153"
           echo "CNAME ${WWW_DOMAIN} -> ${PAGES_HOST}"
+
+          if [ "${ok}" -ne 1 ]; then
+            exit 1
+          fi
