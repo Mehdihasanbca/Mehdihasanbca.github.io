@@ -1,0 +1,132 @@
+name: AVC Phase 8 Quality Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - phase8-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static accessibility and link audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlparse
+          import re, json
+
+          root=Path('.')
+          html_files=sorted(root.glob('*.html'))
+          failures=[]; warnings=[]; checked_links=0; checked_images=0
+          old_phone='9162530999'
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.links=[]; self.images=[]; self.title=False; self.viewport=False; self.canonical=False; self.main=False; self.skip=False
+              def handle_starttag(self,tag,attrs):
+                  d=dict(attrs)
+                  if tag=='a':
+                      href=d.get('href',''); self.links.append(href)
+                      if 'skip-link' in d.get('class',''): self.skip=True
+                  elif tag=='img': self.images.append(d)
+                  elif tag=='meta' and d.get('name','').lower()=='viewport': self.viewport=True
+                  elif tag=='link' and 'canonical' in d.get('rel','').lower(): self.canonical=True
+                  elif tag=='main': self.main=True
+                  elif tag=='title': self.title=True
+
+          for path in html_files:
+              text=path.read_text(encoding='utf-8')
+              p=P(); p.feed(text)
+              if not p.title: failures.append(f'{path}: missing <title>')
+              if not p.viewport: failures.append(f'{path}: missing viewport meta')
+              if path.name not in {'404.html'} and not p.canonical: failures.append(f'{path}: missing canonical')
+              if path.name not in {'404.html'} and not p.main: failures.append(f'{path}: missing <main>')
+              if path.name not in {'404.html'} and not p.skip: warnings.append(f'{path}: missing skip link')
+              if old_phone in text: failures.append(f'{path}: old phone number still present')
+              if 'http://' in text: warnings.append(f'{path}: contains http:// reference; review for mixed content')
+              for img in p.images:
+                  checked_images+=1
+                  if not (img.get('alt') or '').strip(): failures.append(f'{path}: image missing alt: {img.get("src","")}')
+              for href in p.links:
+                  if not href or href.startswith(('#','mailto:','tel:','javascript:')): continue
+                  u=urlparse(href)
+                  if u.scheme in {'http','https'}: continue
+                  target=href.split('#',1)[0].split('?',1)[0]
+                  if not target: continue
+                  checked_links+=1
+                  if target in {'./','/'}: candidate=root/'index.html'
+                  else:
+                      target=target.lstrip('/')
+                      candidate=root/target
+                      if candidate.is_dir(): candidate=candidate/'index.html'
+                  if not candidate.exists(): failures.append(f'{path}: broken local link -> {href}')
+
+          required=['assets/site.css','assets/site.js','assets/phase8.css','assets/seo.js','assets/avc-logo.png','sitemap.xml','robots.txt','data/jobs.json']
+          for item in required:
+              if not (root/item).exists(): failures.append(f'missing required asset: {item}')
+
+          sitejs=(root/'assets/site.js').read_text(encoding='utf-8')
+          if 'phase8.css' not in sitejs: failures.append('site.js does not load Phase 8 stylesheet')
+          if 'Escape' not in sitejs: failures.append('mobile navigation has no Escape-key handling')
+          if "loading='lazy'" not in sitejs and 'img.loading' not in sitejs: failures.append('non-critical image lazy-loading logic missing')
+
+          result={'static_status':'success' if not failures else 'failed','html_files':len(html_files),'internal_links_checked':checked_links,'images_checked':checked_images,'failures':failures,'warnings':warnings}
+          Path('/tmp/static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          if failures:
+              print('\n'.join(failures))
+              raise SystemExit(1)
+          PY
+
+      - name: Verify live sitemap URLs
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          live_fail=0
+          live_total=0
+          live_ok=0
+          live_lines=''
+          mapfile -t urls < <(grep -oP '(?<=<loc>)[^<]+' sitemap.xml)
+          for url in "${urls[@]}"; do
+            live_total=$((live_total+1))
+            code="$(curl -sS -L -o /tmp/live.html -w '%{http_code}' --connect-timeout 15 --max-time 35 "$url")"
+            if [ "$code" = 200 ]; then live_ok=$((live_ok+1)); else live_fail=$((live_fail+1)); fi
+            live_lines+="${url} -> ${code}\n"
+          done
+          printf 'live_total=%s\nlive_ok=%s\nlive_fail=%s\n%s' "$live_total" "$live_ok" "$live_fail" "$live_lines" > /tmp/live.txt
+          exit 0
+
+      - name: Record Phase 8 evidence
+        if: always()
+        shell: bash
+        run: |
+          static_status="$(python3 -c "import json;print(json.load(open('/tmp/static.json'))['static_status'])" 2>/dev/null || echo failed)"
+          live_fail="$(grep '^live_fail=' /tmp/live.txt 2>/dev/null | cut -d= -f2 || echo 999)"
+          overall=success
+          [ "$static_status" = success ] || overall=failed
+          [ "$live_fail" = 0 ] || overall=failed
+          {
+            echo 'AVC Phase 8 quality gate'
+            echo "status: ${overall}"
+            echo "static_status: ${static_status}"
+            cat /tmp/live.txt 2>/dev/null || true
+            echo 'static_details:'
+            cat /tmp/static.json 2>/dev/null || true
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > phase8-status.txt
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase8-status.txt
+          if ! git diff --cached --quiet; then git commit -m 'Record AVC Phase 8 quality status'; git push; fi
+          [ "$overall" = success ]
