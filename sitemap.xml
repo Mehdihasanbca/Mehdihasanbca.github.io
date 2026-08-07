@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://assignmentvenuecentre.me/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://assignmentvenuecentre.me/about.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://assignmentvenuecentre.me/company-verification.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://assignmentvenuecentre.me/company-verification.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://assignmentvenuecentre.me/services.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://assignmentvenuecentre.me/candidate-sourcing.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://assignmentvenuecentre.me/application-coordination.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -14,9 +14,10 @@
   <url><loc>https://assignmentvenuecentre.me/candidates.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://assignmentvenuecentre.me/employers.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://assignmentvenuecentre.me/partners.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://assignmentvenuecentre.me/office.html</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://assignmentvenuecentre.me/trust-center.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://assignmentvenuecentre.me/contact.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://assignmentvenuecentre.me/office.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://assignmentvenuecentre.me/media.html</loc><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://assignmentvenuecentre.me/trust-center.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://assignmentvenuecentre.me/contact.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://assignmentvenuecentre.me/privacy.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
   <url><loc>https://assignmentvenuecentre.me/terms.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
   <url><loc>https://assignmentvenuecentre.me/disclaimer.html</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
