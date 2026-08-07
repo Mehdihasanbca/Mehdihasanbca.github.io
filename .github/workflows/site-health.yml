@@ -21,7 +21,7 @@ jobs:
           set -uo pipefail
           BASE='https://assignmentvenuecentre.me'
           status=success
-          detail='Core AVC public pages, services, jobs and trust pages are reachable with expected content'
+          detail='Core AVC pages, verified business identity, services, jobs, trust and media are reachable'
 
           check_page(){
             local slug="$1" marker="$2" key="$3" file="/tmp/${key}.html"
@@ -48,10 +48,11 @@ jobs:
           results+=("$(check_page 'interview-coordination.html' 'Interview coordination' interview_coordination)")
           results+=("$(check_page 'employer-manpower-support.html' 'Employer manpower support' employer_support)")
           results+=("$(check_page 'jobs.html' 'Verified vacancy hub' jobs)")
-          results+=("$(check_page 'trust-center.html' 'Trust Center|Trust & verification' trust_center)")
-          results+=("$(check_page 'company-verification.html' 'Company verification|public company profile' company_verification)")
-          results+=("$(check_page 'office.html' 'Office & interview support|Office &amp; interview support' office)")
-          results+=("$(check_page 'contact.html' 'Contact & support|Contact &amp; support' contact)")
+          results+=("$(check_page 'trust-center.html' '10AOVPH3197L1ZI' trust_center)")
+          results+=("$(check_page 'company-verification.html' 'UDYAM-BR-10-0047094' company_verification)")
+          results+=("$(check_page 'office.html' 'Kamtaul Road' office)")
+          results+=("$(check_page 'contact.html' '9162530999' contact)")
+          results+=("$(check_page 'media.html' 'Original AVC brand assets|official media' media)")
 
           jobs_json_code="$(curl -sS -L -o /tmp/jobs.json -w '%{http_code}' --connect-timeout 15 --max-time 35 "${BASE}/data/jobs.json" || true)"
           jobs_policy=no
