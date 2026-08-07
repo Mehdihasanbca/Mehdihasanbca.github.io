@@ -1,0 +1,15 @@
+AVC Phase 13 vacancy pages gate
+status: success
+total_jobs: 0
+active_jobs: 0
+generated_pages: 0
+jobposting_eligible: 0
+failures: 0
+warnings: 0
+failure_details:
+live_details:
+https://assignmentvenuecentre.me/jobs.html -> 200; marker=yes
+https://assignmentvenuecentre.me/assets/jobs.js -> 200; marker=yes
+https://assignmentvenuecentre.me/sitemap-jobs.xml -> 200; marker=yes
+https://assignmentvenuecentre.me/robots.txt -> 200; marker=yes
+checked_at_utc: 2026-08-07T10:55:05Z
