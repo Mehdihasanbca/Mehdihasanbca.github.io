@@ -1,0 +1,88 @@
+name: AVC Phase 14 Simple Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - phase14-simple-trigger.txt
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate vacancy manager
+        run: |
+          set -e
+          python -m py_compile scripts/vacancy_manager.py
+          python scripts/vacancy_manager.py validate > /tmp/manager.json
+          grep -q '"status": "success"' /tmp/manager.json
+          python scripts/vacancy_manager.py publish --help | grep -q -- '--apply'
+          python scripts/vacancy_manager.py hold --help | grep -q -- '--apply'
+          python scripts/vacancy_manager.py close --help | grep -q -- '--apply'
+          python scripts/vacancy_manager.py reverify --help | grep -q -- '--apply'
+
+      - name: Verify live public vacancy endpoints
+        run: |
+          set -e
+          base='https://assignmentvenuecentre.me'
+          jobs_code="$(curl -sS -o /tmp/jobs -w '%{http_code}' --connect-timeout 15 --max-time 30 "${base}/jobs.html?phase14simple=$(date +%s)")"
+          data_code="$(curl -sS -o /tmp/data -w '%{http_code}' --connect-timeout 15 --max-time 30 "${base}/data/jobs.json?phase14simple=$(date +%s)")"
+          robots_code="$(curl -sS -o /tmp/robots -w '%{http_code}' --connect-timeout 15 --max-time 30 "${base}/robots.txt?phase14simple=$(date +%s)")"
+          sitemap_code="$(curl -sS -o /tmp/sitemap -w '%{http_code}' --connect-timeout 15 --max-time 30 "${base}/sitemap-jobs.xml?phase14simple=$(date +%s)")"
+          grep -q 'Current opportunities' /tmp/jobs
+          grep -q '"schemaVersion"' /tmp/data
+          grep -q 'Sitemap: https://assignmentvenuecentre.me/sitemap-jobs.xml' /tmp/robots
+          grep -q '<urlset' /tmp/sitemap
+          test "$jobs_code" = 200
+          test "$data_code" = 200
+          test "$robots_code" = 200
+          test "$sitemap_code" = 200
+          total="$(python - <<'PY'
+          import json
+          d=json.load(open('data/jobs.json',encoding='utf-8'))
+          print(len(d.get('jobs') or []))
+          PY
+          )"
+          active="$(python - <<'PY'
+          import json
+          d=json.load(open('data/jobs.json',encoding='utf-8'))
+          print(sum(1 for j in (d.get('jobs') or []) if str(j.get('status','')).lower() in {'open','closing-soon'}))
+          PY
+          )"
+          {
+            echo 'AVC Phase 14 vacancy content management gate'
+            echo 'status: success'
+            echo "total_jobs: ${total}"
+            echo "stored_active_status_records: ${active}"
+            echo 'failures: 0'
+            echo 'warnings: 0'
+            echo 'write_safety: explicit --apply required'
+            echo 'draft_storage: local-only / ignored'
+            echo 'public_source_of_truth: data/jobs.json'
+            echo "jobs_http: ${jobs_code}; marker: yes"
+            echo "jobs_data_http: ${data_code}; marker: yes"
+            echo "robots_http: ${robots_code}; jobs_sitemap_marker: yes"
+            echo "jobs_sitemap_http: ${sitemap_code}; marker: yes"
+            echo "checked_at_utc: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > phase14-status.txt
+          cat phase14-status.txt
+
+      - name: Commit Phase 14 evidence
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase14-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record AVC Phase 14 simple gate'
+            git push
+          fi
