@@ -65,7 +65,7 @@ for path in sorted(ROOT.glob('*.html')):
     text = text.replace('</head>', social + '</head>', 1)
 
     if 'assets/measurement.js' not in text:
-        text = text.replace('</body>', '<script src="assets/measurement.js?v=20260807-p17" defer></script></body>', 1)
+        text = text.replace('</body>', '<script src="assets/measurement.js?v=20260807-p18" defer></script></body>', 1)
 
     path.write_text(text, encoding='utf-8')
 
