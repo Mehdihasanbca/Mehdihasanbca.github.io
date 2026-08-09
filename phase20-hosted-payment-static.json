@@ -1,0 +1,18 @@
+{
+  "status": "ready_pending_razorpay_dashboard_publish",
+  "failures": [],
+  "warnings": [
+    "live_razorpay_payment_page_url_not_configured"
+  ],
+  "payment_architecture": "razorpay_hosted_payment_page",
+  "payment_page_enabled": false,
+  "payment_page_url_official_host": false,
+  "service_base_paise": 150000,
+  "gst_rate_percent": 18,
+  "gst_paise": 27000,
+  "total_paise": 177000,
+  "wafid_third_party_fee_included": false,
+  "confirmation_page_noindex": true,
+  "passport_url_prefill_allowed": false,
+  "public_secret_required": false
+}

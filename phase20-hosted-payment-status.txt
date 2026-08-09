@@ -1,0 +1,29 @@
+AVC Phase 20.2 Razorpay Hosted Payment Page
+status=ready_pending_razorpay_dashboard_publish
+payment_architecture=razorpay_hosted_payment_page
+cloudflare_worker_required=no
+public_key_secret_required=no
+payment_page_enabled=no
+payment_page_url_official_host=no
+service_base_paise=150000
+gst_rate_percent=18
+gst_paise=27000
+razorpay_payment_page_total_paise=177000
+wafid_third_party_fee_included=no
+onboarding_collection=razorpay_payment_page_custom_fields
+passport_url_prefill_allowed=no
+post_payment_redirect=https://assignmentvenuecentre.me/payment-confirmation.html
+payment_confirmation=razorpay_transaction_record_reconciliation
+screenshot_alone_is_confirmation=no
+live_checks=6
+failures=0
+warnings=1
+secret_values_exposed=no
+checked_at_utc=2026-08-09T09:34:59Z
+live_details:
+https://assignmentvenuecentre.me/medical-booking.html -> 200 marker=yes
+https://assignmentvenuecentre.me/payment-confirmation.html -> 200 marker=yes
+https://assignmentvenuecentre.me/payment-trust.html -> 200 marker=yes
+https://assignmentvenuecentre.me/privacy.html -> 200 marker=yes
+https://assignmentvenuecentre.me/assets/payment-page-config.js -> 200 marker=yes
+https://assignmentvenuecentre.me/assets/payment-page.js -> 200 marker=yes
