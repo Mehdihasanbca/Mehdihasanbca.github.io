@@ -1,19 +1,26 @@
-AVC Phase 20.2 Razorpay Hosted Payment Page
-status=hosted_payment_page_ready_for_dashboard_publish
-payment_architecture=razorpay_hosted_payment_page
+AVC Phase 20.3 Razorpay Hosted Payment + Payment Link API fallback
+status=hosted_payment_page_pending_dashboard_publish_api_fallback_verified
+primary_payment_architecture=razorpay_hosted_payment_page
+primary_payment_page_live_url_configured=no
+public_payment_button_enabled=no
+payment_link_api_fallback=yes
+payment_link_api_live_proof=success
+payment_link_api_create_fetch_cancel=yes
+payment_link_api_customer_charge_during_proof=no
+payment_link_api_amount_paid_paise=0
 cloudflare_worker_required=no
 public_key_secret_required=no
 avc_service_base_paise=150000
 gst_rate_percent=18
 gst_paise=27000
-razorpay_payment_page_total_paise=177000
+razorpay_payment_total_paise=177000
 wafid_third_party_fee_included=no
-onboarding_collection=razorpay_payment_page_custom_fields
-razorpay_receipt=enable_automated_receipts
+onboarding_primary=razorpay_payment_page_custom_fields
+payment_link_fallback_onboarding=email_phone_at_razorpay_checkout_plus_case_reference_operationally
+passport_url_prefill_allowed=no
+razorpay_receipt=enable_automated_receipts_on_primary_page
 post_payment_redirect=https://assignmentvenuecentre.me/payment-confirmation.html
 payment_confirmation=razorpay_transaction_record_reconciliation
 screenshot_alone_is_confirmation=no
-payment_page_live_url_configured=no
-public_payment_button_enabled=no
-reason=Razorpay Payment Pages are created and published from the Razorpay Dashboard; connect the published live Razorpay URL in assets/payment-page-config.js.
 secret_values_exposed=no
+reason=Razorpay live Payment Links API is verified and can create case-specific one-time links. Reusable Payment Page with custom onboarding fields still requires one authenticated Razorpay Dashboard creation because Razorpay documents Payment Pages as a Dashboard-created product.
