@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - phase20-wafid-v2-live-trigger.txt
       - medical-booking.html
       - payment-trust.html
       - payment-refund.html
