@@ -1,0 +1,2 @@
+Probe existing Cloudflare token for Pages, D1 and R2 deployment capability without exposing credentials.
+Requested: 2026-08-10T13:52:00+05:30
