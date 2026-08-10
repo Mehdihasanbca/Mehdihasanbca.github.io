@@ -1,0 +1,129 @@
+name: AVC Razorpay Payment Link API Proof
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - phase20-payment-link-api-proof-trigger.txt
+      - .github/workflows/phase20-payment-link-api-proof.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prove-payment-link-api:
+    runs-on: ubuntu-latest
+    env:
+      RAZORPAY_LIVE_API_KEY: ${{ secrets.RAZORPAY_LIVE_API_KEY }}
+      RAZORPAY_LIVE_KEY_SECRET: ${{ secrets.RAZORPAY_LIVE_KEY_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create, verify and cancel a live Razorpay Payment Link
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::add-mask::${RAZORPAY_LIVE_API_KEY}"
+          echo "::add-mask::${RAZORPAY_LIVE_KEY_SECRET}"
+          test -n "${RAZORPAY_LIVE_API_KEY}"
+          test -n "${RAZORPAY_LIVE_KEY_SECRET}"
+          [[ "${RAZORPAY_LIVE_API_KEY}" == rzp_live_* ]]
+
+          ref="AVCMEDPROOF${GITHUB_RUN_ID}${GITHUB_RUN_ATTEMPT}"
+          payload="$(python - <<PY
+          import json
+          print(json.dumps({
+            'amount':177000,
+            'currency':'INR',
+            'accept_partial':False,
+            'description':'AVC Wafid medical booking assistance: INR 1500 service fee + INR 270 GST. Wafid third-party fee separate.',
+            'reference_id':'${ref}',
+            'notify':{'sms':False,'email':False},
+            'reminder_enable':False,
+            'callback_url':'https://assignmentvenuecentre.me/payment-confirmation.html',
+            'callback_method':'get',
+            'notes':{
+              'service':'wafid_booking_assistance',
+              'avc_service_base_paise':'150000',
+              'gst_paise':'27000',
+              'wafid_fee_included':'no',
+              'purpose':'api_capability_proof_only'
+            }
+          }))
+          PY
+          )"
+
+          create_code="$(curl -sS -o /tmp/pl-create.json -w '%{http_code}' -u "${RAZORPAY_LIVE_API_KEY}:${RAZORPAY_LIVE_KEY_SECRET}" -H 'Content-Type: application/json' -X POST 'https://api.razorpay.com/v1/payment_links' --data "$payload")"
+          test "$create_code" = "200"
+
+          pl_id="$(python - <<'PY'
+          import json
+          d=json.load(open('/tmp/pl-create.json'))
+          assert d.get('amount')==177000
+          assert d.get('currency')=='INR'
+          assert d.get('reference_id')
+          assert d.get('callback_url')=='https://assignmentvenuecentre.me/payment-confirmation.html'
+          assert d.get('status') in ('created','issued')
+          print(d.get('id',''))
+          PY
+          )"
+          test -n "$pl_id"
+          echo "::add-mask::$pl_id"
+
+          fetch_code="$(curl -sS -o /tmp/pl-fetch.json -w '%{http_code}' -u "${RAZORPAY_LIVE_API_KEY}:${RAZORPAY_LIVE_KEY_SECRET}" "https://api.razorpay.com/v1/payment_links/${pl_id}")"
+          test "$fetch_code" = "200"
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/pl-fetch.json'))
+          assert d.get('amount')==177000
+          assert d.get('currency')=='INR'
+          assert d.get('callback_url')=='https://assignmentvenuecentre.me/payment-confirmation.html'
+          assert d.get('amount_paid',0)==0
+          PY
+
+          cancel_code="$(curl -sS -o /tmp/pl-cancel.json -w '%{http_code}' -u "${RAZORPAY_LIVE_API_KEY}:${RAZORPAY_LIVE_KEY_SECRET}" -X POST "https://api.razorpay.com/v1/payment_links/${pl_id}/cancel")"
+          test "$cancel_code" = "200"
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/pl-cancel.json'))
+          assert d.get('status')=='cancelled'
+          assert d.get('amount_paid',0)==0
+          PY
+
+          cat > phase20-payment-link-api-proof.txt <<EOF
+          AVC Phase 20 Razorpay Payment Link API proof
+          status=success
+          razorpay_live_api_auth=yes
+          standard_payment_link_api=yes
+          live_link_created=yes
+          live_link_fetched=yes
+          live_link_cancelled=yes
+          payment_collected=no
+          amount_paid_paise=0
+          payment_link_total_paise=177000
+          service_base_paise=150000
+          gst_paise=27000
+          wafid_third_party_fee_included=no
+          callback_url=https://assignmentvenuecentre.me/payment-confirmation.html
+          customer_notification_sent=no
+          short_url_exposed=no
+          payment_link_id_exposed=no
+          secret_values_exposed=no
+          checked_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          EOF
+
+      - name: Commit safe API proof status
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase20-payment-link-api-proof.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record Razorpay Payment Link API capability proof'
+            git push
+          fi
