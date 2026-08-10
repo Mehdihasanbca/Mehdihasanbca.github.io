@@ -28,8 +28,12 @@ jobs:
           test -n "${CLOUDFLARE_API_TOKEN:-}"
           echo "::add-mask::$CLOUDFLARE_API_TOKEN"
           test "$(curl -sS -o /tmp/cfverify.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/user/tokens/verify)" = 200
-          accounts="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/accounts)"
-          account_id="$(printf '%s' "$accounts" | python -c "import sys,json;d=json.load(sys.stdin);r=d.get('result') or [];print((r[0] or {}).get('id','') if r else '')")"
+          accounts="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/accounts || true)"
+          zones="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me' || true)"
+          account_id="$(printf '%s' "$accounts" | python -c "import sys,json;\ntry:d=json.load(sys.stdin);r=d.get('result') or [];print((r[0] or {}).get('id','') if r else '')\nexcept:print('')" 2>/dev/null)"
+          if [ -z "$account_id" ]; then
+            account_id="$(printf '%s' "$zones" | python -c "import sys,json;\ntry:d=json.load(sys.stdin);r=d.get('result') or [];print(((r[0].get('account') or {}).get('id','')) if r else '')\nexcept:print('')" 2>/dev/null)"
+          fi
           test -n "$account_id"
           echo "::add-mask::$account_id"
           export CLOUDFLARE_ACCOUNT_ID="$account_id"
