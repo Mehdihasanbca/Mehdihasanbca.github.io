@@ -1,0 +1,82 @@
+name: AVC Cloudflare Pages Storage Capability Probe
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - cloudflare-pages-probe-trigger.txt
+      - .github/workflows/cloudflare-pages-capability-probe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Resolve account and probe Cloudflare Pages/D1/R2
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          test "$(curl -sS -o /tmp/cfverify.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/user/tokens/verify)" = 200
+          accounts="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/accounts)"
+          account_id="$(printf '%s' "$accounts" | python -c "import sys,json;d=json.load(sys.stdin);r=d.get('result') or [];print((r[0] or {}).get('id','') if r else '')")"
+          test -n "$account_id"
+          echo "::add-mask::$account_id"
+          export CLOUDFLARE_ACCOUNT_ID="$account_id"
+          echo 'cloudflare_auth=yes'
+          echo 'cloudflare_account_resolved=yes'
+          npx --yes wrangler@latest --version
+
+          set +e
+          npx --yes wrangler@latest pages project list --json >/tmp/pages.json 2>/tmp/pages.err
+          pages_rc=$?
+          npx --yes wrangler@latest d1 list --json >/tmp/d1.json 2>/tmp/d1.err
+          d1_rc=$?
+          npx --yes wrangler@latest r2 bucket list >/tmp/r2.txt 2>/tmp/r2.err
+          r2_rc=$?
+          set -e
+
+          echo "pages_list_permission=$([ "$pages_rc" -eq 0 ] && echo yes || echo no)"
+          echo "d1_list_permission=$([ "$d1_rc" -eq 0 ] && echo yes || echo no)"
+          echo "r2_list_permission=$([ "$r2_rc" -eq 0 ] && echo yes || echo no)"
+
+          if [ "$pages_rc" -eq 0 ]; then
+            python - <<'PY'
+          import json
+          try:d=json.load(open('/tmp/pages.json'))
+          except Exception:d=[]
+          rows=d if isinstance(d,list) else d.get('result',[]) if isinstance(d,dict) else []
+          print('pages_project_count='+str(len(rows)))
+          print('pages_medical_project_exists='+('yes' if any(str(x.get('name',''))=='avc-medical-api' for x in rows if isinstance(x,dict)) else 'no'))
+          PY
+          else
+            echo 'pages_error_present=yes'
+          fi
+          if [ "$d1_rc" -eq 0 ]; then
+            python - <<'PY'
+          import json
+          try:d=json.load(open('/tmp/d1.json'))
+          except Exception:d=[]
+          rows=d if isinstance(d,list) else d.get('result',[]) if isinstance(d,dict) else []
+          print('d1_database_count='+str(len(rows)))
+          print('d1_medical_database_exists='+('yes' if any(str(x.get('name',''))=='avc-medical' for x in rows if isinstance(x,dict)) else 'no'))
+          PY
+          else
+            echo 'd1_error_present=yes'
+          fi
+          if [ "$r2_rc" -eq 0 ]; then
+            echo 'r2_list_access=yes'
+            if grep -Fq 'avc-medical-slips' /tmp/r2.txt; then echo 'r2_medical_bucket_exists=yes'; else echo 'r2_medical_bucket_exists=no'; fi
+          else
+            echo 'r2_error_present=yes'
+          fi
