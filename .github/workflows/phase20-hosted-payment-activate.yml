@@ -1,0 +1,53 @@
+name: AVC Hosted Razorpay Payment Page Auto-Activation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - scripts/activate_hosted_payment_page.py
+      - .github/workflows/phase20-hosted-payment-activate.yml
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    env:
+      RAZORPAY_PAYMENT_PAGE_URL: ${{ vars.RAZORPAY_PAYMENT_PAGE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate and activate official Razorpay hosted page
+        id: activate
+        continue-on-error: true
+        run: python scripts/activate_hosted_payment_page.py
+
+      - name: Show safe activation status
+        if: always()
+        run: cat phase20-hosted-payment-activation.txt
+
+      - name: Commit activation state when changed
+        if: always()
+        run: |
+          git pull --rebase
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/payment-page-config.js phase20-hosted-payment-activation.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update AVC hosted Razorpay Payment Page activation'
+            git push
+          fi
+
+      - name: Fail invalid configured URL after safe disable
+        if: steps.activate.outcome == 'failure'
+        run: exit 1
