@@ -1,0 +1,12 @@
+AVC Phase 20.3 Hosted Payment Page activation
+status=pending_variable
+repo_variable_present=no
+official_url_format=no
+official_url_live_fetch=no
+effective_official_host=no
+checkout_enabled=no
+razorpay_payment_page_total_paise=177000
+wafid_third_party_fee_included=no
+passport_url_prefill_allowed=no
+secret_values_exposed=no
+detail=Set repository variable RAZORPAY_PAYMENT_PAGE_URL after publishing the live Razorpay Payment Page.
