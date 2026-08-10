@@ -7,6 +7,12 @@ on:
       - phase20-api-fingerprint-trigger.txt
       - scripts/phase20_api_fingerprint.py
       - .github/workflows/phase20-api-fingerprint.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - phase20-api-fingerprint-trigger.txt
+      - scripts/phase20_api_fingerprint.py
+      - .github/workflows/phase20-api-fingerprint.yml
   workflow_dispatch:
 
 permissions:
@@ -23,7 +29,10 @@ jobs:
         with:
           python-version: '3.12'
       - run: python scripts/phase20_api_fingerprint.py
+      - name: Show fingerprint evidence
+        run: cat phase20-api-production-fingerprint.txt
       - name: Commit production fingerprint
+        if: github.event_name == 'push'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
