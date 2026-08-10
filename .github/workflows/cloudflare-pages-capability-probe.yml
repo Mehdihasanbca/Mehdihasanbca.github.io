@@ -16,6 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_ACCOUNT_ID_VAR: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CF_ACCOUNT_ID_SECRET: ${{ secrets.CF_ACCOUNT_ID }}
+      CF_ACCOUNT_ID_VAR: ${{ vars.CF_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,18 +31,36 @@ jobs:
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN:-}"
           echo "::add-mask::$CLOUDFLARE_API_TOKEN"
-          test "$(curl -sS -o /tmp/cfverify.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/user/tokens/verify)" = 200
-          accounts="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/accounts || true)"
-          zones="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me' || true)"
-          account_id="$(printf '%s' "$accounts" | python -c "import sys,json;\ntry:d=json.load(sys.stdin);r=d.get('result') or [];print((r[0] or {}).get('id','') if r else '')\nexcept:print('')" 2>/dev/null)"
+          explicit_account="${CLOUDFLARE_ACCOUNT_ID_SECRET:-${CLOUDFLARE_ACCOUNT_ID_VAR:-${CF_ACCOUNT_ID_SECRET:-${CF_ACCOUNT_ID_VAR:-}}}}"
+          [ -z "$explicit_account" ] || echo "::add-mask::$explicit_account"
+
+          verify_code="$(curl -sS -o /tmp/cfverify.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/user/tokens/verify || true)"
+          echo "cloudflare_token_verify_http=$verify_code"
+          test "$verify_code" = 200
+
+          account_id="$explicit_account"
+          account_source=explicit_alias
           if [ -z "$account_id" ]; then
+            account_source=accounts_api
+            accounts="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/accounts || true)"
+            account_id="$(printf '%s' "$accounts" | python -c "import sys,json;\ntry:d=json.load(sys.stdin);r=d.get('result') or [];print((r[0] or {}).get('id','') if r else '')\nexcept:print('')" 2>/dev/null)"
+          fi
+          if [ -z "$account_id" ]; then
+            account_source=zone_api
+            zones="$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me' || true)"
             account_id="$(printf '%s' "$zones" | python -c "import sys,json;\ntry:d=json.load(sys.stdin);r=d.get('result') or [];print(((r[0].get('account') or {}).get('id','')) if r else '')\nexcept:print('')" 2>/dev/null)"
           fi
-          test -n "$account_id"
-          echo "::add-mask::$account_id"
-          export CLOUDFLARE_ACCOUNT_ID="$account_id"
+
           echo 'cloudflare_auth=yes'
-          echo 'cloudflare_account_resolved=yes'
+          echo "cloudflare_account_id_present=$([ -n "$account_id" ] && echo yes || echo no)"
+          echo "cloudflare_account_source=$account_source"
+          if [ -n "$account_id" ]; then
+            echo "::add-mask::$account_id"
+            export CLOUDFLARE_ACCOUNT_ID="$account_id"
+          else
+            unset CLOUDFLARE_ACCOUNT_ID || true
+          fi
+
           npx --yes wrangler@latest --version
 
           set +e
@@ -65,6 +87,7 @@ jobs:
           PY
           else
             echo 'pages_error_present=yes'
+            sed -E 's/[A-Za-z0-9_-]{32,}/MASKED/g' /tmp/pages.err | tail -30
           fi
           if [ "$d1_rc" -eq 0 ]; then
             python - <<'PY'
@@ -77,10 +100,12 @@ jobs:
           PY
           else
             echo 'd1_error_present=yes'
+            sed -E 's/[A-Za-z0-9_-]{32,}/MASKED/g' /tmp/d1.err | tail -30
           fi
           if [ "$r2_rc" -eq 0 ]; then
             echo 'r2_list_access=yes'
             if grep -Fq 'avc-medical-slips' /tmp/r2.txt; then echo 'r2_medical_bucket_exists=yes'; else echo 'r2_medical_bucket_exists=no'; fi
           else
             echo 'r2_error_present=yes'
+            sed -E 's/[A-Za-z0-9_-]{32,}/MASKED/g' /tmp/r2.err | tail -30
           fi
