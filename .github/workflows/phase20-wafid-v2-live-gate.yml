@@ -1,0 +1,44 @@
+name: AVC Wafid Medical V2 Live Gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - medical-booking.html
+      - payment-trust.html
+      - payment-refund.html
+      - privacy.html
+      - assets/medical-v2.js
+      - assets/medical-v2.css
+      - scripts/phase20_wafid_v2_live_gate.py
+      - .github/workflows/phase20-wafid-v2-live-gate.yml
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run fresh production Wafid v2 gate
+        run: python scripts/phase20_wafid_v2_live_gate.py
+      - name: Commit live evidence
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add phase20-wafid-v2-live-status.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record Wafid medical v2 live gate'
+            git pull --rebase
+            git push
+          fi
