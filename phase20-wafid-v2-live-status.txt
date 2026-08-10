@@ -1,0 +1,34 @@
+AVC Phase 20 Wafid Medical V2 live gate
+status=blocked_backend_not_live
+checks=21
+failures=1
+live_api=none
+razorpay_service_base_paise=150000
+gst_paise=27000
+razorpay_total_paise=177000
+wafid_third_party_fee_included=no
+payment_test_charge_created=no
+secret_values_exposed=no
+checked_at_utc=2026-08-10T07:37:55.628712+00:00
+static_medical_form=pass
+static_status_and_slip=pass
+static_fee_breakdown=pass
+static_wafid_fee_separate=pass
+static_no_hosted_payment_page_dependency=pass
+static_no_passport_query=pass
+static_no_local_storage=pass
+static_fixed_order_assertion=pass
+static_verified_case_submit=pass
+static_failed_payment_no_pii_payload=pass
+static_secure_status_post=pass
+static_trust_aligned=pass
+static_privacy_aligned=pass
+static_refund_aligned=pass
+no_razorpay_secret_pattern=pass
+live_medical-booking_html=pass (http=200)
+live_assets_medical-v2_js=pass (http=200)
+live_payment-trust_html=pass (http=200)
+live_privacy_html=pass (http=200)
+live_payment-refund_html=pass (http=200)
+live_api_config=fail (No trusted AVC API host returned Wafid v2 config)
+failed_checks=live_api_config
