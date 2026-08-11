@@ -1,0 +1,43 @@
+name: GAMCA Navigation One Shot
+
+on:
+  push:
+    branches:
+      - feat/gamca-booking-live-20260811
+    paths:
+      - '.github/workflows/gamca-nav-one-shot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/gamca-booking-live-20260811
+          fetch-depth: 0
+      - name: Add GAMCA to global navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('assets/site.js')
+          text = path.read_text(encoding='utf-8')
+          old = "const navItems=[['./','Home','index.html'],['about.html','About AVC','about.html'],['services.html','Services','services.html'],['jobs.html','Jobs','jobs.html'],['resources.html','Resources','resources.html'],['access.html','Access','access.html'],['trust-center.html','Trust','trust-center.html'],['contact.html','Contact','contact.html']];"
+          new = "const navItems=[['./','Home','index.html'],['about.html','About AVC','about.html'],['services.html','Services','services.html'],['medical-booking.html','GAMCA','medical-booking.html'],['jobs.html','Jobs','jobs.html'],['resources.html','Resources','resources.html'],['access.html','Access','access.html'],['trust-center.html','Trust','trust-center.html'],['contact.html','Contact','contact.html']];"
+          if old not in text:
+              raise SystemExit('Expected navigation marker not found; refusing unsafe edit')
+          text = text.replace(old, new, 1)
+          text = text.replace('<a href="medical-booking.html">Medical booking</a>', '<a href="medical-booking.html">GAMCA / Wafid medical</a>')
+          path.write_text(text, encoding='utf-8')
+          PY
+          git rm .github/workflows/gamca-nav-one-shot.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/site.js
+          git diff --cached --check
+          git commit -m 'Expose GAMCA booking in site navigation'
+          git push origin HEAD:feat/gamca-booking-live-20260811
