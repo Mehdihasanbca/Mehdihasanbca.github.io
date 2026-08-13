@@ -112,3 +112,24 @@ h1{font-size:clamp(38px,5vw,64px)}
   border-color: #0284c7 !important;
 }
 
+.avc-lang-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.avc-lang-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+

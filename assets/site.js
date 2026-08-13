@@ -117,3 +117,40 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// Hindi / English Multi-Language Switcher
+(function initAvcLangSwitcher() {
+  const topLinks = document.querySelector('.topbar-links');
+  if(!topLinks) return;
+
+  const btn = document.createElement('button');
+  btn.className = 'avc-lang-btn';
+  btn.id = 'avcLangBtn';
+
+  let currentLang = localStorage.getItem('avc_lang') || 'en';
+
+  function updateBtnText() {
+    btn.innerHTML = currentLang === 'hi' ? '🇬🇧 English' : '🇮🇳 हिन्दी';
+  }
+
+  function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('avc_lang', lang);
+    updateBtnText();
+
+    if(lang === 'hi') {
+      window.showAvcToast('भाषा बदलकर हिन्दी कर दी गई है।');
+    } else {
+      window.showAvcToast('Language set to English.');
+    }
+  }
+
+  updateBtnText();
+  topLinks.appendChild(btn);
+
+  btn.addEventListener('click', function() {
+    const nextLang = currentLang === 'en' ? 'hi' : 'en';
+    applyLanguage(nextLang);
+  });
+})();
+
+
