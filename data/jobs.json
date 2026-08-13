@@ -1,10 +1,16 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 2,
   "updatedAt": "2026-08-13",
-  "sourcePolicy": "Publish only current AVC vacancies whose public details have been verified from the concerned recruitment source.",
+  "sourcePolicy": "Publish only current AVC vacancies whose public details have been verified from the concerned recruitment source. Do not invent employers, salaries, vacancy counts, deadlines, benefits, licences or selection claims.",
   "lifecycle": {
-    "publicStatuses": ["open", "closing-soon"],
-    "nonPublicStatuses": ["hold", "closed"],
+    "publicStatuses": [
+      "open",
+      "closing-soon"
+    ],
+    "nonPublicStatuses": [
+      "hold",
+      "closed"
+    ],
     "expiryRule": "Open and closing-soon jobs require validThrough. The website and vacancy-page generator remove a job from public discovery after validThrough.",
     "freshnessRule": "Every public job must carry lastVerifiedAt and must be rechecked within the publishing freshness window.",
     "detailPageRule": "Every public job requires a stable lowercase slug. Its detail page is generated at /vacancies/{slug}.html.",

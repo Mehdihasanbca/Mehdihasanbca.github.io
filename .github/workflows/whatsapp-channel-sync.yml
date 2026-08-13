@@ -1,0 +1,32 @@
+name: AVC WhatsApp Channel Auto-Sync
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Runs automatically every 6 hours
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  sync-whatsapp-jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Sync WhatsApp Channel Jobs
+        run: node scripts/sync-whatsapp-channel.js
+
+      - name: Commit and Push Updated Vacancies
+        run: |
+          git config --global user.name "AVC Auto Sync Bot"
+          git config --global user.email "bot@assignmentvenuecentre.me"
+          git add data/jobs.json
+          git diff-index --quiet HEAD || git commit -m "Auto-sync jobs from AVC WhatsApp Channel"
+          git push
