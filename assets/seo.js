@@ -4,8 +4,6 @@
   const orgId=base+'#organization';
   const officialLogo=base+'assets/avc-logo.png';
 
-  // Keep public pages on the official AVC logo whenever an older presentation-poster
-  // reference is still present in legacy page metadata or markup.
   document.querySelectorAll('meta[property="og:image"],meta[name="twitter:image"]').forEach(meta=>{
     const value=meta.getAttribute('content')||'';
     if(value.includes('avc-logo-intro-poster.png'))meta.setAttribute('content',officialLogo);
@@ -18,20 +16,20 @@
     img.alt='Assignment Venue Center official logo';
   });
 
-  // Secondary public-business pages use the same restrained visual language as the homepage.
-  // Legal/payment/system pages are intentionally excluded so their functional layouts stay untouched.
   const humanPages=new Set([
     'about.html','services.html','candidates.html','employers.html','partners.html',
     'trust-center.html','contact.html','company-verification.html','office.html','media.html'
   ]);
   if(humanPages.has(path)){
     document.body.classList.add('human-business-page');
-    if(!document.querySelector('link[href*="human-pages.css"]')){
-      const link=document.createElement('link');
-      link.rel='stylesheet';
-      link.href='assets/human-pages.css?v=20260813';
-      document.head.appendChild(link);
+    let humanStyle=document.querySelector('link[href*="human-pages.css"]');
+    if(!humanStyle){
+      humanStyle=document.createElement('link');
+      humanStyle.rel='stylesheet';
+      humanStyle.href='assets/human-pages.css?v=20260813';
     }
+    // Re-appending an existing node moves it to the end so older runtime polish CSS cannot override it.
+    document.head.appendChild(humanStyle);
     const topbarLabel=document.querySelector('.topbar-inner>span');
     if(topbarLabel)topbarLabel.textContent='Assignment Venue Center · Darbhanga, Bihar';
   }
