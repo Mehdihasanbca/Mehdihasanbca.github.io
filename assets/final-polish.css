@@ -31,3 +31,23 @@ main{isolation:isolate}
 @media(max-width:720px){.container{width:min(100% - 28px,1180px)}.topbar-inner{align-items:flex-start;padding:8px 0}.topbar-links{gap:8px 14px}.hero{padding-top:56px}.hero-actions,.cta .hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .button,.cta .button{width:100%}.proof-row{grid-template-columns:1fr}.brand-stage{min-height:390px}.brand-stage-content{inset:auto 20px 20px}.brand-stage-content img{width:150px}.section{padding:64px 0}.section-heading{margin-bottom:28px}.audience-card,.service-card,.media-card,.verify-card,.contact-route,.detail-panel,.facility{padding:22px}.footer{padding-top:48px}.footer-bottom{margin-top:28px}.global-contact-strip{display:grid;gap:8px}}
 @media(max-width:480px){.container{width:min(100% - 22px,1180px)}h1{font-size:clamp(36px,12vw,48px)}.hero-note{padding:14px}.brand-stage{min-height:350px}.brand-stage-content h2{font-size:27px}.topbar{font-size:12px}.avc-launch-badge{white-space:normal}}
 @media(prefers-reduced-motion:reduce){.audience-card,.service-card,.media-card,.verify-card,.contact-route,.detail-panel,.process-card,.facility,.snapshot-fact{transition:none!important;transform:none!important}}
+
+/* 2026-08-13: global restraint pass. Keep the site corporate and factual instead of template-like. */
+:root{--radius:14px;--shadow:0 5px 18px rgba(11,31,58,.07)}
+.site-header{background:#fff!important;backdrop-filter:none!important}
+.button{border-radius:8px;box-shadow:none!important;transition:background-color .15s ease,border-color .15s ease,color .15s ease!important}
+.button:hover{transform:none!important}
+.audience-card,.service-card,.media-card,.verify-card,.contact-route,.detail-panel,.process-card,.facility,.snapshot-fact,.profile-card,.service-hub-card,.job-card,.faq-item{border-radius:12px;box-shadow:none!important}
+@media(hover:hover){.audience-card:hover,.service-card:hover,.media-card:hover,.verify-card:hover,.contact-route:hover,.detail-panel:hover,.process-card:hover,.facility:hover,.snapshot-fact:hover,.profile-card:hover,.service-hub-card:hover,.job-card:hover{transform:none!important;box-shadow:none!important}}
+.hero:before,.company-snapshot:before,.office-panel:after,.brand-stage:after{display:none!important}
+.section.dark,.cta,.office-panel,.update-panel,.about-hero,.business-hero,.trust-hero,.legal-hero,.error-page{background-image:none!important}
+.section.dark,.trust-hero,.legal-hero{background-color:#0b1f3a!important}
+.cta,.update-panel{background-color:#b71927!important}
+.office-panel,.business-hero,.about-hero,.error-page{background-color:#f4f6f8!important;color:#17263a!important}
+.about-hero h1,.business-hero h1,.office-panel h3{color:#0b1f3a!important}
+.about-hero .lead,.business-hero p,.office-panel p{color:#566477!important}
+.brand-stage{background:#0b1f3a!important;border-radius:16px!important;box-shadow:none!important}
+.brand-stage:before{background:rgba(11,31,58,.94)!important}
+h1{font-size:clamp(38px,5vw,64px)}
+.section-heading h2,.profile-heading h2,.business-heading h2,.trust-heading h2{letter-spacing:-.03em}
+.avc-launch-badge{box-shadow:none}
