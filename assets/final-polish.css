@@ -51,3 +51,64 @@ main{isolation:isolate}
 h1{font-size:clamp(38px,5vw,64px)}
 .section-heading h2,.profile-heading h2,.business-heading h2,.trust-heading h2{letter-spacing:-.03em}
 .avc-launch-badge{box-shadow:none}
+
+/* 2026-08-13 Interactive Polish Pass */
+.avc-copy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.avc-copy-chip:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0284c7;
+}
+.avc-copy-chip svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.avc-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  z-index: 9999;
+  display: none;
+  animation: avcSlideUp 0.3s ease-out;
+}
+@keyframes avcSlideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.job-card {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.job-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
+}
+
+.audience-card:hover, .service-card:hover {
+  border-color: #0284c7 !important;
+}
+

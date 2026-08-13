@@ -88,3 +88,32 @@ if(footer){
   const target=(serviceHeading?.nextElementSibling?.classList.contains('footer-links')?serviceHeading.nextElementSibling:(companyHeading?.nextElementSibling?.classList.contains('footer-links')?companyHeading.nextElementSibling:null));
   if(target&&!target.querySelector('a[href="access.html"]')){const a=document.createElement('a');a.href='access.html';a.textContent='Access Center';target.appendChild(a)}
 }
+
+// Global Toast & Copy Helper
+window.showAvcToast = function(msg) {
+  let toast = document.getElementById('avcToast');
+  if(!toast) {
+    toast = document.createElement('div');
+    toast.id = 'avcToast';
+    toast.className = 'avc-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3500);
+};
+
+document.addEventListener('click', function(e) {
+  const chip = e.target.closest('[data-copy]');
+  if(chip) {
+    const val = chip.getAttribute('data-copy');
+    if(val) {
+      navigator.clipboard.writeText(val).then(() => {
+        window.showAvcToast(`Copied to clipboard: ${val}`);
+      }).catch(() => {
+        window.showAvcToast(`Copied: ${val}`);
+      });
+    }
+  }
+});
+

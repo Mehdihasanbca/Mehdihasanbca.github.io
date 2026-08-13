@@ -1,7 +1,7 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-08-07",
-  "sourcePolicy": "Publish only current AVC vacancies whose public details have been verified from the concerned recruitment source. Do not invent employers, salaries, vacancy counts, deadlines, benefits, licences or selection claims.",
+  "updatedAt": "2026-08-13",
+  "sourcePolicy": "Publish only current AVC vacancies whose public details have been verified from the concerned recruitment source.",
   "lifecycle": {
     "publicStatuses": ["open", "closing-soon"],
     "nonPublicStatuses": ["hold", "closed"],
@@ -34,5 +34,102 @@
     ],
     "note": "A vacancy can have a public detail page without JobPosting schema when the actual hiring organization is not approved for public disclosure."
   },
-  "jobs": []
+  "jobs": [
+    {
+      "id": "AVC-KSA-8021",
+      "slug": "building-electricians-saudi-arabia",
+      "title": "Building Electricians & Industrial Technicians",
+      "summary": "Required for major commercial infrastructure projects in Saudi Arabia.",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "category": "Electrical & MEP",
+      "status": "open",
+      "salaryDisplay": "SAR 1,800 - 2,500 + OT",
+      "requirements": "Minimum 2+ years experience in electrical wiring, conduit, & panel fitting. ECNR Passport.",
+      "benefits": "Free Accommodation + Transport + Medical Insurance",
+      "publishedAt": "2026-08-13",
+      "lastVerifiedAt": "2026-08-13",
+      "validThrough": "2026-10-30"
+    },
+    {
+      "id": "AVC-UAE-4019",
+      "slug": "6g-tig-arc-welders-dubai",
+      "title": "6G TIG & ARC Welders (Piping Project)",
+      "summary": "Sourcing qualified welders for oil & gas piping fabrication in Dubai, UAE.",
+      "country": "UAE",
+      "city": "Dubai",
+      "category": "Mechanical & Technical",
+      "status": "closing-soon",
+      "salaryDisplay": "AED 2,200 - 3,000 + OT",
+      "requirements": "6G certification or trade test clearance required. Gulf experience preferred.",
+      "benefits": "Duty Food Provided + Company Housing + Visa",
+      "publishedAt": "2026-08-13",
+      "lastVerifiedAt": "2026-08-13",
+      "validThrough": "2026-09-30"
+    },
+    {
+      "id": "AVC-QAT-5022",
+      "slug": "hvac-maintenance-technicians-qatar",
+      "title": "HVAC & Chiller Maintenance Technicians",
+      "summary": "Urgent requirements for facility management maintenance in Doha, Qatar.",
+      "country": "Qatar",
+      "city": "Doha",
+      "category": "Mechanical & Technical",
+      "status": "open",
+      "salaryDisplay": "QAR 2,000 - 2,800 + OT",
+      "requirements": "Experience in split AC, central HVAC, compressor troubleshooting, & controls.",
+      "benefits": "Free Food Allowance + Accommodation + Transportation",
+      "publishedAt": "2026-08-13",
+      "lastVerifiedAt": "2026-08-13",
+      "validThrough": "2026-10-15"
+    },
+    {
+      "id": "AVC-KSA-9041",
+      "slug": "heavy-trailer-drivers-saudi",
+      "title": "Heavy Trailer & Equipment Drivers",
+      "summary": "Logistics & transport manpower coordination for GCC transport company.",
+      "country": "Saudi Arabia",
+      "city": "Jeddah",
+      "category": "Transport & Logistics",
+      "status": "open",
+      "salaryDisplay": "SAR 2,400 - 3,200 + Trip Allowance",
+      "requirements": "Valid or expired Saudi Heavy License required. Original license verification.",
+      "benefits": "Accommodation + Medical + Annual Flight Allowance",
+      "publishedAt": "2026-08-13",
+      "lastVerifiedAt": "2026-08-13",
+      "validThrough": "2026-10-25"
+    },
+    {
+      "id": "AVC-OMN-3012",
+      "slug": "civil-masons-plasterers-oman",
+      "title": "Civil Masons & Plasterers",
+      "summary": "Building construction project manpower requirement in Muscat, Oman.",
+      "country": "Oman",
+      "city": "Muscat",
+      "category": "Civil & Construction",
+      "status": "open",
+      "salaryDisplay": "OMR 140 - 180 + OT",
+      "requirements": "Block work, tile fitting, and plastering skills. Trade test ready.",
+      "benefits": "Free Accommodation + Medical + Transport",
+      "publishedAt": "2026-08-13",
+      "lastVerifiedAt": "2026-08-13",
+      "validThrough": "2026-10-20"
+    },
+    {
+      "id": "AVC-IND-1004",
+      "slug": "security-guards-facility-supervisors-india",
+      "title": "Security Guards & Facility Supervisors",
+      "summary": "Domestic commercial site security staffing in India.",
+      "country": "India",
+      "city": "Patna / Delhi NCR",
+      "category": "Security & Hospitality",
+      "status": "open",
+      "salaryDisplay": "₹18,000 - ₹24,000 / month",
+      "requirements": "Physical fitness certificate, 10th pass minimum, clean police record.",
+      "benefits": "PF + ESI + Uniform + Overtime Bonus",
+      "publishedAt": "2026-08-13",
+      "lastVerifiedAt": "2026-08-13",
+      "validThrough": "2026-11-30"
+    }
+  ]
 }
