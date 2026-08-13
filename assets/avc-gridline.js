@@ -20,6 +20,16 @@
   };
   ensureStyle('avc-gridline.css','assets/avc-gridline.css?v=20260813-g1');
   if(page==='index.html')ensureStyle('avc-gridline-home.css','assets/avc-gridline-home.css?v=20260813-g1');
+  if(page==='candidates.html'){
+    ensureStyle('avc-candidate-hub.css','assets/avc-candidate-hub.css?v=20260813-g7');
+    if(!document.querySelector('script[data-avc-candidate-hub]')){
+      const script=document.createElement('script');
+      script.src='assets/candidate-hub.js?v=20260813-g7';
+      script.defer=true;
+      script.dataset.avcCandidateHub='true';
+      document.head.appendChild(script);
+    }
+  }
 
   const topbarLabel=document.querySelector('.topbar-inner>span');
   if(topbarLabel)topbarLabel.textContent='Recruitment Operations · Darbhanga, Bihar';
