@@ -134,3 +134,68 @@
 @media(prefers-reduced-motion:reduce){
   .human-home *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* 2026-08-13 Visual Polish Enhancements */
+.human-home .human-route {
+  transition: all 0.25s ease-in-out;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.human-home .human-route:hover {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  transform: translateY(-2px);
+}
+
+.human-home .human-route:hover .text-link {
+  color: #0284c7;
+  padding-left: 4px;
+}
+
+.human-service {
+  transition: all 0.2s ease;
+  padding: 24px;
+  border-radius: 10px;
+}
+
+.human-service:hover {
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+}
+
+.human-service>a {
+  transition: padding-left 0.2s ease, color 0.2s ease;
+}
+
+.human-service:hover>a {
+  color: #0284c7;
+  padding-left: 4px;
+}
+
+.avc-ops-panel {
+  border: 1px solid #dce2e8;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 24px;
+  box-shadow: 0 12px 36px rgba(11, 31, 58, 0.06);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10B981;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: avcPulse 1.8s infinite;
+}
+
+@keyframes avcPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
