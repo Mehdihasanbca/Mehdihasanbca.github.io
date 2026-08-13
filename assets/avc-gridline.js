@@ -10,7 +10,6 @@
 
   document.body.classList.add('avc-grid-ui');
 
-  // Keep the custom design system last in the cascade, even when legacy runtime CSS loads later.
   let style=document.querySelector('link[href*="avc-gridline.css"]');
   if(!style){
     style=document.createElement('link');
@@ -22,7 +21,6 @@
   const topbarLabel=document.querySelector('.topbar-inner>span');
   if(topbarLabel)topbarLabel.textContent='Recruitment Operations · Darbhanga, Bihar';
 
-  // Give every major section a deterministic system index without hard-coding marketing counters.
   const sections=[...document.querySelectorAll('main>section')];
   sections.forEach((section,index)=>{
     if(section.querySelector(':scope>.avc-section-index'))return;
@@ -33,7 +31,6 @@
     section.prepend(marker);
   });
 
-  // Subtle content reveal; disabled automatically for reduced-motion users.
   const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const revealTargets=document.querySelectorAll([
     '.human-route','.human-service','.human-editorial-copy','.human-process-list',
@@ -55,13 +52,15 @@
     revealTargets.forEach(node=>node.classList.add('is-visible'));
   }
 
-  // A thin scroll-position rail makes long information pages feel intentionally engineered.
   const rail=document.createElement('div');
   rail.className='avc-scroll-rail';
   rail.setAttribute('aria-hidden','true');
-  rail.innerHTML='<span></span>';
+  rail.style.cssText='position:fixed;left:0;right:0;top:0;height:2px;z-index:3000;pointer-events:none;background:transparent;';
+  const meter=document.createElement('span');
+  meter.style.cssText='display:block;width:100%;height:100%;background:#d82032;transform:scaleX(0);transform-origin:left center;will-change:transform;';
+  rail.appendChild(meter);
   document.body.appendChild(rail);
-  const meter=rail.firstElementChild;
+
   let ticking=false;
   const updateRail=()=>{
     const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
