@@ -2,14 +2,30 @@
   const path=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const base='https://assignmentvenuecentre.me/';
   const orgId=base+'#organization';
+  const officialLogo=base+'assets/avc-logo.png';
+
+  // Keep public pages on the official AVC logo whenever an older presentation-poster
+  // reference is still present in legacy page metadata or markup.
+  document.querySelectorAll('meta[property="og:image"],meta[name="twitter:image"]').forEach(meta=>{
+    const value=meta.getAttribute('content')||'';
+    if(value.includes('avc-logo-intro-poster.png'))meta.setAttribute('content',officialLogo);
+  });
+  document.querySelectorAll('meta[property="og:image:alt"]').forEach(meta=>{
+    if((meta.getAttribute('content')||'').toLowerCase().includes('brand presentation'))meta.setAttribute('content','Assignment Venue Center official logo');
+  });
+  document.querySelectorAll('img[src*="avc-logo-intro-poster.png"]').forEach(img=>{
+    img.src='assets/avc-logo.png';
+    img.alt='Assignment Venue Center official logo';
+  });
+
   const graph=[{
     '@type':['Organization','ProfessionalService'],
     '@id':orgId,
     name:'Assignment Venue Center',
     alternateName:'AVC',
     url:base,
-    logo:{'@type':'ImageObject',url:base+'assets/avc-logo.png'},
-    image:base+'assets/avc-logo.png',
+    logo:{'@type':'ImageObject',url:officialLogo},
+    image:officialLogo,
     email:'info@assignmentvenuecentre.me',
     telephone:'+91 9473286356',
     taxID:'10AOVPH3197L1ZI',
