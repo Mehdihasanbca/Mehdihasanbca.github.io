@@ -1,14 +1,13 @@
 AVC verified jobs content gate
-status: failed
-status=failed
+status: success
+status=success
 total=6
 active=6
-failures=1
+failures=0
 warnings=0
-failure=schemaVersion must be 2
 live_checks:
 https://assignmentvenuecentre.me/jobs.html -> 200
 https://assignmentvenuecentre.me/data/jobs.json -> 200
 https://assignmentvenuecentre.me/assets/jobs.js -> 200
 live_fail=0
-checked_at_utc: 2026-08-13T12:10:17Z
+checked_at_utc: 2026-08-13T12:19:15Z
