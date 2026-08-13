@@ -1,8 +1,8 @@
 AVC Phase 13 vacancy pages gate
 status: success
-total_jobs: 0
-active_jobs: 0
-generated_pages: 0
+total_jobs: 6
+active_jobs: 6
+generated_pages: 6
 jobposting_eligible: 0
 failures: 0
 warnings: 0
@@ -12,4 +12,10 @@ https://assignmentvenuecentre.me/jobs.html -> 200; marker=yes
 https://assignmentvenuecentre.me/assets/jobs.js -> 200; marker=yes
 https://assignmentvenuecentre.me/sitemap-jobs.xml -> 200; marker=yes
 https://assignmentvenuecentre.me/robots.txt -> 200; marker=yes
-checked_at_utc: 2026-08-07T10:55:05Z
+https://assignmentvenuecentre.me/vacancies/building-electricians-saudi-arabia.html -> 200; JobPosting=no; spec=yes
+https://assignmentvenuecentre.me/vacancies/6g-tig-arc-welders-dubai.html -> 200; JobPosting=no; spec=yes
+https://assignmentvenuecentre.me/vacancies/hvac-maintenance-technicians-qatar.html -> 200; JobPosting=no; spec=yes
+https://assignmentvenuecentre.me/vacancies/heavy-trailer-drivers-saudi.html -> 200; JobPosting=no; spec=yes
+https://assignmentvenuecentre.me/vacancies/civil-masons-plasterers-oman.html -> 200; JobPosting=no; spec=yes
+https://assignmentvenuecentre.me/vacancies/security-guards-facility-supervisors-india.html -> 200; JobPosting=no; spec=yes
+checked_at_utc: 2026-08-13T17:37:15Z
