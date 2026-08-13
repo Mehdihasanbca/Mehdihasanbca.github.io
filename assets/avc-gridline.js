@@ -13,13 +13,13 @@
 
   document.body.classList.add('avc-grid-ui');
 
-  let style=document.querySelector('link[href*="avc-gridline.css"]');
-  if(!style){
-    style=document.createElement('link');
-    style.rel='stylesheet';
-    style.href='assets/avc-gridline.css?v=20260813-g1';
-  }
-  document.head.appendChild(style);
+  const ensureStyle=(needle,href)=>{
+    let link=document.querySelector(`link[href*="${needle}"]`);
+    if(!link){link=document.createElement('link');link.rel='stylesheet';link.href=href}
+    document.head.appendChild(link);
+  };
+  ensureStyle('avc-gridline.css','assets/avc-gridline.css?v=20260813-g1');
+  if(page==='index.html')ensureStyle('avc-gridline-home.css','assets/avc-gridline-home.css?v=20260813-g1');
 
   const topbarLabel=document.querySelector('.topbar-inner>span');
   if(topbarLabel)topbarLabel.textContent='Recruitment Operations · Darbhanga, Bihar';
