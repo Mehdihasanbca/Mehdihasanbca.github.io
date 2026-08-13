@@ -18,17 +18,17 @@
     const jobNode=document.querySelector('[data-apply-job]');
     const titleNode=document.querySelector('[data-apply-title]');
     const statusNode=document.querySelector('[data-apply-status]');
-    const button=document.querySelector('[data-apply-final]');
+    const buttons=[...document.querySelectorAll('[data-apply-final]')];
     const currentJobs=document.querySelector('[data-current-jobs]');
     if(sourceNode)sourceNode.textContent=source;
     const enable=(href,title='Official AVC candidate form')=>{
-      if(button){button.href=href;button.hidden=false;button.dataset.directForm='true';button.dataset.applySource=source;if(jobId)button.dataset.applyJob=jobId;}
+      buttons.forEach(button=>{button.href=href;button.hidden=false;button.dataset.directForm='true';button.dataset.applySource=source;if(jobId)button.dataset.applyJob=jobId;});
       if(titleNode)titleNode.textContent=title;
       if(statusNode){statusNode.textContent='Ready to continue';statusNode.dataset.state='open';}
       if(currentJobs)currentJobs.hidden=true;
     };
     const disable=(message)=>{
-      if(button)button.hidden=true;
+      buttons.forEach(button=>{button.hidden=true;});
       if(statusNode){statusNode.textContent=message;statusNode.dataset.state='closed';}
       if(currentJobs)currentJobs.hidden=false;
     };
@@ -46,7 +46,7 @@
         if(jobNode)jobNode.textContent=`${jobId}${job.country?` • ${job.country}`:''}`;
       }).catch(()=>disable('Vacancy verification is temporarily unavailable. Please use the current jobs page.'));
     }
-    button?.addEventListener('click',()=>dispatch('candidate_form_open',{source,job:jobId||null}));
+    buttons.forEach(button=>button.addEventListener('click',()=>dispatch('candidate_form_open',{source,job:jobId||null})));
   }
 
   const emailFlow=(kind,subject,lines)=>{
