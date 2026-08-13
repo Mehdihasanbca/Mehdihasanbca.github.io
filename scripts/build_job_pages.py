@@ -64,6 +64,10 @@ def fmt(value: str | None) -> str:
         return value
 
 
+def location_text(job: dict) -> str:
+    return ", ".join(x for x in [job.get("city"), job.get("country")] if x)
+
+
 def jobposting(job: dict, url: str) -> dict:
     org = job["hiringOrganization"]
     result = {
@@ -107,35 +111,53 @@ def jobposting(job: dict, url: str) -> dict:
     return result
 
 
+def ledger_row(label: str, value: str, *, raw: bool = False) -> str:
+    shown = value if raw else escape(str(value))
+    return (
+        '<div class="vacancy-row">'
+        f'<div class="vacancy-key">{escape(label)}</div>'
+        f'<div class="vacancy-value">{shown}</div>'
+        '</div>'
+    )
+
+
 def render(job: dict) -> str:
     slug = job["slug"]
     url = f"{BASE}/vacancies/{slug}.html"
     apply_url = f"../apply.html?source=vacancy&job={quote(str(job['id']), safe='')}"
     org = job.get("hiringOrganization") or {}
     agent = job.get("recruitingAgent") or {}
+    jid = str(job["id"])
     title = escape(job["title"])
     summary = escape(job["summary"])
-    employer = (
-        f'<div class="identity-row"><div class="identity-key">Hiring organization</div><div class="identity-value">{escape(org["name"])}</div></div>'
-        if org.get("public") is True and org.get("name")
-        else ""
-    )
-    stakeholder = (
-        f'<div class="identity-row"><div class="identity-key">Recruitment stakeholder</div><div class="identity-value">{escape(agent["name"])}</div></div>'
-        if agent.get("public") is True and agent.get("name")
-        else ""
-    )
-    optional = []
+    location = location_text(job)
+    status = str(job.get("status") or "open").lower()
+    status_class = " closing" if status == "closing-soon" else ""
+
+    rows = [
+        ledger_row("Vacancy reference", jid),
+        ledger_row("Status", f'<span class="vacancy-status{status_class}">{escape(display_status(status))}</span>', raw=True),
+        ledger_row("Job title", job["title"]),
+        ledger_row("Location", location),
+        ledger_row("Category", job["category"]),
+    ]
+    if org.get("public") is True and org.get("name"):
+        rows.append(ledger_row("Hiring organization", org["name"]))
+    if agent.get("public") is True and agent.get("name"):
+        rows.append(ledger_row("Recruitment stakeholder", agent["name"]))
     if job.get("salaryDisplay"):
-        optional.append(("Salary / compensation", job["salaryDisplay"]))
+        rows.append(ledger_row("Salary / compensation", job["salaryDisplay"]))
     if job.get("requirements"):
-        optional.append(("Key requirements", job["requirements"]))
+        rows.append(ledger_row("Key requirements", job["requirements"]))
     if job.get("benefits"):
-        optional.append(("Benefits", job["benefits"]))
-    extra = "".join(
-        f'<div class="identity-row"><div class="identity-key">{escape(k)}</div><div class="identity-value">{escape(str(v))}</div></div>'
-        for k, v in optional
-    )
+        rows.append(ledger_row("Benefits", job["benefits"]))
+    rows.extend([
+        ledger_row("Published", fmt(job.get("publishedAt"))),
+        ledger_row("Last verified", fmt(job.get("lastVerifiedAt"))),
+        ledger_row("Valid through", fmt(job.get("validThrough"))),
+    ])
+    ledger = "".join(rows)
+
     schemas = [{
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -151,13 +173,53 @@ def render(job: dict) -> str:
         f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False, separators=(",", ":"))}</script>'
         for s in schemas
     )
-    schema_note = (
-        "This page includes JobPosting structured data using the publicly approved actual hiring organization."
-        if schema_eligible(job)
-        else "This vacancy page does not publish JobPosting structured data because the actual hiring organization is not approved for public structured-data disclosure."
-    )
+
     return f'''<!doctype html>
-<html lang="en-IN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b1f3a"><meta name="robots" content="index,follow,max-image-preview:large"><meta name="description" content="{summary}"><link rel="canonical" href="{url}"><link rel="alternate" hreflang="en-IN" href="{url}"><link rel="alternate" hreflang="x-default" href="{url}"><meta property="og:type" content="website"><meta property="og:title" content="{title} | Assignment Venue Center"><meta property="og:description" content="{summary}"><meta property="og:url" content="{url}"><meta property="og:image" content="{BASE}/assets/avc-logo-intro-poster.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{title} | Assignment Venue Center"><meta name="twitter:description" content="{summary}"><meta name="twitter:image" content="{BASE}/assets/avc-logo-intro-poster.png"><title>{title} | AVC Vacancy {escape(job['id'])}</title><link rel="icon" href="../assets/favicon.ico"><link rel="stylesheet" href="../assets/site.css?v=20260807-p10"><link rel="stylesheet" href="../assets/company.css?v=20260807-p10"><link rel="stylesheet" href="../assets/business-pages.css?v=20260807-p10"><link rel="stylesheet" href="../assets/final-polish.css?v=20260807-p10">{schema_html}</head><body><a class="skip-link" href="#main">Skip to main content</a><div class="topbar"><div class="container topbar-inner"><span>Official AVC vacancy • {escape(job['id'])}</span><div class="topbar-links"><a href="../jobs.html">All jobs</a><a href="../fraud-safety.html">Fraud safety</a></div></div></div><header class="site-header"><div class="container header-inner"><a class="brand" href="../"><img src="../assets/avc-logo.png" alt="Assignment Venue Center official logo"></a><button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-nav-toggle>☰</button><nav class="site-nav" data-site-nav><a href="../">Home</a><a href="../about.html">About AVC</a><a href="../services.html">Services</a><a href="../jobs.html" aria-current="page">Jobs</a><a href="../trust-center.html">Trust</a><a href="../contact.html">Contact</a></nav></div></header><main id="main"><section class="business-hero"><div class="container business-hero-grid"><div><p class="eyebrow">Verified vacancy • {escape(job['id'])}</p><h1>{title}</h1><p class="lead">{summary}</p><div class="hero-actions"><a class="button primary" href="{escape(apply_url)}">Continue to application</a><a class="button secondary" href="{CHANNEL}" target="_blank" rel="noopener noreferrer">Official job updates</a></div></div><aside class="business-hero-card"><img src="../assets/avc-logo.png" alt="Assignment Venue Center official logo"><p><strong>Status:</strong> {display_status(job['status'])}<br><strong>Last verified:</strong> {fmt(job['lastVerifiedAt'])}<br><strong>Valid through:</strong> {fmt(job['validThrough'])}</p></aside></div></section><section class="business-section"><div class="container"><div class="business-heading"><span class="section-kicker">Vacancy details</span><h2>Public information verified for this requirement.</h2></div><div class="identity-table"><div class="identity-row"><div class="identity-key">Vacancy reference</div><div class="identity-value">{escape(job['id'])}</div></div><div class="identity-row"><div class="identity-key">Job title</div><div class="identity-value">{title}</div></div><div class="identity-row"><div class="identity-key">Location</div><div class="identity-value">{escape(', '.join(x for x in [job.get('city'), job.get('country')] if x))}</div></div><div class="identity-row"><div class="identity-key">Category</div><div class="identity-value">{escape(job['category'])}</div></div>{employer}{stakeholder}{extra}<div class="identity-row"><div class="identity-key">Published</div><div class="identity-value">{fmt(job['publishedAt'])}</div></div><div class="identity-row"><div class="identity-key">Last verified</div><div class="identity-value">{fmt(job['lastVerifiedAt'])}</div></div><div class="identity-row"><div class="identity-key">Valid through</div><div class="identity-value">{fmt(job['validThrough'])}</div></div></div></div></section><section class="business-section alt"><div class="container"><div class="boundary-box"><strong>Recruitment boundary:</strong> AVC provides recruitment support and coordination. Final selection, recruitment approval, visa processing, emigration and overseas deployment are handled by the concerned employer and/or registered Recruiting Agent, subject to applicable law and verification.</div><p class="evidence-note">{escape(schema_note)}</p></div></section><section class="cta"><div class="container cta-inner"><div><h2>Apply only through verified AVC channels.</h2><p>Keep the vacancy reference {escape(job['id'])} in your records.</p></div><a class="button light" href="{escape(apply_url)}">Continue to application</a></div></section></main><footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span data-year></span> Assignment Venue Center.</span><a href="../jobs.html">Back to verified jobs</a></div></div></footer><script src="../assets/site.js?v=20260807-p20"></script><script src="../assets/measurement.js?v=20260807-p15" defer></script></body></html>'''
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071827">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="description" content="{summary}">
+  <link rel="canonical" href="{url}">
+  <link rel="alternate" hreflang="en-IN" href="{url}">
+  <link rel="alternate" hreflang="x-default" href="{url}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Assignment Venue Center">
+  <meta property="og:title" content="{title} | Assignment Venue Center">
+  <meta property="og:description" content="{summary}">
+  <meta property="og:url" content="{url}">
+  <meta property="og:image" content="{BASE}/assets/avc-logo.png">
+  <meta property="og:image:alt" content="Assignment Venue Center official logo">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{title} | Assignment Venue Center">
+  <meta name="twitter:description" content="{summary}">
+  <meta name="twitter:image" content="{BASE}/assets/avc-logo.png">
+  <title>{title} | AVC Vacancy {escape(jid)}</title>
+  <link rel="icon" href="../assets/favicon.ico">
+  <link rel="stylesheet" href="../assets/site.css?v=20260807-p10">
+  <link rel="stylesheet" href="../assets/company.css?v=20260807-p10">
+  <link rel="stylesheet" href="../assets/avc-gridline.css?v=20260813-g1">
+  <link rel="stylesheet" href="../assets/avc-vacancy-spec.css?v=20260813-g5">
+  {schema_html}
+</head>
+<body class="avc-grid-ui avc-vacancy-page">
+<a class="skip-link" href="#main">Skip to main content</a>
+<div class="topbar"><div class="container topbar-inner"><span>VACANCY / {escape(jid)}</span><div class="topbar-links"><a href="../jobs.html">All jobs</a><a href="../fraud-safety.html">Fraud safety</a></div></div></div>
+<header class="site-header"><div class="container header-inner"><a class="brand" href="../" aria-label="Assignment Venue Center home"><img src="../assets/avc-logo.png" alt="Assignment Venue Center official logo"></a><button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-nav-toggle>☰</button><nav class="site-nav" aria-label="Primary navigation" data-site-nav><a href="../">Home</a><a href="../about.html">About AVC</a><a href="../services.html">Services</a><a href="../jobs.html" aria-current="page">Jobs</a><a href="../resources.html">Resources</a><a href="../trust-center.html">Trust</a><a href="../contact.html">Contact</a></nav></div></header>
+<main id="main">
+<section class="vacancy-hero"><div class="container vacancy-hero-grid"><div class="vacancy-copy"><p class="vacancy-code">Public vacancy record · {escape(jid)}</p><h1>{title}</h1><p class="lead">{summary}</p><div class="vacancy-actions"><a class="button primary" href="{escape(apply_url)}">Continue to application</a><a class="button outline" href="{CHANNEL}" target="_blank" rel="noopener noreferrer">Official job updates</a></div></div><aside class="vacancy-console" aria-label="Vacancy summary"><div class="vacancy-console-head"><span>AVC / JOB SPEC</span><span>{escape(display_status(status))}</span></div><dl><div><dt>Reference</dt><dd>{escape(jid)}</dd></div><div><dt>Location</dt><dd>{escape(location)}</dd></div><div><dt>Category</dt><dd>{escape(job['category'])}</dd></div><div><dt>Valid through</dt><dd>{escape(fmt(job.get('validThrough')))}</dd></div></dl><button class="vacancy-copy-ref" type="button" data-copy-reference="{escape(jid)}">Copy vacancy reference</button></aside></div></section>
+<section class="vacancy-section"><div class="container"><div class="vacancy-section-head"><span class="vacancy-section-code">01 / POSITION</span><h2>Public information for this requirement.</h2></div><div class="vacancy-ledger">{ledger}</div></div></section>
+<section class="vacancy-section alt"><div class="container"><div class="vacancy-section-head"><span class="vacancy-section-code">02 / PROCESS</span><h2>From vacancy review to selection handoff.</h2></div><div class="vacancy-sequence"><article class="vacancy-step"><span>01</span><div><h3>Review</h3><p>Check the role, location, compensation, requirements and validity date.</p></div></article><article class="vacancy-step"><span>02</span><div><h3>Prepare</h3><p>Keep your factual CV and vacancy-specific documents or work samples ready.</p></div></article><article class="vacancy-step"><span>03</span><div><h3>Apply</h3><p>Continue through the AVC application route with this vacancy reference.</p></div></article><article class="vacancy-step"><span>04</span><div><h3>Selection handoff</h3><p>Interview, final selection and formal overseas processing continue with the concerned recruitment stakeholders.</p></div></article></div></div></section>
+<section class="vacancy-section"><div class="container vacancy-boundary"><div><span class="vacancy-section-code">03 / RESPONSIBILITY</span><h2>Clear handoff after recruitment support.</h2></div><p><strong>Recruitment boundary:</strong> AVC provides recruitment support and coordination. Final selection, recruitment approval, visa processing, emigration and overseas deployment are handled by the concerned employer and/or registered Recruiting Agent, subject to the applicable process and verification.</p></div></section>
+<section class="vacancy-cta"><div class="container"><div><span>AVC / NEXT ACTION</span><h2>Apply using reference {escape(jid)}.</h2></div><a class="button primary" href="{escape(apply_url)}">Continue to application</a></div></section>
+</main>
+<footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span data-year></span> Assignment Venue Center</span><span>AVC / IND / VACANCY / {escape(jid)}</span><a href="../jobs.html">Back to jobs</a></div></div></footer>
+<script src="../assets/vacancy-page.js?v=20260813-g5" defer></script>
+<script src="../assets/measurement.js?v=20260807-p15" defer></script>
+</body>
+</html>'''
 
 
 def main() -> None:
