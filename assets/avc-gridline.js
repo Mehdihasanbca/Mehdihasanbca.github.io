@@ -1,4 +1,7 @@
 (()=>{
+  if(window.__AVC_GRIDLINE_UI__)return;
+  window.__AVC_GRIDLINE_UI__=true;
+
   const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const gridPages=new Set([
     'index.html','about.html','services.html','jobs.html','candidates.html','employers.html','partners.html',
@@ -22,12 +25,14 @@
   if(topbarLabel)topbarLabel.textContent='Recruitment Operations · Darbhanga, Bihar';
 
   const sections=[...document.querySelectorAll('main>section')];
-  sections.forEach((section,index)=>{
+  let visibleIndex=1;
+  sections.forEach(section=>{
+    if(section.matches('.hero,.about-hero,.business-hero,.trust-hero,.resources-hero,.access-hero'))return;
     if(section.querySelector(':scope>.avc-section-index'))return;
     const marker=document.createElement('span');
     marker.className='avc-section-index';
     marker.setAttribute('aria-hidden','true');
-    marker.textContent=`AVC / ${String(index).padStart(2,'0')}`;
+    marker.textContent=`AVC / ${String(visibleIndex++).padStart(2,'0')}`;
     section.prepend(marker);
   });
 
