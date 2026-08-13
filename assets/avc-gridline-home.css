@@ -1,4 +1,6 @@
 /* AVC Gridline — homepage module */
+body.avc-grid-ui.human-home .human-route-section,
+body.avc-grid-ui.human-home .human-contact{position:relative}
 body.avc-grid-ui.human-home .human-route{margin:0!important;padding:30px!important;border:0!important;border-right:1px solid var(--avc-line-dark)!important;background:rgba(255,255,255,.16)!important;min-height:235px;position:relative}
 body.avc-grid-ui.human-home .human-route:last-child{border-right:0!important}
 body.avc-grid-ui.human-home .human-route:hover{background:#fff!important}
