@@ -7,6 +7,7 @@ on:
       - 'data/jobs.json'
       - 'assets/jobs.js'
       - 'scripts/build_job_pages.py'
+      - 'scripts/verify_job_pages.py'
       - '.github/workflows/job-pages.yml'
       - 'phase13-trigger.txt'
   workflow_dispatch:
@@ -30,111 +31,16 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Generate vacancy detail pages
+      - name: Generate detail pages
         run: python scripts/build_job_pages.py | tee phase13-build-result.txt
 
-      - name: Validate vacancy publication architecture
-        run: |
-          python - <<'PY'
-          import json, re, sys
-          from datetime import datetime, date
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
-          from xml.etree import ElementTree as ET
-          from urllib.parse import urlparse
+      - name: Validate publication data
+        run: python scripts/vacancy_manager.py validate
 
-          root=Path('.')
-          data=json.loads((root/'data/jobs.json').read_text(encoding='utf-8'))
-          jobs=data.get('jobs') or []
-          today=datetime.now(ZoneInfo('Asia/Kolkata')).date()
-          public={'open','closing-soon'}
-          required=['id','slug','title','summary','country','category','status','publishedAt','lastVerifiedAt','validThrough']
-          slug_re=re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
-          failures=[]
-          warnings=[]
-          ids=set(); slugs=set(); active=[]; eligible=[]
-          forbidden=['9162530999','100% job guarantee','guaranteed visa','government approved recruitment agency','recruitos','candidate portal','crm','erp']
+      - name: Validate generated architecture
+        run: python scripts/verify_job_pages.py static
 
-          def day(v,field,jobid):
-              try:return date.fromisoformat(v)
-              except Exception:
-                  failures.append(f'{jobid}: invalid {field} date {v!r}')
-                  return None
-
-          for j in jobs:
-              jid=str(j.get('id') or '<missing-id>')
-              if jid in ids: failures.append(f'duplicate id: {jid}')
-              ids.add(jid)
-              status=str(j.get('status') or '').lower()
-              is_public=status in public
-              if is_public:
-                  for f in required:
-                      if not j.get(f): failures.append(f'{jid}: missing public field {f}')
-                  slug=str(j.get('slug') or '')
-                  if not slug_re.fullmatch(slug): failures.append(f'{jid}: invalid slug {slug!r}')
-                  if slug in slugs: failures.append(f'{jid}: duplicate slug {slug}')
-                  slugs.add(slug)
-                  expiry=day(str(j.get('validThrough') or ''),'validThrough',jid)
-                  verified=day(str(j.get('lastVerifiedAt') or ''),'lastVerifiedAt',jid)
-                  posted=day(str(j.get('publishedAt') or ''),'publishedAt',jid)
-                  if expiry and expiry < today: failures.append(f'{jid}: public job expired on {expiry}')
-                  if verified and (today-verified).days > 14: failures.append(f'{jid}: lastVerifiedAt older than 14 days')
-                  if verified and verified > today: failures.append(f'{jid}: lastVerifiedAt is in future')
-                  if posted and posted > today: failures.append(f'{jid}: publishedAt is in future')
-                  text=json.dumps(j,ensure_ascii=False).lower()
-                  for token in forbidden:
-                      if token.lower() in text: failures.append(f'{jid}: forbidden/unapproved token {token}')
-                  app=j.get('applicationUrl')
-                  if app:
-                      u=urlparse(app)
-                      if u.scheme!='https' or not u.netloc: failures.append(f'{jid}: applicationUrl must be HTTPS')
-                  active.append(j)
-                  org=j.get('hiringOrganization') or {}
-                  if org.get('public') is True and org.get('name') and j.get('country') and j.get('title') and j.get('summary') and j.get('publishedAt') and j.get('validThrough'):
-                      eligible.append(j)
-
-          generated=sorted((root/'vacancies').glob('*.html')) if (root/'vacancies').exists() else []
-          if len(generated)!=len(active): failures.append(f'generated page count {len(generated)} != active jobs {len(active)}')
-          active_slugs={str(j.get('slug')) for j in active}
-          generated_slugs={p.stem for p in generated}
-          if active_slugs!=generated_slugs:
-              failures.append(f'generated slugs mismatch: active={sorted(active_slugs)} generated={sorted(generated_slugs)}')
-
-          eligible_slugs={j['slug'] for j in eligible}
-          for p in generated:
-              html=p.read_text(encoding='utf-8')
-              slug=p.stem
-              if f'https://assignmentvenuecentre.me/vacancies/{slug}.html' not in html: failures.append(f'{slug}: canonical URL missing')
-              has_jobposting='"@type":"JobPosting"' in html
-              if slug in eligible_slugs and not has_jobposting: failures.append(f'{slug}: eligible job missing JobPosting schema')
-              if slug not in eligible_slugs and has_jobposting: failures.append(f'{slug}: JobPosting schema present without public hiring organization eligibility')
-              if 'Assignment Venue Center vacancy reference' not in html and has_jobposting: failures.append(f'{slug}: schema identifier missing')
-              if 'Recruitment boundary:' not in html: failures.append(f'{slug}: recruitment boundary missing')
-
-          js=(root/'assets/jobs.js').read_text(encoding='utf-8')
-          if 'JobPosting' in js: failures.append('jobs listing JS must not inject JobPosting schema')
-          if 'vacancies/' not in js: failures.append('jobs listing does not link detail pages')
-
-          robots=(root/'robots.txt').read_text(encoding='utf-8')
-          if 'Sitemap: https://assignmentvenuecentre.me/sitemap-jobs.xml' not in robots: failures.append('robots.txt missing jobs sitemap')
-          sm=ET.parse(root/'sitemap-jobs.xml').getroot()
-          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
-          locs=[n.text for n in sm.findall('s:url/s:loc',ns)]
-          expected=[f'https://assignmentvenuecentre.me/vacancies/{j["slug"]}.html' for j in active]
-          if sorted(locs)!=sorted(expected): failures.append(f'jobs sitemap URLs mismatch: {locs} != {expected}')
-
-          status='success' if not failures else 'failed'
-          result={
-              'status':status,'total_jobs':len(jobs),'active_jobs':len(active),
-              'generated_pages':len(generated),'jobposting_eligible':len(eligible),
-              'failures':failures,'warnings':warnings,
-          }
-          Path('phase13-static.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
-          print(json.dumps(result,indent=2))
-          if failures: sys.exit(1)
-          PY
-
-      - name: Commit generated vacancy artifacts
+      - name: Commit generated artifacts
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -145,82 +51,17 @@ jobs:
             git push
           fi
 
-      - name: Verify live vacancy architecture
-        run: |
-          python - <<'PY'
-          import json, time, urllib.request, urllib.error
-          from pathlib import Path
+      - name: Verify live publication
+        run: python scripts/verify_job_pages.py live
 
-          base='https://assignmentvenuecentre.me'
-          static=json.loads(Path('phase13-static.json').read_text(encoding='utf-8'))
-          data=json.loads(Path('data/jobs.json').read_text(encoding='utf-8'))
-          public={'open','closing-soon'}
-          active=[j for j in (data.get('jobs') or []) if str(j.get('status','')).lower() in public]
-          failures=[]; live=[]
-
-          def fetch(path, attempts=12):
-              url=base+path+('?phase13='+str(int(time.time())) if '?' not in path else '&phase13='+str(int(time.time())))
-              last=''
-              for _ in range(attempts):
-                  try:
-                      req=urllib.request.Request(url,headers={'User-Agent':'AVC-Phase13-Gate/1.0','Cache-Control':'no-cache'})
-                      with urllib.request.urlopen(req,timeout=20) as r:
-                          body=r.read().decode('utf-8','replace')
-                          if r.status==200:return r.status,body
-                          last=str(r.status)
-                  except Exception as e:last=str(e)
-                  time.sleep(10)
-              raise RuntimeError(last)
-
-          checks=[('/jobs.html','Current opportunities'),('/assets/jobs.js','View vacancy details'),('/sitemap-jobs.xml','<urlset'),('/robots.txt','sitemap-jobs.xml')]
-          for path,needle in checks:
-              try:
-                  code,body=fetch(path)
-                  ok=needle in body
-                  live.append(f'{base+path} -> {code}; marker={"yes" if ok else "no"}')
-                  if not ok: failures.append(f'{path}: expected marker missing')
-              except Exception as e:
-                  failures.append(f'{path}: {e}')
-                  live.append(f'{base+path} -> failed')
-
-          for j in active:
-              slug=j.get('slug')
-              if not slug: continue
-              path=f'/vacancies/{slug}.html'
-              try:
-                  code,body=fetch(path)
-                  org=j.get('hiringOrganization') or {}
-                  eligible=org.get('public') is True and org.get('name') and j.get('country') and j.get('title') and j.get('summary') and j.get('publishedAt') and j.get('validThrough')
-                  schema='"@type":"JobPosting"' in body
-                  live.append(f'{base+path} -> {code}; JobPosting={"yes" if schema else "no"}')
-                  if bool(eligible)!=schema: failures.append(f'{slug}: live JobPosting eligibility mismatch')
-              except Exception as e:
-                  failures.append(f'{path}: {e}')
-
-          status='success' if not failures else 'failed'
-          lines=[
-              'AVC Phase 13 vacancy pages gate',
-              f'status: {status}',
-              f'total_jobs: {static["total_jobs"]}',
-              f'active_jobs: {static["active_jobs"]}',
-              f'generated_pages: {static["generated_pages"]}',
-              f'jobposting_eligible: {static["jobposting_eligible"]}',
-              f'failures: {len(failures)}',
-              f'warnings: {len(static.get("warnings",[]))}',
-              'failure_details:',*failures,
-              'live_details:',*live,
-              'checked_at_utc: '+time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),
-          ]
-          Path('phase13-status.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
-          print('\n'.join(lines))
-          if failures: raise SystemExit(1)
-          PY
-
-      - name: Commit Phase 13 evidence
+      - name: Commit publication evidence
         if: always()
         run: |
           if [ ! -f phase13-status.txt ]; then exit 0; fi
+          cp phase13-status.txt /tmp/phase13-status.txt
+          git restore phase13-status.txt 2>/dev/null || rm -f phase13-status.txt
           git pull --rebase
+          cp /tmp/phase13-status.txt phase13-status.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add phase13-status.txt
