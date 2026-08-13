@@ -9,7 +9,7 @@
     alternateName:'AVC',
     url:base,
     logo:{'@type':'ImageObject',url:base+'assets/avc-logo.png'},
-    image:base+'assets/avc-logo-intro-poster.png',
+    image:base+'assets/avc-logo.png',
     email:'info@assignmentvenuecentre.me',
     telephone:'+91 9473286356',
     taxID:'10AOVPH3197L1ZI',
