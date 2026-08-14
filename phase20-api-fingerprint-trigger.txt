@@ -1,2 +1,3 @@
 Fingerprint current AVC ERP production API hosts after Wafid V2 deployment attempts.
-Requested: 2026-08-10T13:42:00+05:30
+Requested: 2026-08-10T13:46:00+05:30
+Nonce: observable-pr-1
