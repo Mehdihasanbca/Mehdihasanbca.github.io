@@ -1,0 +1,57 @@
+/* AVC Gridline Readiness Console */
+.avc-readiness-console{background:#f4f2ed;color:#071827}
+.avc-readiness-console .resources-hero{padding:72px 0 48px;background:#071827;color:#fff;border-bottom:1px solid rgba(255,255,255,.14)}
+.avc-readiness-console .resources-hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:36px;align-items:start}
+.avc-readiness-console .resources-hero .eyebrow,.avc-readiness-console .readiness-code{font:700 .76rem/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:#ff7d88}
+.avc-readiness-console .resources-hero h1{max-width:760px;margin:14px 0 18px;font-size:clamp(2.5rem,5vw,5rem);line-height:.95;letter-spacing:-.055em;color:#fff}
+.avc-readiness-console .resources-hero h1 span{color:#ff7d88}
+.avc-readiness-console .resources-hero .lead{max-width:720px;color:rgba(255,255,255,.74);font-size:1.08rem;line-height:1.72}
+.avc-readiness-console .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.avc-readiness-console .readiness-console{border:1px solid rgba(255,255,255,.18);background:#0c2132}
+.avc-readiness-console .readiness-console-head{display:flex;justify-content:space-between;gap:18px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.16);font:700 .7rem/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.09em;text-transform:uppercase;color:#ff7d88}
+.avc-readiness-console .readiness-console dl{margin:0}
+.avc-readiness-console .readiness-console dl div{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.avc-readiness-console .readiness-console dt{color:rgba(255,255,255,.48);font:700 .72rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase}
+.avc-readiness-console .readiness-console dd{margin:0;color:#fff;font-weight:700}
+.avc-readiness-console .readiness-console p{margin:0;padding:14px;color:rgba(255,255,255,.66);line-height:1.6;font-size:.92rem}
+.avc-readiness-console .candidate-tool{padding:52px 0 72px;background:#f4f2ed}
+.avc-readiness-console .tool-shell{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+.avc-readiness-console .tool-panel{display:grid;gap:18px}
+.avc-readiness-console .check-group{background:#fff;border:1px solid #d9d5cd;border-radius:2px;overflow:hidden}
+.avc-readiness-console .check-group-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:18px 20px;border-bottom:1px solid #d9d5cd;background:#f9f8f4}
+.avc-readiness-console .check-group h2{margin:0;font-size:1.16rem;letter-spacing:-.02em}
+.avc-readiness-console .check-group-meta{text-align:right;font:700 .72rem/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.08em;color:#59646d}
+.avc-readiness-console .check-list{display:grid}
+.avc-readiness-console .check-item{display:grid;grid-template-columns:28px 1fr;gap:14px;align-items:start;padding:16px 20px;border-bottom:1px solid #e8e4dd;cursor:pointer;transition:background .18s ease}
+.avc-readiness-console .check-item:last-child{border-bottom:0}
+.avc-readiness-console .check-item:hover{background:#faf9f6}
+.avc-readiness-console .check-item:has(input:checked){background:#f5f8f6}
+.avc-readiness-console .check-item input{appearance:none;width:21px;height:21px;margin:1px 0 0;border:1px solid #9da5aa;background:#fff;display:grid;place-items:center}
+.avc-readiness-console .check-item input:checked{background:#071827;border-color:#071827}
+.avc-readiness-console .check-item input:checked::after{content:'✓';color:#fff;font-size:.8rem;font-weight:900}
+.avc-readiness-console .check-item input:focus-visible{outline:3px solid rgba(216,32,50,.22);outline-offset:2px}
+.avc-readiness-console .check-item span{line-height:1.58;color:#263743}
+.avc-readiness-console .tool-summary{position:sticky;top:110px;background:#071827;color:#fff;border-radius:2px;border:1px solid #071827;padding:0;overflow:hidden}
+.avc-readiness-console .readiness-summary-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.14);font:700 .72rem/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:#ff7d88}
+.avc-readiness-console .tool-count{padding:22px 16px 6px;font-size:3.2rem;line-height:1;font-weight:850;letter-spacing:-.05em}
+.avc-readiness-console .readiness-percent{padding:0 16px 18px;color:rgba(255,255,255,.58);font:700 .74rem/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.08em}
+.avc-readiness-console .tool-progress{height:6px;margin:0 16px;background:rgba(255,255,255,.13);overflow:hidden}
+.avc-readiness-console .tool-progress span{display:block;height:100%;background:#d82032;transition:width .2s ease}
+.avc-readiness-console .resource-status{margin:16px;padding:10px 12px;border:1px solid rgba(255,255,255,.14);font:700 .78rem/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.07em}
+.avc-readiness-console .readiness-category-status{display:grid;border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12)}
+.avc-readiness-console .readiness-category-status div{display:flex;justify-content:space-between;gap:16px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.09);font-size:.86rem}
+.avc-readiness-console .readiness-category-status div:last-child{border-bottom:0}
+.avc-readiness-console .readiness-category-status span{color:rgba(255,255,255,.56)}
+.avc-readiness-console .readiness-category-status strong{font:700 .76rem/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff}
+.avc-readiness-console .tool-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px}
+.avc-readiness-console .tool-actions .button{width:100%;justify-content:center}
+.avc-readiness-console .tool-note{margin:0;padding:16px;border-top:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.62);font-size:.88rem;line-height:1.6}
+.avc-readiness-console .readiness-links{padding:52px 0;background:#fff;border-top:1px solid #d9d5cd}
+.avc-readiness-console .readiness-links-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #d9d5cd;border-left:1px solid #d9d5cd}
+.avc-readiness-console .readiness-links-grid a{display:block;padding:22px;border-right:1px solid #d9d5cd;border-bottom:1px solid #d9d5cd;color:#071827;text-decoration:none;background:#fff}
+.avc-readiness-console .readiness-links-grid a span{display:block;margin-bottom:8px;font:700 .7rem/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d82032;text-transform:uppercase;letter-spacing:.08em}
+.avc-readiness-console .readiness-links-grid a strong{display:block;margin-bottom:6px;font-size:1.02rem}
+.avc-readiness-console .readiness-links-grid a small{color:#657079;line-height:1.5}
+@media(max-width:900px){.avc-readiness-console .resources-hero-grid,.avc-readiness-console .tool-shell{grid-template-columns:1fr}.avc-readiness-console .tool-summary{position:static}.avc-readiness-console .readiness-links-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.avc-readiness-console .resources-hero{padding:48px 0 34px}.avc-readiness-console .resources-hero h1{font-size:clamp(2.35rem,12vw,3.5rem)}.avc-readiness-console .readiness-console dl div{grid-template-columns:1fr;gap:4px}.avc-readiness-console .candidate-tool{padding:32px 0 50px}.avc-readiness-console .check-group-head{padding:16px}.avc-readiness-console .check-item{padding:15px 16px}.avc-readiness-console .tool-actions{grid-template-columns:1fr}.avc-readiness-console .readiness-links-grid{grid-template-columns:1fr}.avc-readiness-console .hero-actions .button{width:100%;justify-content:center}}
+@media print{.avc-readiness-console .topbar,.avc-readiness-console .site-header,.avc-readiness-console .resources-hero .hero-actions,.avc-readiness-console .readiness-links,.avc-readiness-console .tool-actions,.avc-scroll-rail{display:none!important}.avc-readiness-console .resources-hero{padding:20px 0;background:#fff!important;color:#000!important}.avc-readiness-console .resources-hero h1,.avc-readiness-console .resources-hero .lead{color:#000!important}.avc-readiness-console .resources-hero-grid,.avc-readiness-console .tool-shell{display:block}.avc-readiness-console .readiness-console{display:none}.avc-readiness-console .tool-summary{position:static;background:#fff!important;color:#000!important;border-color:#aaa;margin-bottom:18px}.avc-readiness-console .tool-count,.avc-readiness-console .readiness-percent,.avc-readiness-console .resource-status,.avc-readiness-console .tool-note{color:#000!important}.avc-readiness-console .check-group{break-inside:avoid}}
