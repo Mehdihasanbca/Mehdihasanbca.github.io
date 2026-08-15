@@ -67,4 +67,12 @@
   if(!document.querySelector('script[data-avc-verified-schema]')){
     const script=document.createElement('script');script.type='application/ld+json';script.dataset.avcVerifiedSchema='true';script.text=JSON.stringify({'@context':'https://schema.org','@graph':graph});document.head.appendChild(script);
   }
+
+  if(!document.querySelector('script[data-avc-public-routing]')){
+    const routing=document.createElement('script');
+    routing.src='assets/public-routing.js?v=20260815-r1';
+    routing.defer=true;
+    routing.dataset.avcPublicRouting='true';
+    document.head.appendChild(routing);
+  }
 })();
