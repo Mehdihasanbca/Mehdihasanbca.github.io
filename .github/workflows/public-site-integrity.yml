@@ -1,0 +1,77 @@
+name: AVC Public Site Integrity
+
+on:
+  pull_request:
+    paths:
+      - '**.html'
+      - 'assets/**'
+      - 'scripts/verify_site_integrity.py'
+      - 'sitemap*.xml'
+      - 'robots.txt'
+      - 'CNAME'
+      - '.github/workflows/public-site-integrity.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - 'assets/**'
+      - 'scripts/verify_site_integrity.py'
+      - 'sitemap*.xml'
+      - 'robots.txt'
+      - 'CNAME'
+      - '.github/workflows/public-site-integrity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: avc-public-site-integrity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify public routes, sitemaps and architecture
+        run: python scripts/verify_site_integrity.py
+      - name: Compile verifier
+        run: python -m py_compile scripts/verify_site_integrity.py
+
+  production-smoke:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: static-integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for current GitHub Pages homepage
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://assignmentvenuecentre.me'
+          ready=no
+          for i in $(seq 1 18); do
+            body="$(curl -fsSL --connect-timeout 10 --max-time 25 "$base/" || true)"
+            if printf '%s' "$body" | grep -q 'avc-gridline-home.css?v=20260818-h1'; then
+              ready=yes
+              break
+            fi
+            sleep 10
+          done
+          test "$ready" = yes
+      - name: Verify core live endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://assignmentvenuecentre.me'
+          for path in / /jobs.html /candidates.html /resources.html /trust-center.html /medical-booking.html /robots.txt /sitemap.xml /sitemap-jobs.xml /.well-known/security.txt; do
+            code="$(curl -sS -L -o /dev/null -w '%{http_code}' --connect-timeout 12 --max-time 30 "$base$path" || true)"
+            echo "$path -> $code"
+            test "$code" = 200
+          done
+          retired="$(curl -sS -L -o /dev/null -w '%{http_code}' --connect-timeout 12 --max-time 30 "$base/assets/final-polish.css" || true)"
+          echo "/assets/final-polish.css -> $retired"
+          test "$retired" = 404
