@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify AVC static-site links and sitemap integrity using only the standard library."""
+"""Verify AVC static-site links, sitemaps, and public architecture using only stdlib."""
 
 from __future__ import annotations
 
@@ -13,6 +13,17 @@ import xml.etree.ElementTree as ET
 SITE_HOST = "assignmentvenuecentre.me"
 ROOT = Path(__file__).resolve().parents[1]
 IGNORED_SCHEMES = {"mailto", "tel", "javascript", "data", "blob"}
+RETIRED_ASSETS = {
+    "assets/final-polish.css",
+    "assets/human-home.css",
+    "assets/human-pages.css",
+    "assets/candidate-hub.js",
+}
+RETIRED_PHASE10 = {
+    "phase10-status.txt",
+    "phase10-trigger.txt",
+    ".github/workflows/phase10-launch-lock.yml",
+}
 
 
 class PageParser(HTMLParser):
@@ -61,10 +72,7 @@ def local_target(source: Path, raw: str) -> Path | None:
         rel = unquote(parsed.path)
         if not rel:
             return None
-        if rel.startswith("/"):
-            target = ROOT / rel.lstrip("/")
-        else:
-            target = source.parent / rel
+        target = ROOT / rel.lstrip("/") if rel.startswith("/") else source.parent / rel
 
     target = target.resolve()
     try:
@@ -86,9 +94,7 @@ def path_from_site_url(raw: str) -> Path | None:
     if not rel:
         return ROOT / "index.html"
     target = ROOT / rel
-    if parsed.path.endswith("/"):
-        target = target / "index.html"
-    return target
+    return target / "index.html" if parsed.path.endswith("/") else target
 
 
 def sitemap_urls(name: str, errors: list[str]) -> set[str]:
@@ -114,6 +120,36 @@ def display(path: Path) -> str:
         return path.relative_to(ROOT).as_posix()
     except ValueError:
         return str(path)
+
+
+def verify_architecture(errors: list[str]) -> None:
+    for rel in sorted(RETIRED_ASSETS | RETIRED_PHASE10):
+        if (ROOT / rel).exists():
+            errors.append(f"retired compatibility artifact still present: {rel}")
+
+    homepage = (ROOT / "index.html").read_text(encoding="utf-8", errors="replace")
+    if 'class="avc-grid-ui avc-home"' not in homepage:
+        errors.append("homepage missing avc-grid-ui avc-home body marker")
+    if "assets/avc-gridline-home.css" not in homepage:
+        errors.append("homepage missing avc-gridline-home.css source of truth")
+
+    site_js = (ROOT / "assets/site.js").read_text(encoding="utf-8", errors="replace")
+    for retired in ("final-polish.css", "human-home.css", "human-pages.css", "candidate-hub.js"):
+        if retired in site_js:
+            errors.append(f"site.js still references retired asset: {retired}")
+
+    cname = (ROOT / "CNAME").read_text(encoding="utf-8", errors="replace").strip()
+    if cname != SITE_HOST:
+        errors.append(f"CNAME mismatch: expected {SITE_HOST}, found {cname!r}")
+
+    robots = (ROOT / "robots.txt").read_text(encoding="utf-8", errors="replace")
+    required = {
+        f"Sitemap: https://{SITE_HOST}/sitemap.xml",
+        f"Sitemap: https://{SITE_HOST}/sitemap-jobs.xml",
+    }
+    for line in sorted(required):
+        if line not in robots:
+            errors.append(f"robots.txt missing: {line}")
 
 
 def main() -> int:
@@ -160,10 +196,7 @@ def main() -> int:
     noindex_root: set[Path] = set()
     for page in root_pages:
         parser = page_cache.get(page.resolve()) or parse_page(page)
-        if is_noindex(parser):
-            noindex_root.add(page.resolve())
-        else:
-            indexable_root.add(page.resolve())
+        (noindex_root if is_noindex(parser) else indexable_root).add(page.resolve())
 
     for page in sorted(indexable_root):
         if page not in main_sitemap_paths:
@@ -179,6 +212,8 @@ def main() -> int:
         sources = {src for src in inbound.get(page, set()) if src != page}
         if not sources:
             warnings.append(f"no static inbound HTML link found: {display(page)}")
+
+    verify_architecture(errors)
 
     print(
         "AVC site integrity: "
