@@ -18,7 +18,7 @@
     const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);
   };
   ensureStyle('avc-gridline.css','assets/avc-gridline.css?v=20260813-g1');
-  if(page==='index.html')ensureStyle('avc-gridline-home.css','assets/avc-gridline-home.css?v=20260813-g1');
+  if(page==='index.html')ensureStyle('avc-gridline-home.css','assets/avc-gridline-home.css?v=20260818-h1');
 
   const topbarLabel=document.querySelector('.topbar-inner>span');
   if(topbarLabel){
