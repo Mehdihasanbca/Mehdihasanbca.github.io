@@ -5,8 +5,6 @@
 @media(max-width:1060px){.site-nav{top:calc(var(--avc-header-height,112px) + 8px)!important;max-height:calc(100dvh - var(--avc-header-height,112px) - 24px)!important;overflow:auto;overscroll-behavior:contain}}
 body.avc-grid-ui .button.primary{background:var(--avc-red,#d82032)!important;border-color:var(--avc-red,#d82032)!important;color:#fff!important}
 body.avc-grid-ui .button.primary:hover{background:var(--avc-red-2,#b91526)!important;border-color:var(--avc-red-2,#b91526)!important;color:#fff!important}
-body.avc-grid-ui .button.outline{background:transparent!important;border-color:#aeb7b9!important;color:var(--avc-ink,#071827)!important}
-body.avc-grid-ui .button.outline:hover{background:var(--avc-ink,#071827)!important;border-color:var(--avc-ink,#071827)!important;color:#fff!important}
 body.avc-grid-ui .job-card:hover,body.avc-grid-ui .audience-card:hover,body.avc-grid-ui .service-card:hover{box-shadow:none!important;transform:none!important}
 body.avc-grid-ui .job-card:hover{border-color:var(--avc-line-dark,rgba(7,24,39,.16))!important}
 :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--avc-focus,#0b66c3);outline-offset:3px}
