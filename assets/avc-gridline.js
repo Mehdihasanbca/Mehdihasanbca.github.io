@@ -19,16 +19,6 @@
   };
   ensureStyle('avc-gridline.css','assets/avc-gridline.css?v=20260813-g1');
   if(page==='index.html')ensureStyle('avc-gridline-home.css','assets/avc-gridline-home.css?v=20260813-g1');
-  if(page==='candidates.html'){
-    ensureStyle('avc-candidate-hub.css','assets/avc-candidate-hub.css?v=20260813-g7');
-    if(!document.querySelector('script[data-avc-candidate-hub]')){
-      const script=document.createElement('script');
-      script.src='assets/candidate-hub.js?v=20260813-g7';
-      script.defer=true;
-      script.dataset.avcCandidateHub='true';
-      document.head.appendChild(script);
-    }
-  }
 
   const topbarLabel=document.querySelector('.topbar-inner>span');
   if(topbarLabel){
@@ -39,7 +29,7 @@
   const sections=[...document.querySelectorAll('main>section')];
   let visibleIndex=1;
   sections.forEach(section=>{
-    if(section.matches('.hero,.about-hero,.business-hero,.trust-hero,.resources-hero,.access-hero,.corp-hero,.avc-record-hero'))return;
+    if(section.matches('.hero,.about-hero,.business-hero,.trust-hero,.resources-hero,.access-hero,.corp-hero,.avc-record-hero,.candidate-hero'))return;
     if(section.querySelector(':scope>.avc-section-index'))return;
     const marker=document.createElement('span');
     marker.className='avc-section-index';
@@ -53,7 +43,8 @@
     '.human-route','.human-service','.human-editorial-copy','.human-process-list',
     '.profile-card','.service-hub-card','.job-card','.resource-card','.access-card',
     '.scope-grid','.checklist-grid','.fact-table','.identity-table','.leadership-card',
-    '.corp-card','.corp-row','.corp-two','.corp-contact','.corp-leadership'
+    '.corp-card','.corp-row','.corp-two','.corp-contact','.corp-leadership',
+    '.candidate-route','.candidate-step','.candidate-pack article','.candidate-special','.candidate-safety article'
   ].join(','));
   if(!reduce&&'IntersectionObserver' in window){
     const observer=new IntersectionObserver(entries=>{
