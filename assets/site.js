@@ -1,15 +1,16 @@
 const navToggle=document.querySelector('[data-nav-toggle]');
 const siteNav=document.querySelector('[data-site-nav]');
 
-const loadStyle=(needle,href)=>{if(!document.querySelector(`link[href*="${needle}"]`)){const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)}};
+const loadStyle=(needle,href)=>{if(document.querySelector(`link[href*="${needle}"]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)};
+const gridShell=document.body.classList.contains('avc-grid-ui')||Boolean(document.querySelector('link[href*="avc-gridline.css"]'));
 loadStyle('company.css','assets/company.css?v=20260807');
 loadStyle('phase8.css','assets/phase8.css?v=20260807');
-loadStyle('final-polish.css','assets/final-polish.css?v=20260807-p10');
+if(!gridShell)loadStyle('final-polish.css','assets/final-polish.css?v=20260813-human');
+loadStyle('avc-runtime.css','assets/avc-runtime.css?v=20260818-a11y1');
 
 const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
 const isHome=current==='index.html';
 const syncHeaderHeight=()=>{const top=document.querySelector('.topbar')?.offsetHeight||0;const head=document.querySelector('.site-header')?.offsetHeight||0;document.documentElement.style.setProperty('--avc-header-height',`${top+head}px`)};
-syncHeaderHeight();window.addEventListener('resize',syncHeaderHeight,{passive:true});
 
 const topbarLinks=document.querySelector('.topbar-links');
 if(topbarLinks){
@@ -26,7 +27,10 @@ if(siteNav){
 const closeNav=(restoreFocus=false)=>{if(!siteNav||!navToggle)return;siteNav.classList.remove('open');document.body.classList.remove('menu-open');navToggle.setAttribute('aria-expanded','false');navToggle.setAttribute('aria-label','Open navigation');navToggle.textContent='☰';if(restoreFocus)navToggle.focus()};
 
 if(navToggle&&siteNav){
-  if(!siteNav.id)siteNav.id='primary-navigation';navToggle.setAttribute('aria-controls',siteNav.id);navToggle.setAttribute('aria-label','Open navigation');
+  navToggle.type='button';
+  if(!siteNav.id)siteNav.id='primary-navigation';
+  navToggle.setAttribute('aria-controls',siteNav.id);
+  navToggle.setAttribute('aria-label','Open navigation');
   navToggle.addEventListener('click',()=>{const open=!siteNav.classList.contains('open');if(open){siteNav.classList.add('open');document.body.classList.add('menu-open');navToggle.setAttribute('aria-expanded','true');navToggle.setAttribute('aria-label','Close navigation');navToggle.textContent='×';siteNav.querySelector('a')?.focus()}else closeNav(true)});
   siteNav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>closeNav(false)));
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&siteNav.classList.contains('open'))closeNav(true)});
@@ -34,7 +38,14 @@ if(navToggle&&siteNav){
   window.addEventListener('resize',()=>{if(window.innerWidth>1060)closeNav(false)},{passive:true});
 }
 
+syncHeaderHeight();
+requestAnimationFrame(syncHeaderHeight);
+window.addEventListener('load',syncHeaderHeight,{once:true});
+window.addEventListener('resize',syncHeaderHeight,{passive:true});
+if('ResizeObserver'in window){const ro=new ResizeObserver(syncHeaderHeight);document.querySelectorAll('.topbar,.site-header').forEach(node=>ro.observe(node))}
+
 document.querySelectorAll('.faq-question').forEach((button,index)=>{
+  button.type='button';
   const item=button.closest('.faq-item');const answer=item?.querySelector('.faq-answer');if(!item||!answer)return;
   const answerId=answer.id||`faq-answer-${index+1}`;answer.id=answerId;button.setAttribute('aria-controls',answerId);
   const initial=item.classList.contains('open');button.setAttribute('aria-expanded',String(initial));answer.hidden=!initial;
@@ -43,10 +54,10 @@ document.querySelectorAll('.faq-question').forEach((button,index)=>{
 
 document.querySelectorAll('[data-year]').forEach(node=>{node.textContent=String(new Date().getFullYear())});
 
-document.querySelectorAll('img').forEach((img,index)=>{img.decoding='async';const critical=img.closest('.site-header')||img.closest('.hero')||img.closest('.about-hero')||img.closest('.business-hero')||img.closest('.trust-hero')||index===0;if(!critical)img.loading='lazy'});
+document.querySelectorAll('img').forEach((img,index)=>{img.decoding='async';const critical=img.closest('.site-header')||img.closest('.hero')||img.closest('.about-hero')||img.closest('.business-hero')||img.closest('.trust-hero')||img.closest('.corp-hero')||img.closest('.avc-record-hero')||index===0;if(!critical)img.loading='lazy'});
 
 if(isHome){
-  const heroCopy=document.querySelector('.hero .hero-grid>div:first-child');
+  const heroCopy=document.querySelector('.hero .hero-grid>div:first-child')||document.querySelector('.human-hero-copy');
   if(heroCopy&&!heroCopy.querySelector('.avc-launch-badge')){const badge=document.createElement('div');badge.className='avc-launch-badge';badge.textContent='Official AVC website • Darbhanga, Bihar';heroCopy.insertBefore(badge,heroCopy.firstElementChild)}
 }
 
@@ -74,10 +85,8 @@ if(footer){
   if(container&&!footer.querySelector('.global-contact-strip')){const strip=document.createElement('div');strip.className='global-contact-strip';strip.innerHTML=`<strong>Assignment Venue Center</strong><a href="tel:+919473286356">+91 9473286356</a><a href="mailto:info@assignmentvenuecentre.me">info@assignmentvenuecentre.me</a><span>Kamtaul Road, Madhupur, Tekatar, Darbhanga, Bihar - 847306</span>`;container.appendChild(strip)}
 }
 
-if(!document.querySelector('script[data-avc-seo-loader]')){const seo=document.createElement('script');seo.src='assets/seo.js?v=20260807-p19';seo.defer=true;seo.dataset.avcSeoLoader='true';document.head.appendChild(seo)}
+if(!document.querySelector('script[data-avc-seo-loader]')){const seo=document.createElement('script');seo.src='assets/seo.js?v=20260818-t1';seo.defer=true;seo.dataset.avcSeoLoader='true';document.head.appendChild(seo)}
 
-
-// Phase 16 access integration
 if(current==='candidates.html'){
   const actions=document.querySelector('.about-hero .hero-actions');
   if(actions&&!actions.querySelector('a[href="access.html"]')){const a=document.createElement('a');a.className='button secondary';a.href='access.html';a.textContent='Access Center';actions.appendChild(a)}
@@ -89,68 +98,21 @@ if(footer){
   if(target&&!target.querySelector('a[href="access.html"]')){const a=document.createElement('a');a.href='access.html';a.textContent='Access Center';target.appendChild(a)}
 }
 
-// Global Toast & Copy Helper
-window.showAvcToast = function(msg) {
-  let toast = document.getElementById('avcToast');
-  if(!toast) {
-    toast = document.createElement('div');
-    toast.id = 'avcToast';
-    toast.className = 'avc-toast';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 3500);
+let avcToastTimer=0;
+window.showAvcToast=function(msg){
+  let toast=document.getElementById('avcToast');
+  if(!toast){toast=document.createElement('div');toast.id='avcToast';toast.className='avc-toast';toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');toast.setAttribute('aria-atomic','true');toast.hidden=true;document.body.appendChild(toast)}
+  toast.textContent=msg;toast.hidden=false;clearTimeout(avcToastTimer);avcToastTimer=window.setTimeout(()=>{toast.hidden=true},3500);
 };
 
-document.addEventListener('click', function(e) {
-  const chip = e.target.closest('[data-copy]');
-  if(chip) {
-    const val = chip.getAttribute('data-copy');
-    if(val) {
-      navigator.clipboard.writeText(val).then(() => {
-        window.showAvcToast(`Copied to clipboard: ${val}`);
-      }).catch(() => {
-        window.showAvcToast(`Copied: ${val}`);
-      });
-    }
-  }
-});
+const prepareCopyControl=chip=>{if(!/^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(chip.tagName)){chip.setAttribute('role','button');if(!chip.hasAttribute('tabindex'))chip.tabIndex=0}if(!chip.hasAttribute('aria-label'))chip.setAttribute('aria-label','Copy to clipboard')};
+document.querySelectorAll('[data-copy]').forEach(prepareCopyControl);
 
-// Hindi / English Multi-Language Switcher
-(function initAvcLangSwitcher() {
-  const topLinks = document.querySelector('.topbar-links');
-  if(!topLinks) return;
+const copyValue=async chip=>{
+  const val=chip.getAttribute('data-copy');if(!val)return;
+  if(!navigator.clipboard?.writeText){window.showAvcToast('Copy unavailable — select and copy the value manually.');return}
+  try{await navigator.clipboard.writeText(val);window.showAvcToast(`Copied to clipboard: ${val}`)}catch{window.showAvcToast('Copy unavailable — select and copy the value manually.')}
+};
 
-  const btn = document.createElement('button');
-  btn.className = 'avc-lang-btn';
-  btn.id = 'avcLangBtn';
-
-  let currentLang = localStorage.getItem('avc_lang') || 'en';
-
-  function updateBtnText() {
-    btn.innerHTML = currentLang === 'hi' ? '🇬🇧 English' : '🇮🇳 हिन्दी';
-  }
-
-  function applyLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('avc_lang', lang);
-    updateBtnText();
-
-    if(lang === 'hi') {
-      window.showAvcToast('भाषा बदलकर हिन्दी कर दी गई है।');
-    } else {
-      window.showAvcToast('Language set to English.');
-    }
-  }
-
-  updateBtnText();
-  topLinks.appendChild(btn);
-
-  btn.addEventListener('click', function() {
-    const nextLang = currentLang === 'en' ? 'hi' : 'en';
-    applyLanguage(nextLang);
-  });
-})();
-
-
+document.addEventListener('click',e=>{const chip=e.target.closest('[data-copy]');if(chip)copyValue(chip)});
+document.addEventListener('keydown',e=>{const chip=e.target.closest?.('[data-copy]');if(!chip||!['Enter',' '].includes(e.key))return;e.preventDefault();copyValue(chip)});
