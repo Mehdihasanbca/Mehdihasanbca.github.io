@@ -14,9 +14,8 @@
   document.body.classList.add('avc-grid-ui');
 
   const ensureStyle=(needle,href)=>{
-    let link=document.querySelector(`link[href*="${needle}"]`);
-    if(!link){link=document.createElement('link');link.rel='stylesheet';link.href=href}
-    document.head.appendChild(link);
+    if(document.querySelector(`link[href*="${needle}"]`))return;
+    const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);
   };
   ensureStyle('avc-gridline.css','assets/avc-gridline.css?v=20260813-g1');
   if(page==='index.html')ensureStyle('avc-gridline-home.css','assets/avc-gridline-home.css?v=20260813-g1');
@@ -32,12 +31,15 @@
   }
 
   const topbarLabel=document.querySelector('.topbar-inner>span');
-  if(topbarLabel)topbarLabel.textContent='Recruitment Operations · Darbhanga, Bihar';
+  if(topbarLabel){
+    const label=topbarLabel.textContent.trim();
+    if(!label||label==='Assignment Venue Center · Darbhanga, Bihar'||label==='Recruitment Operations · Darbhanga, Bihar')topbarLabel.textContent='Recruitment Operations · Darbhanga, Bihar';
+  }
 
   const sections=[...document.querySelectorAll('main>section')];
   let visibleIndex=1;
   sections.forEach(section=>{
-    if(section.matches('.hero,.about-hero,.business-hero,.trust-hero,.resources-hero,.access-hero'))return;
+    if(section.matches('.hero,.about-hero,.business-hero,.trust-hero,.resources-hero,.access-hero,.corp-hero,.avc-record-hero'))return;
     if(section.querySelector(':scope>.avc-section-index'))return;
     const marker=document.createElement('span');
     marker.className='avc-section-index';
@@ -50,7 +52,8 @@
   const revealTargets=document.querySelectorAll([
     '.human-route','.human-service','.human-editorial-copy','.human-process-list',
     '.profile-card','.service-hub-card','.job-card','.resource-card','.access-card',
-    '.scope-grid','.checklist-grid','.fact-table','.identity-table','.leadership-card'
+    '.scope-grid','.checklist-grid','.fact-table','.identity-table','.leadership-card',
+    '.corp-card','.corp-row','.corp-two','.corp-contact','.corp-leadership'
   ].join(','));
   if(!reduce&&'IntersectionObserver' in window){
     const observer=new IntersectionObserver(entries=>{
@@ -72,7 +75,7 @@
   rail.setAttribute('aria-hidden','true');
   rail.style.cssText='position:fixed;left:0;right:0;top:0;height:2px;z-index:3000;pointer-events:none;background:transparent;';
   const meter=document.createElement('span');
-  meter.style.cssText='display:block;width:100%;height:100%;background:#d82032;transform:scaleX(0);transform-origin:left center;will-change:transform;';
+  meter.style.cssText='display:block;width:100%;height:100%;background:#d82032;transform:scaleX(0);transform-origin:left center;';
   rail.appendChild(meter);
   document.body.appendChild(rail);
 
