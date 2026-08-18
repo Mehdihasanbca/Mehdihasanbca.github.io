@@ -12,7 +12,6 @@ import xml.etree.ElementTree as ET
 
 SITE_HOST = "assignmentvenuecentre.me"
 ROOT = Path(__file__).resolve().parents[1]
-SITEMAPS = ("sitemap.xml", "sitemap-jobs.xml")
 IGNORED_SCHEMES = {"mailto", "tel", "javascript", "data", "blob"}
 
 
@@ -73,7 +72,8 @@ def local_target(source: Path, raw: str) -> Path | None:
     except ValueError:
         return target
 
-    if target.is_dir() or raw.split("?", 1)[0].split("#", 1)[0].endswith("/"):
+    clean_raw = raw.split("?", 1)[0].split("#", 1)[0]
+    if target.is_dir() or clean_raw.endswith("/"):
         target = target / "index.html"
     return target
 
@@ -91,11 +91,16 @@ def path_from_site_url(raw: str) -> Path | None:
     return target
 
 
-def sitemap_urls(name: str) -> set[str]:
+def sitemap_urls(name: str, errors: list[str]) -> set[str]:
     path = ROOT / name
     if not path.exists():
+        errors.append(f"missing sitemap file: {name}")
         return set()
-    tree = ET.parse(path)
+    try:
+        tree = ET.parse(path)
+    except ET.ParseError as exc:
+        errors.append(f"invalid XML in {name}: {exc}")
+        return set()
     namespace = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     return {
         (node.text or "").strip()
@@ -131,10 +136,11 @@ def main() -> int:
             if target.suffix.lower() == ".html":
                 inbound[target.resolve()].add(page.resolve())
 
-    main_sitemap = sitemap_urls("sitemap.xml")
-    jobs_sitemap = sitemap_urls("sitemap-jobs.xml")
+    main_sitemap = sitemap_urls("sitemap.xml", errors)
+    jobs_sitemap = sitemap_urls("sitemap-jobs.xml", errors)
     all_sitemap_urls = main_sitemap | jobs_sitemap
-    sitemap_paths: set[Path] = set()
+    main_sitemap_paths: set[Path] = set()
+    all_sitemap_paths: set[Path] = set()
 
     for name, urls in (("sitemap.xml", main_sitemap), ("sitemap-jobs.xml", jobs_sitemap)):
         for url in sorted(urls):
@@ -142,7 +148,10 @@ def main() -> int:
             if target is None:
                 errors.append(f"external/invalid URL in {name}: {url}")
                 continue
-            sitemap_paths.add(target.resolve())
+            resolved = target.resolve()
+            all_sitemap_paths.add(resolved)
+            if name == "sitemap.xml":
+                main_sitemap_paths.add(resolved)
             if not target.exists():
                 errors.append(f"missing sitemap target: {name} -> {url} ({display(target)})")
 
@@ -157,12 +166,12 @@ def main() -> int:
             indexable_root.add(page.resolve())
 
     for page in sorted(indexable_root):
-        if page not in sitemap_paths:
+        if page not in main_sitemap_paths:
             errors.append(f"indexable root page missing from sitemap.xml: {display(page)}")
 
     for page in sorted(noindex_root):
-        if page in sitemap_paths:
-            errors.append(f"noindex page must not appear in sitemap: {display(page)}")
+        if page in all_sitemap_paths:
+            errors.append(f"noindex page must not appear in a sitemap: {display(page)}")
 
     for page in sorted(indexable_root):
         if page.name == "index.html":
