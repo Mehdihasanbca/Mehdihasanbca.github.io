@@ -4,6 +4,8 @@
   const orgId=base+'#organization';
   const officialLogo=base+'assets/avc-logo.png';
 
+  if(!document.documentElement.lang||document.documentElement.lang.toLowerCase()==='en')document.documentElement.lang='en-IN';
+
   document.querySelectorAll('meta[property="og:image"],meta[name="twitter:image"]').forEach(meta=>{
     const value=meta.getAttribute('content')||'';
     if(value.includes('avc-logo-intro-poster.png'))meta.setAttribute('content',officialLogo);
@@ -16,17 +18,6 @@
     img.alt='Assignment Venue Center official logo';
   });
 
-  const humanPages=new Set([
-    'about.html','services.html','candidates.html','employers.html','partners.html',
-    'trust-center.html','contact.html','company-verification.html','office.html','media.html'
-  ]);
-  if(humanPages.has(path)){
-    document.body.classList.add('human-business-page');
-    let humanStyle=document.querySelector('link[href*="human-pages.css"]');
-    if(!humanStyle){humanStyle=document.createElement('link');humanStyle.rel='stylesheet';humanStyle.href='assets/human-pages.css?v=20260813'}
-    document.head.appendChild(humanStyle);
-  }
-
   const gridPages=new Set([
     'index.html','about.html','services.html','jobs.html','candidates.html','employers.html','partners.html',
     'trust-center.html','contact.html','resources.html','access.html','company-verification.html','office.html','media.html',
@@ -34,14 +25,14 @@
     'interview-coordination.html','employer-manpower-support.html','employer-requirement.html','partner-enquiry.html'
   ]);
   if(gridPages.has(path)){
-    let gridStyle=document.querySelector('link[href*="avc-gridline.css"]');
-    if(!gridStyle){gridStyle=document.createElement('link');gridStyle.rel='stylesheet';gridStyle.href='assets/avc-gridline.css?v=20260813-g1'}
-    document.head.appendChild(gridStyle);
+    if(!document.querySelector('link[href*="avc-gridline.css"]')){
+      const gridStyle=document.createElement('link');gridStyle.rel='stylesheet';gridStyle.href='assets/avc-gridline.css?v=20260813-g1';document.head.appendChild(gridStyle);
+    }
 
     const uiAlreadyLoaded=window.__AVC_GRIDLINE_UI__||document.querySelector('script[src*="avc-gridline.js"]');
     if(!uiAlreadyLoaded){
       const ui=document.createElement('script');
-      ui.src='assets/avc-gridline.js?v=20260813-g1';
+      ui.src='assets/avc-gridline.js?v=20260818-t1';
       ui.defer=true;
       ui.dataset.avcGridlineLoader='true';
       document.head.appendChild(ui);
