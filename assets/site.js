@@ -2,10 +2,8 @@ const navToggle=document.querySelector('[data-nav-toggle]');
 const siteNav=document.querySelector('[data-site-nav]');
 
 const loadStyle=(needle,href)=>{if(document.querySelector(`link[href*="${needle}"]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)};
-const gridShell=document.body.classList.contains('avc-grid-ui')||Boolean(document.querySelector('link[href*="avc-gridline.css"]'));
 loadStyle('company.css','assets/company.css?v=20260807');
 loadStyle('phase8.css','assets/phase8.css?v=20260807');
-if(!gridShell)loadStyle('final-polish.css','assets/final-polish.css?v=20260813-human');
 loadStyle('avc-runtime.css','assets/avc-runtime.css?v=20260818-a11y1');
 
 const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
