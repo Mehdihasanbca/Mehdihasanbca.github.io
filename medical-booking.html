@@ -1,13 +1,11 @@
 <!doctype html>
 <html lang="en-IN">
 <head>
-  <meta name="google-adsense-account" content="ca-pub-1417105686781482">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1417105686781482" crossorigin="anonymous"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b1f3a">
-  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
-  <meta name="description" content="AVC Wafid/GCC medical booking assistance with secure Razorpay payment, private medical onboarding, case tracking and slip retrieval.">
+  <meta name="robots" content="noindex,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="description" content="AVC Wafid/GCC medical booking assistance route with live backend verification, Razorpay availability checks, case tracking and official Wafid links.">
   <link rel="canonical" href="https://assignmentvenuecentre.me/medical-booking.html">
   <title>Wafid Medical Booking Assistance | Assignment Venue Center</title>
   <link rel="icon" href="assets/favicon.ico">
@@ -25,14 +23,14 @@
     <div class="container payment-hero-grid">
       <div>
         <p class="eyebrow">Wafid / GCC medical support</p>
-        <h1>Medical onboarding, secure payment and <span>case tracking.</span></h1>
-        <p class="lead">Submit the booking details on AVC, pay the fixed AVC service fee through Razorpay, receive an AVC medical reference, then track the manual Wafid booking and slip from the same page.</p>
-        <div class="payment-actions"><a class="button primary" href="#book-medical">Start medical booking</a><a class="button outline" href="#track-medical">Track existing case</a></div>
+        <h1>Medical assistance with a <span>live availability check.</span></h1>
+        <p class="lead">AVC enables its Razorpay medical-assistance payment only after the private backend is verified live. If that secure service is unavailable, payment remains disabled; candidates can still use the official Wafid links on this page.</p>
+        <div class="payment-actions"><a class="button primary" href="#book-medical">Check booking availability</a><a class="button outline" href="#track-medical">Track existing case</a></div>
       </div>
       <aside class="payment-side">
-        <span class="status-chip ready">Secure v2 workflow</span>
-        <h2>Razorpay payment. Manual official Wafid processing.</h2>
-        <p>AVC never asks for card PIN, CVV, UPI PIN, internet-banking password or payment OTP. Those credentials stay inside Razorpay Checkout.</p>
+        <span class="status-chip pending">Gateway checked live</span>
+        <h2>Payment is conditional on server verification.</h2>
+        <p>AVC never asks for card PIN, CVV, UPI PIN, internet-banking password or payment OTP. When enabled, those credentials stay inside Razorpay Checkout.</p>
       </aside>
     </div>
   </section>
@@ -41,7 +39,7 @@
     <div class="container medical-shell">
       <div class="medical-grid">
         <article class="medical-card">
-          <div class="payment-heading"><span class="section-kicker">Medical onboarding</span><h2>Enter details exactly as on the passport.</h2><p>These details are sent only to AVC's private medical-processing API after Razorpay payment succeeds. They are not placed in the page URL or browser storage.</p></div>
+          <div class="payment-heading"><span class="section-kicker">Medical onboarding</span><h2>Enter details exactly as on the passport.</h2><p>The page first checks AVC's private backend and Razorpay configuration. Candidate details are submitted to the private medical-processing API only through the verified workflow; if the backend is unavailable, payment stays disabled and no paid case should be created.</p></div>
           <form id="medical-booking-form" autocomplete="on" novalidate>
             <div class="medical-form-grid">
               <div class="medical-field"><label for="first_name">First name *</label><input id="first_name" name="first_name" maxlength="120" autocomplete="given-name" required></div>
@@ -62,7 +60,7 @@
               <div class="medical-field full"><label class="medical-consent"><input type="checkbox" name="consent" value="true" required><span>I confirm these details are accurate and authorize AVC to use them for Wafid/GCC medical booking assistance. I have read the <a href="privacy.html" target="_blank">Privacy Policy</a> and <a href="payment-refund.html" target="_blank">Payment & Refund Policy</a>. I understand the ₹1,770 payment is AVC's service fee + GST and does not include the separate official Wafid/third-party charge.</span></label></div>
             </div>
             <div style="margin-top:18px"><button id="medical-pay-button" class="medical-pay" type="button" disabled>Connecting secure payment…</button></div>
-            <div id="medical-gateway-state" class="medical-state" data-state="checking" aria-live="polite"><strong>Connecting to secure AVC payment service</strong><p>Checking backend and Razorpay configuration.</p></div>
+            <div id="medical-gateway-state" class="medical-state" data-state="checking" aria-live="polite"><strong>Connecting to secure AVC payment service</strong><p>Checking backend and Razorpay configuration. Payment stays unavailable unless this verification succeeds.</p></div>
             <div id="medical-result" class="medical-result" hidden aria-live="polite"></div>
           </form>
         </article>
@@ -72,13 +70,13 @@
           <div class="fee-stack">
             <div class="fee-line"><span>AVC booking-assistance service</span><strong>₹1,500</strong></div>
             <div class="fee-line"><span>GST @ 18% on AVC service fee</span><strong>₹270</strong></div>
-            <div class="fee-line total"><span>Razorpay total</span><span>₹1,770</span></div>
+            <div class="fee-line total"><span>Razorpay total when enabled</span><span>₹1,770</span></div>
             <div class="fee-line"><span>Official Wafid / third-party cost</span><strong>Separate actual amount</strong></div>
           </div>
           <div class="medical-note" style="margin-top:18px"><strong>Important:</strong> Wafid is operated by the Gulf Health Council. AVC is not Wafid/GAMCA and does not represent the Gulf Health Council. Official availability, medical-center allocation, Wafid charges, slip issuance and medical result are controlled by the official Wafid process and concerned accredited medical center.</div>
           <h3 style="margin-top:22px">Payment security</h3>
-          <ul class="medical-security-list"><li>Order amount is fixed by AVC's private backend.</li><li>Razorpay verifies payment credentials.</li><li>AVC verifies the Razorpay signature before creating a paid case.</li><li>No payment screenshot or UTR is accepted as final proof.</li><li>No passport value is sent in a payment receipt, URL or analytics event.</li></ul>
-          <div class="medical-links"><a href="https://wafid.com/en/book-appointment/" target="_blank" rel="noopener noreferrer">Official Wafid booking →</a><a href="https://wafid.com/en/medical-center/search/" target="_blank" rel="noopener noreferrer">Official Wafid medical-center search →</a><a href="https://wafid.com/en/medical-status-search/" target="_blank" rel="noopener noreferrer">Official Wafid medical-status search →</a></div>
+          <ul class="medical-security-list"><li>Checkout remains disabled unless AVC's private API is verified live.</li><li>Order amount is fixed by AVC's private backend.</li><li>Razorpay handles payment credentials.</li><li>AVC verifies the Razorpay signature before creating a paid case.</li><li>No payment screenshot or UTR is accepted as final proof.</li><li>No passport value is sent in a payment receipt, URL or analytics event.</li></ul>
+          <div class="medical-links"><a href="https://wafid.com/en/book-appointment/" target="_blank" rel="noopener noreferrer">Official Wafid booking →</a><a href="https://wafid.com/en/medical-center/search/" target="_blank" rel="noopener noreferrer">Official Wafid medical-center search →</a><a href="https://wafid.com/en/medical-status-search/" target="_blank" rel="noopener noreferrer">Official Wafid medical-status search →</a><a href="guide-wafid-medical-india.html">Read AVC's Wafid guide →</a></div>
         </aside>
       </div>
 
@@ -97,13 +95,13 @@
   </section>
 
   <section class="payment-section">
-    <div class="container"><div class="payment-heading"><span class="section-kicker">Processing lifecycle</span><h2>What happens after payment.</h2></div><div class="workflow"><article class="workflow-step"><b>1</b><h3>PAID</h3><p>Razorpay payment is verified and AVC creates the private medical case.</p></article><article class="workflow-step"><b>2</b><h3>BOOKING IN PROGRESS</h3><p>AVC operator enters the approved details on the official Wafid system.</p></article><article class="workflow-step"><b>3</b><h3>OTP REQUIRED</h3><p>If Wafid requires candidate verification, AVC contacts the candidate. AVC never bypasses official OTP controls.</p></article><article class="workflow-step"><b>4</b><h3>SLIP AVAILABLE</h3><p>AVC records the official Wafid slip/reference and, where uploaded, makes the slip available through secure case verification.</p></article><article class="workflow-step"><b>5</b><h3>RESULT AVAILABLE</h3><p>Medical result remains controlled by the official Wafid/accredited medical-center process.</p></article></div></div>
+    <div class="container"><div class="payment-heading"><span class="section-kicker">Processing lifecycle</span><h2>What happens after a verified payment when the AVC service is available.</h2></div><div class="workflow"><article class="workflow-step"><b>1</b><h3>PAID</h3><p>Razorpay payment is server-verified and AVC creates the private medical case.</p></article><article class="workflow-step"><b>2</b><h3>BOOKING IN PROGRESS</h3><p>AVC operator enters the approved details on the official Wafid system.</p></article><article class="workflow-step"><b>3</b><h3>OTP REQUIRED</h3><p>If Wafid requires candidate verification, AVC contacts the candidate. AVC never bypasses official OTP controls.</p></article><article class="workflow-step"><b>4</b><h3>SLIP AVAILABLE</h3><p>AVC records the official Wafid slip/reference and, where uploaded, makes the slip available through secure case verification.</p></article><article class="workflow-step"><b>5</b><h3>RESULT AVAILABLE</h3><p>Medical result remains controlled by the official Wafid/accredited medical-center process.</p></article></div></div>
   </section>
 
-  <section class="payment-section alt"><div class="container"><div class="notice-box"><strong>Important:</strong> AVC payment or booking assistance does not guarantee medical fitness, visa approval, recruitment selection or overseas deployment. Final recruitment/visa/deployment remain with the concerned employer and/or registered Recruiting Agent, subject to applicable law and verification.</div><div class="inline-links"><a href="payment-trust.html">Payment Trust Center →</a><a href="payment-refund.html">Payment & Refund Policy →</a><a href="privacy.html">Privacy Policy →</a><a href="contact.html">Official AVC Support →</a></div></div></section>
+  <section class="payment-section alt"><div class="container"><div class="notice-box"><strong>Important:</strong> AVC payment or booking assistance does not guarantee medical fitness, visa approval, recruitment selection or overseas deployment. Final recruitment/visa/deployment remain with the concerned employer and/or registered Recruiting Agent, subject to applicable law and verification.</div><div class="inline-links"><a href="guide-wafid-medical-india.html">Wafid candidate guide →</a><a href="payment-trust.html">Payment Trust Center →</a><a href="payment-refund.html">Payment & Refund Policy →</a><a href="privacy.html">Privacy Policy →</a><a href="contact.html">Official AVC Support →</a></div></div></section>
 </main>
 <footer class="footer"><div class="container"><div class="footer-bottom"><span>© <span data-year></span> Assignment Venue Center.</span><span>AVC ₹1,500 + GST ₹270 • Wafid cost separate</span></div></div></footer>
-<script src="assets/site.js?v=20260807-p20"></script>
+<script src="assets/site.js?v=20260820-ads1"></script>
 <script src="assets/medical-v2.js?v=20260810-p20v2" defer></script>
 <script src="assets/measurement.js?v=20260807-p20" defer></script>
 </body>
