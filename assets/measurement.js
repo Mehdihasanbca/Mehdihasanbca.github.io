@@ -7,9 +7,6 @@
   const classify=(a)=>{
     const href=(a.getAttribute('href')||'').trim();
     if(!href)return null;
-    if(href.includes('medical-booking.html'))return 'medical_booking';
-    if(href.includes('payment-trust.html'))return 'payment_trust';
-    if(href.includes('payment-refund.html'))return 'payment_refund';
     if(href.includes('knowledge.html'))return 'knowledge_hub';
     if(href.includes('candidate-readiness.html'))return 'candidate_readiness';
     if(href.includes('resources.html'))return 'resources_hub';
