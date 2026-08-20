@@ -10,9 +10,10 @@ Production source for **https://assignmentvenuecentre.me/**.
 - Shared accessibility/runtime guardrails: `assets/avc-runtime.css`, `assets/site.js`
 - Candidate operations: `assets/avc-candidate-hub.css`
 - Jobs: `assets/avc-jobs-ledger.css`, `assets/jobs.js`, `data/jobs.json`
-- Wafid medical assistance: dedicated `payment.css`, `medical-v2.css`, `medical-v2.js` and private API workflow
 
 Retired compatibility layers such as `final-polish.css`, `human-home.css`, `human-pages.css`, and `candidate-hub.js` must not be reintroduced.
+
+The retired Wafid medical-booking and payment systems, including Razorpay integration files, payment worker configuration, related workflows, status artifacts and setup documentation, must not be reintroduced into the public website unless they are intentionally rebuilt as a new reviewed system.
 
 ## Verification
 
@@ -26,4 +27,4 @@ The `AVC Public Site Integrity` GitHub Actions workflow runs this check for publ
 
 ## Protected operational areas
 
-Vacancy generation, jobs content gates, Wafid medical/payment workflows, Razorpay checks, DNS/TLS diagnostics, and their status automation are separate operational systems. Public UI cleanup should not rewrite their business logic or generated status files unless the change specifically targets that system.
+Vacancy generation, jobs content gates, DNS/TLS diagnostics and their status automation are separate operational systems. Public UI cleanup should not rewrite their business logic or generated status files unless the change specifically targets that system.
