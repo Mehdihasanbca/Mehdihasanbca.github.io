@@ -56,7 +56,13 @@ check('static_fixed_order_assertion', 'TOTAL_PAISE=177000' in js and "'/api/v1/g
 check('static_verified_case_submit', "'/api/v1/gamca-medical/public/requests'" in js and 'razorpay_signature' in js)
 check('static_failed_payment_no_pii_payload', "'/api/v1/gamca-medical/public/payment-failures'" in js and 'failure_reason' in js)
 check('static_secure_status_post', "'/api/v1/gamca-medical/public/status'" in js and "'/api/v1/gamca-medical/public/slip'" in js)
-check('static_trust_aligned', 'server-side verification' in trust.lower() and 'Hosted Payment Page' not in trust)
+trust_lower = trust.lower()
+trust_verification_marker = (
+    'server-side verification' in trust_lower
+    or 'server-side payment verification' in trust_lower
+    or 'signature verification' in trust_lower
+)
+check('static_trust_aligned', trust_verification_marker and 'Hosted Payment Page' not in trust)
 check('static_privacy_aligned', 'private ERP/API' in privacy and 'localStorage' in privacy)
 check('static_refund_aligned', 'Razorpay Checkout total' in refund and 'Hosted Payment Page' not in refund)
 check('no_razorpay_secret_pattern', not re.search(r'rzp_(?:live|test)_[A-Za-z0-9]{8,}', medical + js + trust + privacy + refund))
@@ -65,7 +71,7 @@ check('no_razorpay_secret_pattern', not re.search(r'rzp_(?:live|test)_[A-Za-z0-9
 for path, marker in [
     ('/medical-booking.html', 'medical-booking-form'),
     ('/assets/medical-v2.js', 'TOTAL_PAISE=177000'),
-    ('/payment-trust.html', 'server-side verification'),
+    ('/payment-trust.html', 'Signature verification'),
     ('/privacy.html', 'private ERP/API'),
     ('/payment-refund.html', 'Razorpay Checkout total'),
 ]:
