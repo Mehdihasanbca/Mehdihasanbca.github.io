@@ -1,4 +1,0 @@
-Run AVC Phase 20.1 final live Razorpay deployment.
-AVC service fee: ₹1,500 + GST 18% ₹270 = ₹1,770.
-Wafid third-party cost separate.
-Requested: 2026-08-07T19:18:00+05:30
