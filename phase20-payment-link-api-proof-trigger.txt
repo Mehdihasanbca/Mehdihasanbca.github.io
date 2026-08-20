@@ -1,1 +1,0 @@
-Trigger AVC Razorpay Payment Link live API proof. Create, verify, then immediately cancel a ₹1,770 link. No customer notification and no payment collection.
