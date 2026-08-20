@@ -24,6 +24,46 @@ RETIRED_PHASE10 = {
     "phase10-trigger.txt",
     ".github/workflows/phase10-launch-lock.yml",
 }
+RETIRED_WAFID_PAYMENT = {
+    "medical-booking.html",
+    "guide-wafid-medical-booking.html",
+    "payment-trust.html",
+    "payment-refund.html",
+    "payment-confirmation.html",
+    "assets/payment.css",
+    "assets/payment.js",
+    "assets/payment-config.js",
+    "assets/payment-page-config.js",
+    "assets/medical-v2.css",
+    "assets/medical-v2.js",
+    "worker/payment-api.js",
+    "wrangler.toml",
+    "docs/RAZORPAY-HOSTED-PAYMENT-PAGE.md",
+    "docs/RAZORPAY-MEDICAL-PAYMENT-SETUP.md",
+    "phase20-api-fingerprint-trigger.txt",
+    "phase20-api-production-fingerprint.txt",
+    "scripts/activate_hosted_payment_page.py",
+    "scripts/deploy_payment_live.py",
+    "scripts/finalize_payment_activation.py",
+    "scripts/phase20_api_fingerprint.py",
+    "scripts/phase20_hosted_payment_gate.py",
+    "scripts/phase20_integrate.py",
+    "scripts/phase20_wafid_v2_live_gate.py",
+    "scripts/razorpay_medical_payment_link.py",
+    ".github/workflows/phase20-api-fingerprint.yml",
+    ".github/workflows/phase20-hosted-payment.yml",
+    ".github/workflows/phase20-live-razorpay.yml",
+    ".github/workflows/phase20-simple.yml",
+    ".github/workflows/phase20-wafid-v2-live-gate.yml",
+}
+RETIRED_PUBLIC_MARKERS = {
+    "medical-booking.html",
+    "guide-wafid-medical-booking.html",
+    "payment-trust.html",
+    "payment-refund.html",
+    "payment-confirmation.html",
+    "/api/payments/",
+}
 
 
 class PageParser(HTMLParser):
@@ -123,9 +163,9 @@ def display(path: Path) -> str:
 
 
 def verify_architecture(errors: list[str]) -> None:
-    for rel in sorted(RETIRED_ASSETS | RETIRED_PHASE10):
+    for rel in sorted(RETIRED_ASSETS | RETIRED_PHASE10 | RETIRED_WAFID_PAYMENT):
         if (ROOT / rel).exists():
-            errors.append(f"retired compatibility artifact still present: {rel}")
+            errors.append(f"retired artifact still present: {rel}")
 
     homepage = (ROOT / "index.html").read_text(encoding="utf-8", errors="replace")
     if 'class="avc-grid-ui avc-home"' not in homepage:
@@ -137,6 +177,20 @@ def verify_architecture(errors: list[str]) -> None:
     for retired in ("final-polish.css", "human-home.css", "human-pages.css", "candidate-hub.js"):
         if retired in site_js:
             errors.append(f"site.js still references retired asset: {retired}")
+
+    public_sources = list(ROOT.glob("*.html")) + [
+        ROOT / "assets/site.js",
+        ROOT / "assets/measurement.js",
+        ROOT / "sitemap.xml",
+        ROOT / "sitemap-jobs.xml",
+    ]
+    for source in public_sources:
+        if not source.exists():
+            continue
+        text = source.read_text(encoding="utf-8", errors="replace")
+        for marker in sorted(RETIRED_PUBLIC_MARKERS):
+            if marker in text:
+                errors.append(f"retired Wafid/payment reference remains in {display(source)}: {marker}")
 
     cname = (ROOT / "CNAME").read_text(encoding="utf-8", errors="replace").strip()
     if cname != SITE_HOST:
