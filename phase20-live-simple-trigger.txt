@@ -1,3 +1,0 @@
-Run Razorpay live activation for AVC Wafid booking assistance.
-Pricing: AVC service ₹1,500 + GST 18% ₹270 = ₹1,770. Wafid third-party fee separate.
-Requested: 2026-08-07T19:12:00+05:30
