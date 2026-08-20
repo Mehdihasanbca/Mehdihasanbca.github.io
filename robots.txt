@@ -1,5 +1,20 @@
 User-agent: *
 Allow: /
 
+# Keep deployment, diagnostic and workflow artifacts out of search crawls.
+# These files support site operations but are not publisher content.
+Disallow: /*-trigger.txt$
+Disallow: /*-status.txt$
+Disallow: /phase*.txt$
+Disallow: /phase*.json$
+Disallow: /wafid-backend-readiness.txt
+Disallow: /search-verification-status.txt
+Disallow: /jobs-content-status.txt
+Disallow: /wrangler.toml
+Disallow: /README.md
+Disallow: /VACANCY-PUBLISHING.md
+Disallow: /worker/
+
 Sitemap: https://assignmentvenuecentre.me/sitemap.xml
+Sitemap: https://assignmentvenuecentre.me/sitemap-content.xml
 Sitemap: https://assignmentvenuecentre.me/sitemap-jobs.xml
