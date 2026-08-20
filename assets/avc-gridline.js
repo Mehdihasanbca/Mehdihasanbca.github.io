@@ -2,6 +2,19 @@
   if(window.__AVC_GRIDLINE_UI__)return;
   window.__AVC_GRIDLINE_UI__=true;
 
+  const retiredRouteNeedles=['medical-booking.html','guide-wafid-medical-india.html','payment-trust.html','payment-refund.html','payment-confirmation.html'];
+  const removeRetiredRoutes=()=>{
+    document.querySelectorAll('a[href]').forEach(link=>{
+      const href=link.getAttribute('href')||'';
+      if(!retiredRouteNeedles.some(needle=>href.includes(needle)))return;
+      const card=link.closest('article,li');
+      if(card)card.remove();else link.remove();
+    });
+  };
+  removeRetiredRoutes();
+  document.addEventListener('DOMContentLoaded',removeRetiredRoutes,{once:true});
+  requestAnimationFrame(removeRetiredRoutes);
+
   const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const gridPages=new Set([
     'index.html','about.html','services.html','jobs.html','candidates.html','employers.html','partners.html',
