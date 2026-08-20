@@ -89,6 +89,33 @@ jobs:
             fi
           fi
 
+          if [ "$token_auth" = yes ]; then
+            zone_code="$(curl -sS -o /tmp/cf-zone.json -w '%{http_code}' -H "Authorization: Bearer ${token}" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me&per_page=10' || true)"
+            if [ "$zone_code" = 200 ]; then
+              readarray -t zone_meta < <(python - <<'PY'
+          import json
+          try:
+              data=json.load(open('/tmp/cf-zone.json', encoding='utf-8'))
+              rows=data.get('result') or []
+              print('yes' if rows else 'no')
+              account=(rows[0] or {}).get('account') or {} if rows else {}
+              print(account.get('id',''))
+          except Exception:
+              print('no')
+              print('')
+          PY
+              )
+              if [ "${zone_meta[0]:-no}" = yes ]; then zone_access=yes; fi
+              zone_account_id="${zone_meta[1]:-}"
+              if [ "$account_target_available" = no ] && [ -n "$zone_account_id" ]; then
+                account_id="$zone_account_id"
+                account_target_available=yes
+                account_source=zone
+                echo "::add-mask::$account_id"
+              fi
+            fi
+          fi
+
           if [ "$token_auth" = yes ] && [ "$account_target_available" = yes ]; then
             d1_code="$(curl -sS -o /tmp/cf-d1.json -w '%{http_code}' -H "Authorization: Bearer ${token}" "https://api.cloudflare.com/client/v4/accounts/${account_id}/d1/database?per_page=100" || true)"
             if [ "$d1_code" = 200 ]; then
@@ -106,19 +133,6 @@ jobs:
 
             workers_code="$(curl -sS -o /tmp/cf-workers.json -w '%{http_code}' -H "Authorization: Bearer ${token}" "https://api.cloudflare.com/client/v4/accounts/${account_id}/workers/scripts" || true)"
             [ "$workers_code" = 200 ] && workers_list_access=yes
-          fi
-
-          if [ "$token_auth" = yes ]; then
-            zone_code="$(curl -sS -o /tmp/cf-zone.json -w '%{http_code}' -H "Authorization: Bearer ${token}" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me&per_page=10' || true)"
-            if [ "$zone_code" = 200 ] && python - <<'PY'
-          import json
-          try:
-              data=json.load(open('/tmp/cf-zone.json', encoding='utf-8'))
-              raise SystemExit(0 if (data.get('result') or []) else 1)
-          except Exception:
-              raise SystemExit(1)
-          PY
-            then zone_access=yes; fi
           fi
 
           d1_binding=no
