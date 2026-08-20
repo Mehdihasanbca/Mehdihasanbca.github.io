@@ -1,2 +1,0 @@
-Run AVC Razorpay GO LIVE automatically.
-Requested: 2026-08-07T22:14:00+05:30
