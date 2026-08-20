@@ -15,33 +15,43 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_TOKEN_A: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_TOKEN_B: ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_ACCOUNT_B: ${{ secrets.CF_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Probe Cloudflare backend capabilities without creating resources
+      - name: Probe scoped Cloudflare capabilities without creating resources
         shell: bash
         run: |
           set +e
+          token="${CF_TOKEN_A:-${CF_TOKEN_B:-}}"
+          account_id="${CF_ACCOUNT_A:-${CF_ACCOUNT_B:-}}"
           token_present=no
           token_auth=no
-          accounts_access=no
+          account_id_present=no
+          accounts_list_access=no
+          account_target_available=no
+          account_source=none
           d1_list_access=no
           workers_list_access=no
           zone_access=no
           account_count=0
           d1_count=0
-          account_id=''
 
-          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
-            token_present=yes
-            echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          if [ -n "$token" ]; then token_present=yes; echo "::add-mask::$token"; fi
+          if [ -n "$account_id" ]; then
+            account_id_present=yes
+            account_target_available=yes
+            account_source=secret
+            echo "::add-mask::$account_id"
           fi
 
           if [ "$token_present" = yes ]; then
-            token_code="$(curl -sS -o /tmp/cf-token.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/user/tokens/verify' || true)"
+            token_code="$(curl -sS -o /tmp/cf-token.json -w '%{http_code}' -H "Authorization: Bearer ${token}" 'https://api.cloudflare.com/client/v4/user/tokens/verify' || true)"
             if [ "$token_code" = 200 ] && python - <<'PY'
           import json
           try:
@@ -53,8 +63,8 @@ jobs:
             then token_auth=yes; fi
           fi
 
-          if [ "$token_auth" = yes ]; then
-            accounts_code="$(curl -sS -o /tmp/cf-accounts.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/accounts?per_page=50' || true)"
+          if [ "$token_auth" = yes ] && [ "$account_target_available" = no ]; then
+            accounts_code="$(curl -sS -o /tmp/cf-accounts.json -w '%{http_code}' -H "Authorization: Bearer ${token}" 'https://api.cloudflare.com/client/v4/accounts?per_page=50' || true)"
             if [ "$accounts_code" = 200 ]; then
               readarray -t account_meta < <(python - <<'PY'
           import json
@@ -70,12 +80,17 @@ jobs:
               )
               account_count="${account_meta[0]:-0}"
               account_id="${account_meta[1]:-}"
-              if [ -n "$account_id" ]; then accounts_access=yes; fi
+              accounts_list_access=yes
+              if [ -n "$account_id" ]; then
+                account_target_available=yes
+                account_source=list
+                echo "::add-mask::$account_id"
+              fi
             fi
           fi
 
-          if [ "$accounts_access" = yes ]; then
-            d1_code="$(curl -sS -o /tmp/cf-d1.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${account_id}/d1/database?per_page=100" || true)"
+          if [ "$token_auth" = yes ] && [ "$account_target_available" = yes ]; then
+            d1_code="$(curl -sS -o /tmp/cf-d1.json -w '%{http_code}' -H "Authorization: Bearer ${token}" "https://api.cloudflare.com/client/v4/accounts/${account_id}/d1/database?per_page=100" || true)"
             if [ "$d1_code" = 200 ]; then
               d1_list_access=yes
               d1_count="$(python - <<'PY'
@@ -89,10 +104,12 @@ jobs:
               )"
             fi
 
-            workers_code="$(curl -sS -o /tmp/cf-workers.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${account_id}/workers/scripts" || true)"
+            workers_code="$(curl -sS -o /tmp/cf-workers.json -w '%{http_code}' -H "Authorization: Bearer ${token}" "https://api.cloudflare.com/client/v4/accounts/${account_id}/workers/scripts" || true)"
             [ "$workers_code" = 200 ] && workers_list_access=yes
+          fi
 
-            zone_code="$(curl -sS -o /tmp/cf-zone.json -w '%{http_code}' -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me&per_page=10' || true)"
+          if [ "$token_auth" = yes ]; then
+            zone_code="$(curl -sS -o /tmp/cf-zone.json -w '%{http_code}' -H "Authorization: Bearer ${token}" 'https://api.cloudflare.com/client/v4/zones?name=assignmentvenuecentre.me&per_page=10' || true)"
             if [ "$zone_code" = 200 ] && python - <<'PY'
           import json
           try:
@@ -110,7 +127,7 @@ jobs:
           grep -Fq '/api/v1/gamca-medical/public/' worker/payment-api.js 2>/dev/null && medical_routes=yes
 
           status='blocked_cloudflare_capability_probe'
-          if [ "$token_auth" = yes ] && [ "$accounts_access" = yes ] && [ "$d1_list_access" = yes ] && [ "$workers_list_access" = yes ] && [ "$zone_access" = yes ]; then
+          if [ "$token_auth" = yes ] && [ "$account_target_available" = yes ] && [ "$d1_list_access" = yes ] && [ "$workers_list_access" = yes ] && [ "$zone_access" = yes ]; then
             status='cloudflare_runtime_capabilities_visible'
           fi
 
@@ -119,7 +136,10 @@ jobs:
             echo "status=$status"
             echo "cloudflare_token_present=$token_present"
             echo "cloudflare_token_auth=$token_auth"
-            echo "cloudflare_accounts_access=$accounts_access"
+            echo "cloudflare_account_id_present=$account_id_present"
+            echo "cloudflare_account_target_available=$account_target_available"
+            echo "cloudflare_account_source=$account_source"
+            echo "cloudflare_accounts_list_access=$accounts_list_access"
             echo "cloudflare_account_count=$account_count"
             echo "cloudflare_d1_list_access=$d1_list_access"
             echo "cloudflare_existing_d1_database_count=$d1_count"
