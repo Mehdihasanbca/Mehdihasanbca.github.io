@@ -8,6 +8,9 @@ body.avc-grid-ui .button.primary:hover{background:var(--avc-red-2,#b91526)!impor
 body.avc-grid-ui .job-card:hover,body.avc-grid-ui .audience-card:hover,body.avc-grid-ui .service-card:hover{box-shadow:none!important;transform:none!important}
 body.avc-grid-ui .job-card:hover{border-color:var(--avc-line-dark,rgba(7,24,39,.16))!important}
 :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--avc-focus,#0b66c3);outline-offset:3px}
+/* Retired public features: Wafid/medical booking and website payment system. */
+a[href*="medical-booking.html"],a[href*="guide-wafid-medical-india.html"],a[href*="payment-trust.html"],a[href*="payment-refund.html"],a[href*="payment-confirmation.html"]{display:none!important}
+article:has(a[href*="medical-booking.html"]),article:has(a[href*="guide-wafid-medical-india.html"]),article:has(a[href*="payment-trust.html"]),article:has(a[href*="payment-refund.html"]),article:has(a[href*="payment-confirmation.html"]),li:has(a[href*="medical-booking.html"]),li:has(a[href*="guide-wafid-medical-india.html"]),li:has(a[href*="payment-trust.html"]),li:has(a[href*="payment-refund.html"]),li:has(a[href*="payment-confirmation.html"]){display:none!important}
 @media(max-width:520px){.avc-toast{right:16px;bottom:16px;left:16px;max-width:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.avc-reveal{opacity:1!important;transform:none!important}}
 @media(prefers-contrast:more){body.avc-grid-ui .site-nav a,body.avc-grid-ui .button{border-color:currentColor}}
