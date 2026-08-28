@@ -4,8 +4,8 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-LINK = '<link rel="stylesheet" href="assets/avc-polish.css?v=20260828-p1">'
-VACANCY_LINK = '<link rel="stylesheet" href="../assets/avc-polish.css?v=20260828-p1">'
+LINK = '<link rel="stylesheet" href="assets/avc-polish.css?v=20260828-p2">'
+VACANCY_LINK = '<link rel="stylesheet" href="../assets/avc-polish.css?v=20260828-p2">'
 
 
 def patch(path: Path, link: str) -> bool:
