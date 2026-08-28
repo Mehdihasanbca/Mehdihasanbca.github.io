@@ -55,8 +55,6 @@ document.querySelectorAll('[data-year]').forEach(node=>{node.textContent=String(
 
 document.querySelectorAll('img').forEach((img,index)=>{img.decoding='async';const critical=img.closest('.site-header')||img.closest('.hero')||img.closest('.about-hero')||img.closest('.business-hero')||img.closest('.trust-hero')||img.closest('.corp-hero')||img.closest('.avc-record-hero')||img.closest('.editorial-hero')||img.closest('.article-header')||index===0;if(!critical)img.loading='lazy'});
 
-const retiredRouteNeedles=['medical-booking.html','guide-wafid-medical-india.html','payment-trust.html','payment-refund.html','payment-confirmation.html'];
-document.querySelectorAll('a[href]').forEach(link=>{const href=link.getAttribute('href')||'';if(!retiredRouteNeedles.some(needle=>href.includes(needle)))return;const card=link.closest('article,li');if(card)card.remove();else link.remove()});
 
 if(isHome){
   const heroCopy=document.querySelector('.hero .hero-grid>div:first-child')||document.querySelector('.human-hero-copy');
