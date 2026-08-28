@@ -1,0 +1,49 @@
+name: AVC Site Polish Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/avc-polish.css'
+      - 'scripts/apply_site_polish.py'
+      - '.github/workflows/site-polish.yml'
+      - 'site-polish-trigger.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avc-site-polish-sync
+  cancel-in-progress: false
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Link polish stylesheet across public pages
+        run: python scripts/apply_site_polish.py
+
+      - name: Verify public site integrity
+        run: python scripts/verify_site_integrity.py
+
+      - name: Commit polished page links
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add '*.html' 'vacancies/*.html' || true
+          if ! git diff --cached --quiet; then
+            git commit -m 'Apply AVC visual polish across public pages'
+            git pull --rebase
+            git push
+          fi
