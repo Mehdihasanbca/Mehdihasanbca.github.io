@@ -6,6 +6,7 @@ on:
     paths:
       - 'assets/avc-polish.css'
       - 'scripts/apply_site_polish.py'
+      - 'scripts/cleanup_retired_routes.py'
       - '.github/workflows/site-polish.yml'
       - 'site-polish-trigger.txt'
   workflow_dispatch:
@@ -29,19 +30,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Remove retired route references
+        run: python scripts/cleanup_retired_routes.py
+
       - name: Link polish stylesheet across public pages
         run: python scripts/apply_site_polish.py
 
       - name: Verify public site integrity
         run: python scripts/verify_site_integrity.py
 
-      - name: Commit polished page links
+      - name: Commit polished public site
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add '*.html' 'vacancies/*.html' || true
+          git add '*.html' 'vacancies/*.html' 'assets/site.js' || true
           if ! git diff --cached --quiet; then
             git commit -m 'Apply AVC visual polish across public pages'
             git pull --rebase
