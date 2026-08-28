@@ -5,7 +5,9 @@ on:
     branches: [main]
     paths:
       - 'assets/avc-polish.css'
+      - 'assets/avc-role-polish.css'
       - 'scripts/apply_site_polish.py'
+      - 'scripts/apply_role_polish.py'
       - 'scripts/cleanup_retired_routes.py'
       - '.github/workflows/site-polish.yml'
       - 'site-polish-trigger.txt'
@@ -35,6 +37,9 @@ jobs:
 
       - name: Link polish stylesheet across public pages
         run: python scripts/apply_site_polish.py
+
+      - name: Link role-page polish stylesheet
+        run: python scripts/apply_role_polish.py
 
       - name: Verify public site integrity
         run: python scripts/verify_site_integrity.py
