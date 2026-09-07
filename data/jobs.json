@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-06",
+  "updatedAt": "2026-09-07",
   "sourcePolicy": "Publish only current AVC vacancies whose public details have been verified from the concerned recruitment source. Do not invent employers, salaries, vacancy counts, deadlines, benefits, licences or selection claims.",
   "lifecycle": {
     "publicStatuses": [
@@ -54,7 +54,7 @@
       "requirements": "Minimum 2+ years experience in electrical wiring, conduit, & panel fitting. ECNR Passport.",
       "benefits": "Free Accommodation + Transport + Medical Insurance",
       "publishedAt": "2026-08-13",
-      "lastVerifiedAt": "2026-09-06",
+      "lastVerifiedAt": "2026-09-07",
       "validThrough": "2026-10-30"
     },
     {
@@ -70,7 +70,7 @@
       "requirements": "6G certification or trade test clearance required. Gulf experience preferred.",
       "benefits": "Duty Food Provided + Company Housing + Visa",
       "publishedAt": "2026-08-13",
-      "lastVerifiedAt": "2026-09-06",
+      "lastVerifiedAt": "2026-09-07",
       "validThrough": "2026-09-30"
     },
     {
@@ -86,7 +86,7 @@
       "requirements": "Experience in split AC, central HVAC, compressor troubleshooting, & controls.",
       "benefits": "Free Food Allowance + Accommodation + Transportation",
       "publishedAt": "2026-08-13",
-      "lastVerifiedAt": "2026-09-06",
+      "lastVerifiedAt": "2026-09-07",
       "validThrough": "2026-10-15"
     },
     {
@@ -102,7 +102,7 @@
       "requirements": "Valid or expired Saudi Heavy License required. Original license verification.",
       "benefits": "Accommodation + Medical + Annual Flight Allowance",
       "publishedAt": "2026-08-13",
-      "lastVerifiedAt": "2026-09-06",
+      "lastVerifiedAt": "2026-09-07",
       "validThrough": "2026-10-25"
     },
     {
@@ -118,7 +118,7 @@
       "requirements": "Block work, tile fitting, and plastering skills. Trade test ready.",
       "benefits": "Free Accommodation + Medical + Transport",
       "publishedAt": "2026-08-13",
-      "lastVerifiedAt": "2026-09-06",
+      "lastVerifiedAt": "2026-09-07",
       "validThrough": "2026-10-20"
     },
     {
@@ -134,7 +134,7 @@
       "requirements": "Physical fitness certificate, 10th pass minimum, clean police record.",
       "benefits": "PF + ESI + Uniform + Overtime Bonus",
       "publishedAt": "2026-08-13",
-      "lastVerifiedAt": "2026-09-06",
+      "lastVerifiedAt": "2026-09-07",
       "validThrough": "2026-11-30"
     }
   ]
