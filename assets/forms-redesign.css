@@ -2366,3 +2366,141 @@
   }
 }
 
+/* ==========================================================================
+   OFFICIAL PRINT & PDF EXPORT STYLESHEET
+   Formats Candidate Token & Employer Sourcing Brief for A4 Print
+   ========================================================================== */
+@media print {
+  /* Hide non-essential web chrome */
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+  }
+  
+  .topbar,
+  .site-header,
+  .verif-topbar,
+  .verif-header,
+  .emergency-safety-banner,
+  .verif-alert-ticker,
+  .footer,
+  .verif-footer,
+  .floating-whatsapp-cta,
+  .form-faq-section,
+  .video-showcase-section,
+  .google-reviews-section,
+  .lead-magnet-section,
+  .avc-modal-overlay,
+  .trust-sidebar,
+  .success-actions,
+  .stats-section,
+  .facility-gallery-section,
+  .leadership-section,
+  .avc-comparison-section,
+  .journey-tracker-section,
+  .employer-confidence-section,
+  .recruiter-verification-section,
+  .facility-deep-dive-section,
+  .testimonials-section,
+  .form-wizard,
+  .wizard-progress-bar,
+  .wizard-steps-indicator,
+  .form-header,
+  #employer-requirement-form,
+  .skip-link,
+  .avc-toast-notice {
+    display: none !important;
+  }
+
+  .form-layout-wrap,
+  .form-card,
+  .form-layout-grid {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .form-success-card {
+    display: block !important;
+    border: 2px solid #071827 !important;
+    border-radius: 8px !important;
+    padding: 24px !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+  }
+
+  .form-success-card::before {
+    content: "ASSIGNMENT VENUE CENTER (AVC) • OFFICIAL DESK RECORD";
+    display: block;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: 900;
+    color: #071827;
+    border-bottom: 2px solid #071827;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .form-success-card::after {
+    content: "OFFICIAL NOTICE: Candidate registration and interview attendance at AVC Darbhanga Venue is 100% FREE under Emigration Act 1983 compliance. Demanding money for interview call letters or job guarantees is strictly illegal. Report imposters to +91 9473286356 / info@assignmentvenuecentre.me | Kamtaul Road, Madhupur, Tekatar, Darbhanga, Bihar - 847306.";
+    display: block;
+    font-size: 8.5pt;
+    color: #475569;
+    border-top: 1px dashed #94a3b8;
+    padding-top: 12px;
+    margin-top: 24px;
+    line-height: 1.4;
+    text-align: justify;
+  }
+
+  .success-icon-wrap {
+    display: none !important;
+  }
+
+  .success-token-box {
+    background: #f1f5f9 !important;
+    border: 1px solid #071827 !important;
+    color: #071827 !important;
+    padding: 12px !important;
+    margin: 12px 0 18px !important;
+  }
+
+  .token-code {
+    font-size: 18pt !important;
+    color: #071827 !important;
+    font-family: monospace !important;
+    letter-spacing: 2px !important;
+  }
+
+  .success-details-summary {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 12px !important;
+  }
+
+  .success-details-summary dl {
+    grid-template-columns: 180px 1fr !important;
+    font-size: 10.5pt !important;
+    row-gap: 8px !important;
+  }
+
+  .success-details-summary dt {
+    font-weight: 800 !important;
+    color: #334155 !important;
+  }
+
+  .success-details-summary dd {
+    color: #000000 !important;
+    font-weight: 600 !important;
+  }
+}
+
