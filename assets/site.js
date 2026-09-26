@@ -6,6 +6,9 @@ loadStyle('company.css','assets/company.css?v=20260807');
 loadStyle('phase8.css','assets/phase8.css?v=20260807');
 loadStyle('avc-runtime.css','assets/avc-runtime.css?v=20260820-retired2');
 
+const loadScript=(needle,src)=>{if(document.querySelector(`script[src*="${needle}"]`))return;const s=document.createElement('script');s.src=src;s.defer=true;document.body.appendChild(s)};
+loadScript('avc-quickbot.js','assets/avc-quickbot.js?v=20260926-q1');
+
 const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
 const isHome=current==='index.html';
 const isGuidePage=current==='guides.html'||current.startsWith('guide-')||current==='editorial-policy.html';
