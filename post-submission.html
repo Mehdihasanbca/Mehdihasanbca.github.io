@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071827">
+  <meta name="google-adsense-account" content="ca-pub-1417105686781482">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1417105686781482" crossorigin="anonymous"></script>
+  <meta name="description" content="Candidate Post-Submission Journey & Status Tracker | Assignment Venue Center. Track your application stages, trade test timelines, and overseas deployment steps.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <link rel="canonical" href="https://assignmentvenuecentre.me/post-submission.html">
+  <title>Candidate Application Journey & Status Tracker | Assignment Venue Center</title>
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="assets/site.css?v=20260807-p10-p10">
+  <link rel="stylesheet" href="assets/company.css?v=20260807-p10">
+  <link rel="stylesheet" href="assets/avc-gridline.css?v=20260813-g1">
+  <link rel="stylesheet" href="assets/forms-redesign.css?v=20260926-v3">
+  <link rel="stylesheet" href="assets/avc-polish.css?v=20260828-p2">
+  <link rel="stylesheet" href="assets/avc-role-polish.css?v=20260828-p3">
+  <script src="assets/avc-analytics.js?v=20260926" defer></script>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Assignment Venue Center">
+  <meta property="og:locale" content="en_IN">
+  <meta property="og:title" content="Candidate Application Journey & Status Tracker | Assignment Venue Center">
+  <meta property="og:description" content="Understand the 7 stages of your Gulf recruitment journey from registration to trade test and visa mobilization.">
+  <meta property="og:url" content="https://assignmentvenuecentre.me/post-submission.html">
+  <meta property="og:image" content="https://assignmentvenuecentre.me/assets/avc-logo-intro-poster.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Candidate Application Journey & Status Tracker | Assignment Venue Center">
+  <meta name="twitter:description" content="Track your application stages and estimated timelines at AVC Darbhanga.">
+  <meta name="twitter:image" content="https://assignmentvenuecentre.me/assets/avc-logo-intro-poster.png">
+
+  <style>
+    .journey-hero {
+      background: linear-gradient(135deg, #071827 0%, #0d2847 60%, #1e3a8a 100%);
+      color: #fff;
+      padding: 60px 0 50px;
+      border-bottom: 2px solid #2563eb;
+    }
+    .journey-hero-title {
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 800;
+      margin: 12px 0 16px;
+      color: #fff;
+      line-height: 1.25;
+    }
+    .journey-hero-lead {
+      font-size: 16px;
+      color: #cbd5e1;
+      max-width: 780px;
+      line-height: 1.6;
+      margin-bottom: 26px;
+    }
+
+    /* Tracker Card */
+    .status-lookup-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      max-width: 640px;
+      margin: -30px auto 40px;
+      position: relative;
+      z-index: 10;
+    }
+    .status-lookup-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .status-lookup-head h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #0f172a;
+    }
+    .status-input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .status-input-row input {
+      flex: 1;
+      min-width: 220px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+    }
+    .status-input-row button {
+      background: #2563eb;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .status-input-row button:hover {
+      background: #1d4ed8;
+    }
+
+    /* Stepper Architecture */
+    .stepper-wrap {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 20px 0 60px;
+    }
+    .stage-item {
+      display: flex;
+      gap: 20px;
+      position: relative;
+      padding-bottom: 36px;
+    }
+    .stage-item:last-child {
+      padding-bottom: 0;
+    }
+    .stage-item::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 42px;
+      bottom: 0;
+      width: 2px;
+      background: #e2e8f0;
+    }
+    .stage-item:last-child::before {
+      display: none;
+    }
+    .stage-num-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #eff6ff;
+      border: 2px solid #3b82f6;
+      color: #1d4ed8;
+      font-weight: 800;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+    .stage-content {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px 24px;
+      flex: 1;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+    .stage-content-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .stage-content-top h4 {
+      margin: 0;
+      font-size: 17px;
+      color: #0f172a;
+    }
+    .stage-time-tag {
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .stage-desc {
+      font-size: 14px;
+      color: #475569;
+      line-height: 1.6;
+      margin: 0 0 12px;
+    }
+    .stage-action-note {
+      background: #f8fafc;
+      border-left: 3px solid #3b82f6;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      color: #1e293b;
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* Active Result Box */
+    #lookup-result-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 8px;
+      display: none;
+    }
+    #lookup-result-box.found {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      display: block;
+    }
+    #lookup-result-box.not-found {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      display: block;
+    }
+  </style>
+</head>
+<body class="avc-grid-ui">
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="container topbar-inner">
+    <span>CANDIDATE SERVICES / APPLICATION JOURNEY & TIMELINES</span>
+    <div class="topbar-links">
+      <a href="apply.html">Apply Free (₹0)</a>
+      <a href="jobs.html">Live Jobs</a>
+      <a href="company-verification.html">Verification</a>
+      <a href="trust-center.html">Zero Fee Policy</a>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="./" aria-label="Assignment Venue Center home">
+      <img src="assets/avc-logo.png" alt="Assignment Venue Center official logo">
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-nav-toggle>☰</button>
+    <nav class="site-nav" data-site-nav>
+      <a href="./">Home</a>
+      <a href="post-submission.html" aria-current="page">Application Journey</a>
+      <a href="jobs.html">Jobs</a>
+      <a href="need-skilled-manpower.html">Employers</a>
+      <a href="guides.html">Trade Guides</a>
+      <a href="trust-center.html">Trust Center</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <a class="button primary" href="apply.html">Register Profile Free</a>
+    </div>
+  </div>
+</header>
+
+<!-- Emergency Anti-Fraud Warning Banner -->
+<section class="emergency-safety-banner" aria-label="Strict Zero-Fee Notice">
+  <div class="container safety-banner-inner">
+    <div class="safety-banner-top">
+      <div class="safety-banner-title">
+        <span>⚖️</span>
+        <span>NO FEES AT ANY STAGE OF SELECTION — STRICT ₹0 POLICY</span>
+        <span class="safety-alert-badge">EMIGRATION ACT 1983 COMPLIANT</span>
+      </div>
+      <div style="font-size: 13px; color: #fee2e2;">
+        Assignment Venue Center never asks candidates for application fees, interview booking charges, or trade test venue fees. Report anyone asking for money immediately.
+      </div>
+    </div>
+  </div>
+</section>
+
+<main id="main">
+  <!-- Hero -->
+  <section class="journey-hero">
+    <div class="container">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:rgba(37,99,235,0.3);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);padding:4px 12px;border-radius:4px;font-size:12px;font-weight:700;">TRANSPARENT RECRUITMENT TIMELINE</span>
+        <span style="background:rgba(234,179,8,0.2);color:#fde047;border:1px solid rgba(253,224,71,0.3);padding:4px 12px;border-radius:4px;font-size:12px;font-weight:700;">7 RECRUITMENT MILESTONES</span>
+      </div>
+      <h1 class="journey-hero-title">What Happens After You Submit Your Application?</h1>
+      <p class="journey-hero-lead">
+        We believe in complete transparency. Understand every step your application takes from initial intake, technical screening, practical trade test at Darbhanga, to foreign employer selection and visa deployment.
+      </p>
+    </div>
+  </section>
+
+  <!-- Live Status Lookup Box -->
+  <div class="container">
+    <div class="status-lookup-card">
+      <div class="status-lookup-head">
+        <span style="font-size:24px;">🔍</span>
+        <div>
+          <h3>Track Your Application Status</h3>
+          <p style="margin:2px 0 0;font-size:13px;color:#64748b;">Enter your Application Token (e.g. AVC-APP-2026-XXXX) or registered WhatsApp phone number.</p>
+        </div>
+      </div>
+
+      <div class="status-input-row">
+        <input type="text" id="lookup-input" placeholder="e.g. AVC-APP-2026-1042 or 9876543210" aria-label="Application Token or Mobile Number">
+        <button type="button" id="lookup-btn">Check Status</button>
+      </div>
+
+      <div id="lookup-result-box"></div>
+    </div>
+  </div>
+
+  <!-- Stepper Section -->
+  <section style="background:#f8fafc;padding:30px 0 60px;">
+    <div class="container">
+      <div class="section-headline" style="text-align:center;margin-bottom:40px;">
+        <span style="color:#2563eb;font-weight:700;font-size:12px;text-transform:uppercase;">STEP-BY-STEP RECRUITMENT LIFECYCLE</span>
+        <h2 style="font-size:28px;color:#0f172a;margin:8px 0 10px;">The 7 Stages from Application to Gulf Deployment</h2>
+        <p style="color:#64748b;font-size:15px;margin:0 auto;max-width:650px;">Clear expectations and estimated timelines for each stage so you never have to wonder about your application status.</p>
+      </div>
+
+      <div class="stepper-wrap">
+        <!-- Stage 1 -->
+        <div class="stage-item">
+          <div class="stage-num-badge">1</div>
+          <div class="stage-content">
+            <div class="stage-content-top">
+              <h4>Application Submitted & Token Allocated</h4>
+              <span class="stage-time-tag">Immediate / Day 1</span>
+            </div>
+            <p class="stage-desc">
+              Your profile is registered in the AVC Candidate Database CRM. A unique application reference token (e.g. <code>AVC-APP-2026-XXXX</code>) is generated and sent to you via instant WhatsApp auto-reply and on-screen confirmation.
+            </p>
+            <div class="stage-action-note">
+              📌 <strong>What you need to do:</strong> Note down your Application Token and ensure your WhatsApp number remains active.
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="stage-item">
+          <div class="stage-num-badge">2</div>
+          <div class="stage-content">
+            <div class="stage-content-top">
+              <h4>Profile & Document Verification</h4>
+              <span class="stage-time-tag">Estimated: 1–2 Days</span>
+            </div>
+            <p class="stage-desc">
+              Our technical recruitment desk reviews your declared trade experience, technical certificates (ITI / Diploma), and passport validity. Passport must have at least 8 months remaining validity.
+            </p>
+            <div class="stage-action-note">
+              📌 <strong>What you need to do:</strong> Keep clear scanned photos of your Passport (front & back) and trade experience letters ready on your phone.
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="stage-item">
+          <div class="stage-num-badge">3</div>
+          <div class="stage-content">
+            <div class="stage-content-top">
+              <h4>Requirement Matching & Visa Block Allocation</h4>
+              <span class="stage-time-tag">Estimated: 3–5 Days</span>
+            </div>
+            <p class="stage-desc">
+              When an overseas employer or licensed Recruiting Agent issues a demand for your trade (e.g., 50 Electricians for Saudi Arabia, 30 Welders for UAE), our CRM algorithm matches your experience and passport status (ECR/ECNR) to the vacancy criteria.
+            </p>
+            <div class="stage-action-note">
+              📌 <strong>What you need to do:</strong> Check the official <a href="jobs.html">AVC Vacancy Board</a> and keep an eye on our WhatsApp Channel alerts.
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="stage-item">
+          <div class="stage-num-badge">4</div>
+          <div class="stage-content">
+            <div class="stage-content-top">
+              <h4>Interview & Practical Trade Test Invitation</h4>
+              <span class="stage-time-tag">Estimated: 5–7 Days</span>
+            </div>
+            <p class="stage-desc">
+              Shortlisted candidates receive an official call-up notice on WhatsApp with the interview date, reporting time, and testing instructions at the Assignment Venue Center campus in Darbhanga, Bihar.
+            </p>
+            <div class="stage-action-note">
+              📌 <strong>What you need to do:</strong> Confirm your attendance within 24 hours. Prepare your safety gear (safety shoes, work clothes) for hands-on practical testing.
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5 -->
+        <div class="stage-item">
+          <div class="stage-num-badge">5</div>
+          <div class="stage-content">
+            <div class="stage-content-top">
+              <h4>Hands-On Trade Testing & Client Evaluation</h4>
+              <span class="stage-time-tag">Day of Interview</span>
+            </div>
+            <p class="stage-desc">
+              You execute a 4-hour practical evaluation in our specialized testing bays (Lincoln 6G welding booths, 415V electrical benches, or trailer obstacle yard) witnessed in-person by visiting client delegates or recorded in HD video for foreign technical panels.
+            </p>
+            <div class="stage-action-note">
+              📌 <strong>What you need to do:</strong> Read our <a href="guide-technical-trade-tests-interview-questions.html">Technical Trade Test & Interview Guide</a> to review common circuits, weld joints, and troubleshooting questions beforehand.
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 6 -->
+        <div class="stage-item">
+          <div class="stage-num-badge">6</div>
+          <div class="stage-content">
+            <div class="stage-content-top">
+              <h4>Employer Selection & Offer Letter Briefing</h4>
+              <span class="stage-time-tag">Estimated: 2–4 Days Post-Test</span>
+            </div>
+            <p class="stage-desc">
+              Selected candidates are briefed on the official Job Offer: Basic Salary, Food Allowance, Working Hours, Overtime terms, Free Accommodation, and Medical Insurance. You receive a copy of your provisional selection confirmation.
+            </p>
+            <div class="stage-action-note">
+              📌 <strong>Statutory Rule:</strong> Verify that the salary matches the approved MEA eMigrate minimum wage standards before signing.
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 7 -->
+        <div class="stage-item">
+          <div class="stage-num-badge">7</div>
+          <div class="stage-content">
+            <div class="stage-content-top">
+              <h4>GAMCA Medical, PGE Clearance & Flight Mobilization</h4>
+              <span class="stage-time-tag">Estimated: 14–25 Days</span>
+            </div>
+            <p class="stage-desc">
+              Candidate completes the mandatory GAMCA medical fitness test at an authorized clinic. Selected files are forwarded to the authorized Recruiting Agent for visa endorsement, MEA eMigrate clearance (for ECR passports), and ticket issuance.
+            </p>
+            <div class="stage-action-note">
+              ✈️ <strong>Deployment:</strong> Final pre-departure orientation briefing (PDOT) and flight departure to the destination country.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Help Strip -->
+      <div style="text-align:center;margin-top:20px;">
+        <p style="font-size:14px;color:#64748b;">Have questions about your current application stage?</p>
+        <a href="https://wa.me/919473286356?text=Hello%20AVC%20Helpdesk,%20I%20have%20an%20inquiry%20regarding%20my%20application%20status." target="_blank" rel="noopener noreferrer" class="button" style="background:#25D366;color:#fff;padding:12px 24px;border-radius:6px;font-weight:700;display:inline-flex;align-items:center;gap:8px;text-decoration:none;">
+          <span>💬</span> Chat with Darbhanga Helpdesk on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="assets/avc-logo.png" alt="Assignment Venue Center official logo">
+        <p>Institutional technical trade testing venue, candidate sourcing, and interview coordination infrastructure in Darbhanga, Bihar, India.</p>
+      </div>
+      <div>
+        <h3>Candidate Portal</h3>
+        <div class="footer-links">
+          <a href="apply.html">Apply Free (₹0 Fee)</a>
+          <a href="post-submission.html">Application Journey</a>
+          <a href="jobs.html">Live Vacancies</a>
+          <a href="guides.html">Trade Guides</a>
+        </div>
+      </div>
+      <div>
+        <h3>Employers &amp; Partners</h3>
+        <div class="footer-links">
+          <a href="need-skilled-manpower.html">B2B Manpower</a>
+          <a href="employer-docket.html">Facility Specs</a>
+          <a href="sourcing-partner.html">Sourcing Network</a>
+          <a href="company-verification.html">Verification</a>
+        </div>
+      </div>
+      <div>
+        <h3>Compliance</h3>
+        <div class="footer-links">
+          <a href="trust-center.html">Zero Fee Policy</a>
+          <a href="fraud-safety.html">Fraud Advisory</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Assignment Venue Center</span>
+      <span>AVC / CANDIDATE JOURNEY TRACKER / INDIA</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js?v=20260818-t1" defer></script>
+<script src="assets/avc-gridline.js?v=20260818-t1" defer></script>
+<script>
+  // Simple Client-Side Token Lookup against Local Ledger
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('lookup-input');
+    const btn = document.getElementById('lookup-btn');
+    const resultBox = document.getElementById('lookup-result-box');
+
+    // Auto-check if URL has token
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    if (urlToken && input) {
+      input.value = urlToken;
+      checkStatus(urlToken);
+    }
+
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const val = (input?.value || '').trim();
+        if (!val) {
+          alert('Please enter your Application Token or Phone Number');
+          return;
+        }
+        checkStatus(val);
+      });
+    }
+
+    function checkStatus(query) {
+      const cleanQ = query.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+      let ledger = [];
+      try {
+        ledger = JSON.parse(localStorage.getItem('avc_candidate_ledger') || '[]');
+      } catch (e) {}
+
+      const found = ledger.find(item => {
+        const t = (item.token || '').toLowerCase();
+        const p = (item.phone || '').toLowerCase();
+        return t === cleanQ || p.includes(cleanQ) || cleanQ.includes(p);
+      });
+
+      if (found) {
+        resultBox.className = 'found';
+        resultBox.innerHTML = `
+          <h4 style="margin:0 0 8px;color:#166534;font-size:16px;">✅ Application Record Found!</h4>
+          <p style="margin:0 0 6px;font-size:13.5px;color:#1e293b;"><strong>Candidate:</strong> ${found.fullName} | <strong>Trade:</strong> ${found.trade}</p>
+          <p style="margin:0 0 6px;font-size:13.5px;color:#1e293b;"><strong>Reference:</strong> <code>${found.token}</code> | <strong>Applied on:</strong> ${found.displayDate || 'Recently'}</p>
+          <div style="margin-top:10px;padding:8px 12px;background:#dcfce7;border-radius:6px;font-weight:700;color:#15803d;font-size:13px;">
+            Current Status: ${found.status || 'Stage 2: Technical Pre-Screening'}
+          </div>
+          <div style="margin-top:10px;">
+            <a href="https://wa.me/919473286356?text=Hello%20AVC,%20my%20token%20is%20${encodeURIComponent(found.token)}.%20Please%20update%20me%20on%20my%20interview%20schedule." target="_blank" rel="noopener noreferrer" style="color:#166534;font-weight:700;font-size:13px;text-decoration:underline;">
+              💬 Click here to WhatsApp AVC regarding token ${found.token} →
+            </a>
+          </div>
+        `;
+      } else {
+        resultBox.className = 'not-found';
+        resultBox.innerHTML = `
+          <h4 style="margin:0 0 6px;color:#92400e;font-size:15px;">ℹ️ Search Note for "${query}"</h4>
+          <p style="margin:0 0 8px;font-size:13px;color:#78350f;">
+            If you submitted your application on another device or via Google Form, your record is logged in the master database.
+          </p>
+          <a href="https://wa.me/919473286356?text=Hello%20AVC%20Helpdesk,%20please%20check%20my%20application%20status.%20My%20Token%20or%20Phone%20is:%20${encodeURIComponent(query)}" target="_blank" rel="noopener noreferrer" style="background:#25D366;color:#fff;padding:8px 16px;border-radius:6px;font-size:12.5px;font-weight:700;display:inline-block;text-decoration:none;">
+            💬 Verify Directly with AVC Helpdesk on WhatsApp
+          </a>
+        `;
+      }
+    }
+  });
+</script>
+</body>
+</html>
