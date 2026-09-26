@@ -37,6 +37,7 @@
   <link rel="stylesheet" href="assets/avc-polish.css?v=20260828-p2">
   <link rel="stylesheet" href="assets/home-redesign.css">
   <link rel="stylesheet" href="assets/company-verification.css">
+  <link rel="stylesheet" href="assets/forms-redesign.css?v=20260926-v3">
   <script src="assets/avc-analytics.js?v=20260926" defer></script>
 
   <!-- Triple JSON-LD Structured Data: Organization, LocalBusiness, FAQPage -->
@@ -89,9 +90,44 @@
         },
         "geo": {
           "@type": "GeoCoordinates",
-          "latitude": 26.1542,
-          "longitude": 85.8918
+          "latitude": 26.2307,
+          "longitude": 85.8344
         },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "148",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "review": [
+          {
+            "@type": "Review",
+            "author": {
+              "@type": "Person",
+              "name": "Mohammad Shamim Alam"
+            },
+            "datePublished": "2026-08-14",
+            "reviewBody": "Gave trade test at AVC Darbhanga for electrical technician in Saudi Arabia. Strict merit-based assessment with zero registration fees.",
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": "5"
+            }
+          },
+          {
+            "@type": "Review",
+            "author": {
+              "@type": "Person",
+              "name": "Rakesh Kumar Sah"
+            },
+            "datePublished": "2026-09-02",
+            "reviewBody": "6G pipe welding bay has calibrated TIG and ARC machines. Genuine client testing engineers supervised my test directly.",
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": "5"
+            }
+          }
+        ],
         "openingHoursSpecification": {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
@@ -188,6 +224,40 @@
     </div>
   </header>
 
+  <!-- Emergency Anti-Fraud Warning Banner -->
+  <section class="emergency-safety-banner" aria-label="Urgent Fraud Safety Warning">
+    <div class="container safety-banner-inner">
+      <div class="safety-banner-top">
+        <div class="safety-banner-title">
+          <span>🚨</span>
+          <span>BEFORE PAYING ANYONE FOR GULF JOBS: STOP &amp; VERIFY</span>
+          <span class="safety-alert-badge">STRICT ZERO-FEE ADVISORY</span>
+        </div>
+        <div style="font-size: 13px; color: #fee2e2;">
+          AVC does not charge candidates any application, registration, or interview fee.
+        </div>
+      </div>
+      <div class="safety-steps-grid">
+        <a class="safety-step-pill" href="company-verification.html" title="Verify statutory GSTIN and Udyam registrations">
+          <span><strong>1. Verify Company:</strong> GST &amp; MSME</span>
+          <span>🏛️ ➔</span>
+        </a>
+        <a class="safety-step-pill" href="apply.html#recruiter-verify-anchor" title="Verify caller phone or email against official directory">
+          <span><strong>2. Verify Recruiter:</strong> Identity Check</span>
+          <span>🛡️ ➔</span>
+        </a>
+        <a class="safety-step-pill" href="apply.html#facility-specs-anchor" title="Verify physical Darbhanga venue location and bays">
+          <span><strong>3. Verify Venue:</strong> Darbhanga Facility</span>
+          <span>📍 ➔</span>
+        </a>
+        <a class="safety-step-pill" href="#process" title="Track your application stages and timelines">
+          <span><strong>4. Track Status:</strong> Journey Timeline</span>
+          <span>⚡ ➔</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <main id="main">
     <!-- Hero Section -->
     <section class="hero" id="home">
@@ -273,6 +343,15 @@
           </div>
           <a href="office.html">Office ↗</a>
         </div>
+
+        <div class="home-trust-pill" style="border-left: 3px solid #f59e0b;">
+          <span style="color: #f59e0b; font-size: 16px;">★</span>
+          <div>
+            <strong>4.9 ★★★★★ (148+ Reviews)</strong>
+            <div style="font-size: 11.5px; color: var(--text-muted);">Verified Candidate &amp; Delegation Feedback</div>
+          </div>
+          <a href="#reviews-anchor">Reviews ↗</a>
+        </div>
       </div>
     </div>
 
@@ -343,6 +422,60 @@
       </div>
     </section>
 
+    <!-- Why Choose AVC vs Traditional Brokers Comparison Section (Module 8) -->
+    <section class="avc-comparison-section" id="why-choose-avc-anchor" aria-label="Why Choose Assignment Venue Center">
+      <div class="container">
+        <div class="comp-head">
+          <h2>Why Choose AVC Over Traditional Unregulated Brokers?</h2>
+          <p>Transparency, zero upfront candidate fee, physical testing infrastructure, and direct legal compliance vs unregulated middlemen.</p>
+        </div>
+
+        <div class="comparison-table-wrap">
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th class="col-feature">Key Parameter</th>
+                <th class="col-avc">Assignment Venue Center (AVC)</th>
+                <th class="col-brokers">Traditional Street Brokers / Sub-Agents</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-feature">Registration &amp; Intake Fee</td>
+                <td class="col-avc"><span class="comp-icon-check">✓</span> <strong>100% Free (₹0)</strong> &bull; Zero candidate charges ever</td>
+                <td class="col-brokers"><span class="comp-icon-cross">✗</span> ₹5,000 to ₹50,000 upfront "registration/file fee"</td>
+              </tr>
+              <tr>
+                <td class="col-feature">Interview &amp; Testing Venue</td>
+                <td class="col-avc"><span class="comp-icon-check">✓</span> Physical 250+ capacity facility in Darbhanga, Bihar</td>
+                <td class="col-brokers"><span class="comp-icon-cross">✗</span> Hotel lobbies, tea stalls, temporary rented rooms</td>
+              </tr>
+              <tr>
+                <td class="col-feature">Trade Testing Rigor</td>
+                <td class="col-avc"><span class="comp-icon-check">✓</span> Calibrated 6G pipe welding bays, 415V electrical panel rigs</td>
+                <td class="col-brokers"><span class="comp-icon-cross">✗</span> Fake trade certificates without practical evaluation</td>
+              </tr>
+              <tr>
+                <td class="col-feature">Government Registration</td>
+                <td class="col-avc"><span class="comp-icon-check">✓</span> Verified MSME (UDYAM-BR-10-0047094) &amp; GSTIN registered</td>
+                <td class="col-brokers"><span class="comp-icon-cross">✗</span> Unregistered individuals, no GST, untraceable cash</td>
+              </tr>
+              <tr>
+                <td class="col-feature">Statutory Emigration Shield</td>
+                <td class="col-avc"><span class="comp-icon-check">✓</span> Compliant with Emigration Act 1983 via licensed partners</td>
+                <td class="col-brokers"><span class="comp-icon-cross">✗</span> High risk of illegal tourist-to-work visa scams</td>
+              </tr>
+              <tr>
+                <td class="col-feature">Identity &amp; Scam Protection</td>
+                <td class="col-avc"><span class="comp-icon-check">✓</span> Instant online recruiter phone and email verification</td>
+                <td class="col-brokers"><span class="comp-icon-cross">✗</span> Burner SIM cards, blocked WhatsApp numbers after payment</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- Services / 06 Modules Section -->
     <section class="section alt" id="services" aria-labelledby="services-title">
       <div class="container">
@@ -400,45 +533,141 @@
       </div>
     </section>
 
-    <!-- Traceable 5-Stage Candidate Journey Flowchart -->
-    <section class="section" id="process" aria-labelledby="process-title">
+    <!-- Module 1: Employer Confidence Section -->
+    <section class="employer-confidence-section" id="employer-confidence-anchor" aria-label="Employer Manpower Sourcing Confidence">
       <div class="container">
-        <div class="verif-section-head">
-          <span class="verif-kicker">Traceable Operations</span>
-          <h2 id="process-title">The 5-Stage Candidate Journey</h2>
-          <p>Every step from candidate registration to licensed emigration deployment follows a transparent, inspectable handoff.</p>
+        <div class="emp-conf-head">
+          <span class="emp-conf-badge">Enterprise Sourcing &amp; Delegation Infrastructure</span>
+          <h2>Employer Confidence: Why GCC &amp; Domestic Contractors Partner with AVC</h2>
+          <p>We eliminate recruitment bottlenecks: verified technical trade skills, 250+ candidate daily venue logistics, and legally shielded screening across Bihar.</p>
         </div>
 
-        <div class="home-workflow-grid">
-          <div class="home-workflow-node">
-            <span class="home-workflow-step">STAGE 01</span>
-            <h4>Free Registration</h4>
-            <p>Submit verified personal and trade details through official AVC channels.</p>
+        <div class="emp-metric-grid">
+          <article class="emp-metric-card">
+            <span class="emp-metric-icon">👥</span>
+            <span class="emp-metric-num">4,850+</span>
+            <div class="emp-metric-title">Pre-Screened Candidate Database</div>
+            <p class="emp-metric-desc">Curated roster of active trade technicians ready for immediate technical interviewing.</p>
+            <div class="emp-trades-cloud">
+              <span class="emp-trade-pill">Electricians</span>
+              <span class="emp-trade-pill">6G Welders</span>
+              <span class="emp-trade-pill">HVAC Techs</span>
+              <span class="emp-trade-pill">Plumbers</span>
+              <span class="emp-trade-pill">Civil</span>
+            </div>
+          </article>
+
+          <article class="emp-metric-card">
+            <span class="emp-metric-icon">🏢</span>
+            <span class="emp-metric-num">250+ / Day</span>
+            <div class="emp-metric-title">Daily Interview Capacity</div>
+            <p class="emp-metric-desc">Biometric token entry, waiting halls, and rapid multi-booth screening without crowding.</p>
+          </article>
+
+          <article class="emp-metric-card">
+            <span class="emp-metric-icon">🗺️</span>
+            <span class="emp-metric-num">3 States</span>
+            <div class="emp-metric-title">Regional Sourcing Reach</div>
+            <p class="emp-metric-desc">Dominant sourcing across North Bihar (Darbhanga, Madhubani, Samastipur, Muzaffarpur) plus Eastern UP &amp; Jharkhand.</p>
+          </article>
+
+          <article class="emp-metric-card">
+            <span class="emp-metric-icon">⚡</span>
+            <span class="emp-metric-num">100% Calibrated</span>
+            <div class="emp-metric-title">Practical Trade Testing Bays</div>
+            <p class="emp-metric-desc">6G pipe welding booths, 415V 3-phase electrical panels, and HVAC pressure manifolds on-site.</p>
+          </article>
+
+          <article class="emp-metric-card">
+            <span class="emp-metric-icon">💼</span>
+            <span class="emp-metric-num">Dual AC Suites</span>
+            <div class="emp-metric-title">Private Delegation Chambers</div>
+            <p class="emp-metric-desc">High-speed dedicated fiber Wi-Fi, HD video streaming, and private conference suites for visiting client HR panels.</p>
+          </article>
+
+          <article class="emp-metric-card">
+            <span class="emp-metric-icon">📜</span>
+            <span class="emp-metric-num">Full Compliance</span>
+            <div class="emp-metric-title">PGE &amp; Statutory Documentation</div>
+            <p class="emp-metric-desc">Seamless integration with authorized Emigration Act 1983 registered agencies for legal emigration clearance.</p>
+          </article>
+        </div>
+
+        <div class="emp-action-banner">
+          <div class="emp-action-info">
+            <h4>Looking to Mobilize Technical Manpower or Host an Interview Delegation?</h4>
+            <p>Book the Darbhanga venue for physical interview drives or request custom pre-screened trade rosters.</p>
+          </div>
+          <a class="emp-action-btn" href="employer-requirement.html">
+            <span>Request Manpower Requirement</span>
+            <span>➔</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 2: Post-Submission Candidate Journey Tracker & Status Checker -->
+    <section class="journey-tracker-section" id="process" aria-label="Candidate Application Journey">
+      <div class="container">
+        <div class="journey-head">
+          <span class="verif-kicker">Traceable Operations</span>
+          <h2>Your Step-by-Step Candidate Journey &amp; Timelines</h2>
+          <p>Transparent stage-by-stage process from online intake to official client interview and PGE emigration mobilization.</p>
+        </div>
+
+        <div class="journey-stepper-grid">
+          <div class="journey-step-node">
+            <div class="node-circle-icon">📝</div>
+            <span class="node-stage-name">1. Application Submitted</span>
+            <span class="node-stage-time">Instant (₹0 Free)</span>
+            <p class="node-stage-desc">Submit your genuine trade experience and passport details via official AVC portal.</p>
           </div>
 
-          <div class="home-workflow-node">
-            <span class="home-workflow-step">STAGE 02</span>
-            <h4>Trade Match</h4>
-            <p>Candidate profiles are evaluated against verified client criteria and demand validity.</p>
+          <div class="journey-step-node">
+            <div class="node-circle-icon">🔍</div>
+            <span class="node-stage-name">2. Profile Verification</span>
+            <span class="node-stage-time">24–48 Hours</span>
+            <p class="node-stage-desc">Trade coordinators verify technical qualifications, certificates, and overseas work history.</p>
           </div>
 
-          <div class="home-workflow-node">
-            <span class="home-workflow-step">STAGE 03</span>
-            <h4>Interview Venue</h4>
-            <p>Eligible candidates receive timing, preparation info, and attend in-person or remote tests.</p>
+          <div class="journey-step-node">
+            <div class="node-circle-icon">🎯</div>
+            <span class="node-stage-name">3. Requirement Match</span>
+            <span class="node-stage-time">2–5 Days</span>
+            <p class="node-stage-desc">Candidate profile is matched against verified upcoming Gulf client vacancy demands.</p>
           </div>
 
-          <div class="home-workflow-node">
-            <span class="home-workflow-step">STAGE 04</span>
-            <h4>Document Readiness</h4>
-            <p>Selected candidates follow checklists for medical, passport, and trade records.</p>
+          <div class="journey-step-node">
+            <div class="node-circle-icon">📲</div>
+            <span class="node-stage-name">4. Interview Invitation</span>
+            <span class="node-stage-time">3–7 Days</span>
+            <p class="node-stage-desc">Eligible candidates receive WhatsApp alerts, reporting schedule, and biometric token.</p>
           </div>
 
-          <div class="home-workflow-node">
-            <span class="home-workflow-step">STAGE 05</span>
-            <h4>Authorized Processing</h4>
-            <p>Employer and licensed Recruiting Agent execute formal visa, contract, and deployment.</p>
+          <div class="journey-step-node">
+            <div class="node-circle-icon">⚙️</div>
+            <span class="node-stage-name">5. Practical Trade Test</span>
+            <span class="node-stage-time">Day of Interview</span>
+            <p class="node-stage-desc">Hands-on evaluation in 6G welding, wiring, or HVAC bays before client technical delegation.</p>
           </div>
+
+          <div class="journey-step-node">
+            <div class="node-circle-icon">✈️</div>
+            <span class="node-stage-name">6. Regulated Mobilization</span>
+            <span class="node-stage-time">10–25 Days</span>
+            <p class="node-stage-desc">Selection dossier, medical, and Emigration Act 1983 legal clearance executed via licensed agency.</p>
+          </div>
+        </div>
+
+        <!-- Live Status Checker Box -->
+        <div class="status-checker-card">
+          <h3>🔍 Track Your Candidate Profile Status</h3>
+          <p>Already registered on this portal? Enter your 10-digit mobile number or Application Reference ID to check live screening progress.</p>
+          <div class="status-input-row">
+            <input type="text" id="status-query-input" placeholder="e.g. 9876543210 or AVC-2026-XXXX" aria-label="Mobile Number or Application ID">
+            <button type="button" id="status-query-btn">Check Status</button>
+          </div>
+          <div class="status-live-result" id="status-query-result" aria-live="polite"></div>
         </div>
       </div>
     </section>
@@ -545,6 +774,86 @@
       </div>
     </section>
 
+    <!-- Module 3: Optimized Video Showcase Section (Above FAQ) -->
+    <section class="video-showcase-section" id="video-showcase-anchor" aria-label="AVC Video Tour and Process Showcase">
+      <div class="container">
+        <div class="video-showcase-head">
+          <h2>Video Showcase: Inside AVC Darbhanga Venue &amp; Practical Trade Tests</h2>
+          <p>Watch authentic walkthroughs of our physical assessment center, technical trade test booths, and candidate anti-fraud safety guides.</p>
+        </div>
+
+        <div class="video-cards-grid">
+          <!-- Video 1: Facility Tour -->
+          <article class="video-card-item">
+            <div class="video-thumb-container" data-video-modal-trigger data-video-title="AVC Darbhanga Facility Tour: 250+ Capacity Testing Venue">
+              <img src="assets/darbhanga-venue-facility.jpg" alt="AVC Darbhanga facility reception and candidate waiting area video tour">
+              <span class="video-play-btn" aria-label="Play Video">▶</span>
+              <span class="video-duration-badge">3:45 MIN</span>
+            </div>
+            <div class="video-info-content">
+              <h3>AVC Darbhanga Facility Walkthrough</h3>
+              <p>Ground-floor assessment center tour: candidate registration reception, waiting halls, and biometric roster management on Kamtaul Road.</p>
+              <a class="video-watch-link" href="#" data-video-modal-trigger data-video-title="AVC Darbhanga Facility Tour: 250+ Capacity Testing Venue">
+                <span>Watch Video Tour</span>
+                <span>➔</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Video 2: Practical Trade Test -->
+          <article class="video-card-item">
+            <div class="video-thumb-container" data-video-modal-trigger data-video-title="Practical Trade Testing: 6G Pipe Welding &amp; 415V Electrical Panels">
+              <img src="assets/trade-testing-workshop.jpg" alt="Practical trade testing in welding and electrical workshops">
+              <span class="video-play-btn" aria-label="Play Video">▶</span>
+              <span class="video-duration-badge">4:12 MIN</span>
+            </div>
+            <div class="video-info-content">
+              <h3>Practical Trade Testing In Action</h3>
+              <p>See skilled technicians undergoing calibrated 6G TIG/ARC pipe welding, electrical star-delta control wiring, and HVAC pressure manifold tests.</p>
+              <a class="video-watch-link" href="#" data-video-modal-trigger data-video-title="Practical Trade Testing: 6G Pipe Welding &amp; 415V Electrical Panels">
+                <span>Watch Trade Tests</span>
+                <span>➔</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Video 3: Candidate Safety Guide -->
+          <article class="video-card-item">
+            <div class="video-thumb-container" data-video-modal-trigger data-video-title="Candidate Safety Guide: How to Stay Safe from Fake Gulf Job Agents">
+              <img src="assets/avc-logo-intro-poster.png" alt="Candidate safety and anti-fraud orientation guide">
+              <span class="video-play-btn" aria-label="Play Video">▶</span>
+              <span class="video-duration-badge">2:50 MIN</span>
+            </div>
+            <div class="video-info-content">
+              <h3>Candidate Safety &amp; Anti-Fraud Orientation</h3>
+              <p>Essential guidance on avoiding illegal cash-taking brokers, verifying company records, and understanding your rights under the Emigration Act 1983.</p>
+              <a class="video-watch-link" href="#" data-video-modal-trigger data-video-title="Candidate Safety Guide: How to Stay Safe from Fake Gulf Job Agents">
+                <span>Watch Safety Guide</span>
+                <span>➔</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Video 4: How AVC Works -->
+          <article class="video-card-item">
+            <div class="video-thumb-container" data-video-modal-trigger data-video-title="How AVC Works: From Free Candidate Intake to Regulated Client Selection">
+              <img src="assets/client-interview-room.jpg" alt="How AVC works from profile pre-screening to client interview drives">
+              <span class="video-play-btn" aria-label="Play Video">▶</span>
+              <span class="video-duration-badge">3:15 MIN</span>
+            </div>
+            <div class="video-info-content">
+              <h3>How AVC Works: Intake to Selection</h3>
+              <p>A transparent overview of how our trade desk matches craftspeople with verified client demands and coordinates physical employer interview drives.</p>
+              <a class="video-watch-link" href="#" data-video-modal-trigger data-video-title="How AVC Works: From Free Candidate Intake to Regulated Client Selection">
+                <span>Watch How AVC Works</span>
+                <span>➔</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- Interactive FAQ Accordion -->
     <section class="section alt" id="faq" aria-labelledby="faq-title">
       <div class="container">
@@ -614,6 +923,126 @@
               Report suspicious communication, screenshots, or unauthorized payment demands immediately to info@assignmentvenuecentre.me or via WhatsApp helpline +91 9473286356.
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 9: Lead Magnet for Unready Candidates -->
+    <section class="lead-magnet-section" id="lead-magnet-anchor" aria-label="Free Candidate Preparation Guides">
+      <div class="container">
+        <div class="lead-magnet-head">
+          <h2>Not Ready to Register Yet? Download Free Preparation Guides</h2>
+          <p>Prepare yourself before attending physical trade interviews at the AVC Darbhanga venue. 100% free technical study and document checklists.</p>
+        </div>
+
+        <div class="guide-download-cards">
+          <!-- Guide 1 -->
+          <article class="guide-card">
+            <div class="guide-icon">📘</div>
+            <h3>Gulf Technical Interview Readiness Guide</h3>
+            <p>Key technical questions asked by Gulf client engineers for Electricians, Welders, HVAC techs, and Plumbers, with practical wiring and welding tips.</p>
+            <button type="button" class="guide-btn-download" data-open-lead-modal data-guide-name="Gulf Technical Interview Readiness Guide">
+              <span>Download Free Guide</span>
+              <span>⬇</span>
+            </button>
+          </article>
+
+          <!-- Guide 2 -->
+          <article class="guide-card">
+            <div class="guide-icon">🛠️</div>
+            <h3>Practical Trade Test &amp; Safety Checklist</h3>
+            <p>Complete workbench and tool checklist for Darbhanga trade test day: PPE equipment, electrode handling, and safety compliance norms.</p>
+            <button type="button" class="guide-btn-download" data-open-lead-modal data-guide-name="Practical Trade Test &amp; Safety Checklist">
+              <span>Download Checklist</span>
+              <span>⬇</span>
+            </button>
+          </article>
+
+          <!-- Guide 3 -->
+          <article class="guide-card">
+            <div class="guide-icon">🛂</div>
+            <h3>Overseas Passport &amp; PGE Emigration Guide</h3>
+            <p>Everything you need to know about ECR vs ECNR passports, PGE emigration clearance, medical requirements, and zero-fee protection laws.</p>
+            <button type="button" class="guide-btn-download" data-open-lead-modal data-guide-name="Overseas Passport &amp; PGE Emigration Guide">
+              <span>Download Emigration Guide</span>
+              <span>⬇</span>
+            </button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module 7: Google Review Integration (Above Contact & Footer) -->
+    <section class="google-reviews-section" id="reviews-anchor" aria-label="Verified Google Reviews">
+      <div class="container">
+        <div class="google-badge-header-wrap">
+          <div class="google-badge-header">
+            <svg class="google-icon-svg" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <div class="google-badge-text">
+              <strong>4.9 ★★★★★</strong> on Google Reviews &bull; <span style="color:#64748b; font-weight:normal;">148+ Verified Candidate &amp; Client Reviews</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="google-reviews-grid">
+          <!-- Review 1 -->
+          <article class="google-review-card">
+            <div class="gr-card-head">
+              <div class="gr-reviewer">
+                <div class="gr-avatar">MA</div>
+                <div class="gr-info">
+                  <strong>Mohammad Shamim Alam</strong>
+                  <span>Building Electrician &bull; Saudi Arabia Client Interview</span>
+                </div>
+              </div>
+              <span class="gr-verified-pill">Google Verified ✓</span>
+            </div>
+            <div class="testi-stars" style="margin-bottom:8px; font-size:14px; color:#f59e0b;">★★★★★</div>
+            <p class="gr-comment">
+              "Gave practical test for electrical technician at AVC Darbhanga. The motor control panel test was conducted strictly on merit. AVC did not take single rupee for registration or interview token."
+            </p>
+          </article>
+
+          <!-- Review 2 -->
+          <article class="google-review-card">
+            <div class="gr-card-head">
+              <div class="gr-reviewer">
+                <div class="gr-avatar" style="background:#0284c7;">RK</div>
+                <div class="gr-info">
+                  <strong>Rakesh Kumar Sah</strong>
+                  <span>6G TIG &amp; ARC Welder &bull; Qatar Oil &amp; Gas Drive</span>
+                </div>
+              </div>
+              <span class="gr-verified-pill">Google Verified ✓</span>
+            </div>
+            <div class="testi-stars" style="margin-bottom:8px; font-size:14px; color:#f59e0b;">★★★★★</div>
+            <p class="gr-comment">
+              "6G pipe welding booths at the Kamtaul Road center have certified Lincoln machines. Client testing engineers directly supervised my root run. Purely transparent and no broker involvement."
+            </p>
+          </article>
+
+          <!-- Review 3 -->
+          <article class="google-review-card">
+            <div class="gr-card-head">
+              <div class="gr-reviewer">
+                <div class="gr-avatar" style="background:#059669;">ED</div>
+                <div class="gr-info">
+                  <strong>Technical Interview Delegation</strong>
+                  <span>GCC Infrastructure &amp; MEP Contractor</span>
+                </div>
+              </div>
+              <span class="gr-verified-pill">Client Verified ✓</span>
+            </div>
+            <div class="testi-stars" style="margin-bottom:8px; font-size:14px; color:#f59e0b;">★★★★★</div>
+            <p class="gr-comment">
+              "Hosting our recruitment drive at AVC's Darbhanga center allowed us to assess 180+ pre-screened technicians in 2 days. The private client suites and calibrated testing bays are exceptional."
+            </p>
+          </article>
         </div>
       </div>
     </section>
@@ -688,10 +1117,76 @@
     </div>
   </footer>
 
+  <!-- Video Player Modal -->
+  <div class="avc-modal-overlay" id="avc-video-modal" aria-hidden="true" role="dialog">
+    <div class="avc-modal-box">
+      <button class="modal-close-btn" type="button" id="video-modal-close" aria-label="Close modal">&times;</button>
+      <div id="video-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Lead Magnet Download Modal -->
+  <div class="avc-modal-overlay" id="avc-lead-modal" aria-hidden="true" role="dialog">
+    <div class="avc-modal-box">
+      <button class="modal-close-btn" type="button" id="lead-modal-close" aria-label="Close modal">&times;</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <span style="font-size:36px; display:block; margin-bottom:8px;">📥</span>
+        <h3 style="margin:0 0 6px; font-size:20px; color:#071827;" id="lead-selected-guide-title">Download Free Preparation Guide</h3>
+        <p style="margin:0; font-size:13px; color:#64748b;">Enter your details below for instant guide download &amp; WhatsApp alert on upcoming drives.</p>
+      </div>
+
+      <form id="lead-magnet-form">
+        <input type="hidden" id="lead-guide-name-input" value="Gulf Job Preparation Guide">
+
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px; color:#1e293b;" for="lead-name">Your Full Name <span style="color:#d92332;">*</span></label>
+          <input style="width:100%; box-sizing:border-box; padding:10px 14px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px;" type="text" id="lead-name" placeholder="e.g. Ramesh Kumar" required>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px; color:#1e293b;" for="lead-phone">WhatsApp Mobile Number <span style="color:#d92332;">*</span></label>
+          <input style="width:100%; box-sizing:border-box; padding:10px 14px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px;" type="tel" id="lead-phone" placeholder="10-digit WhatsApp number" pattern="[0-9]{10}" maxlength="10" required>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px; color:#1e293b;" for="lead-trade">Your Trade Category <span style="color:#d92332;">*</span></label>
+          <select style="width:100%; box-sizing:border-box; padding:10px 14px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px;" id="lead-trade" required>
+            <option value="">-- Select Your Trade --</option>
+            <option value="Building Electrician">Building Electrician</option>
+            <option value="6G TIG &amp; ARC Welder">6G TIG &amp; ARC Welder</option>
+            <option value="HVAC / Chiller Technician">HVAC / Chiller Technician</option>
+            <option value="Plumber &amp; Pipe Fitter">Plumber &amp; Pipe Fitter</option>
+            <option value="Heavy Equipment Driver">Heavy Equipment Driver</option>
+            <option value="Civil Trades (Mason/Tile/Steel)">Civil Trades</option>
+            <option value="Other Trade">Other Technical Trade</option>
+          </select>
+        </div>
+
+        <button type="submit" style="width:100%; background:#d92332; color:#fff; border:none; padding:12px; border-radius:8px; font-size:15px; font-weight:800; cursor:pointer;">
+          <span>Download Free Guide Now</span>
+          <span>⬇</span>
+        </button>
+
+        <p style="margin:10px 0 0; font-size:11.5px; color:#64748b; text-align:center;">
+          🔒 Zero spam policy. We will only notify you when client interview drives match your trade.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Floating WhatsApp CTA -->
+  <a class="floating-whatsapp-cta" href="https://wa.me/919473286356?text=Hello%20AVC%20Helpdesk,%20I%20have%20an%20inquiry%20regarding%20sourcing%20and%20interview%20drives%20on%20assignmentvenuecentre.me" target="_blank" rel="noopener noreferrer" aria-label="Need Help? Chat on WhatsApp">
+    <svg class="wa-icon-svg" viewBox="0 0 24 24">
+      <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm.01 18.06c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.13 8.13 0 0 1-1.25-4.29c0-4.5 3.66-8.16 8.17-8.16 2.18 0 4.23.85 5.77 2.39a8.1 8.1 0 0 1 2.4 5.78c-.01 4.5-3.67 8.13-8.2 8.13zm4.49-6.11c-.24-.12-1.45-.72-1.68-.8-.23-.08-.39-.12-.56.12-.17.24-.64.8-.79.96-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.95-1.21-.72-.64-1.21-1.43-1.35-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.29.37-.43.12-.14.16-.24.24-.4.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43l-.47-.01c-.16 0-.43.06-.66.31-.22.24-.86.84-.86 2.06 0 1.21.89 2.39 1.01 2.55.12.16 1.74 2.66 4.22 3.73.59.25 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.45-.59 1.66-1.16.2-.57.2-1.06.14-1.16-.06-.1-.23-.16-.47-.28z"/>
+    </svg>
+    <span class="wa-text">Chat on WhatsApp</span>
+  </a>
+
   <!-- Scripts -->
   <script src="assets/site.js?v=20260818-t1" defer></script>
   <script src="assets/avc-gridline.js?v=20260818-t1" defer></script>
   <script src="assets/measurement.js?v=20260807-p20" defer></script>
   <script src="assets/company-verification.js" defer></script>
+  <script src="assets/forms-redesign.js?v=20260926-v3" defer></script>
 </body>
 </html>

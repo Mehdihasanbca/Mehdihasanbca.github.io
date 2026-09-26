@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071827">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Operations & Conversion Telemetry Console | Assignment Venue Center</title>
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="assets/site.css?v=20260926-v2">
+  <link rel="stylesheet" href="assets/forms-redesign.css?v=20260926-v3">
+  <script src="assets/avc-analytics.js?v=20260926"></script>
+  <style>
+    .analytics-console-wrap {
+      padding: 40px 0 60px;
+      background: #f8fafc;
+      min-height: 80vh;
+    }
+    .console-header-card {
+      background: linear-gradient(135deg, #071827 0%, #0d2744 100%);
+      color: #ffffff;
+      padding: 32px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .metrics-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+    .metric-card-box {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .metric-val {
+      font-size: 32px;
+      font-weight: 900;
+      color: #071827;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .metric-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .funnel-container {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .funnel-bars-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+      text-align: center;
+    }
+    .funnel-col {
+      background: #f1f5f9;
+      padding: 16px 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .funnel-num {
+      font-size: 22px;
+      font-weight: 900;
+      color: #0284c7;
+    }
+    .funnel-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 4px;
+    }
+    .events-table-wrap {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      overflow-x: auto;
+      padding: 20px;
+    }
+    .events-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .events-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 2px solid #cbd5e1;
+      color: #071827;
+      font-weight: 700;
+    }
+    .events-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+    .event-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    .action-btn-row {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-act {
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-act.danger {
+      background: #dc2626;
+    }
+    @media (max-width: 900px) {
+      .metrics-summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .funnel-bars-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="avc-grid-ui">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>INTERNAL EXECUTIVE TELEMETRY & CONVERSION CONSOLE</span>
+      <div class="topbar-links">
+        <a href="./">Home</a>
+        <a href="apply.html">Candidate Portal</a>
+        <a href="employer-requirement.html">Employer Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="analytics-console-wrap">
+    <div class="container">
+      
+      <!-- Console Header -->
+      <div class="console-header-card">
+        <div>
+          <span style="background:rgba(233,180,76,0.2); color:#e9b44c; padding:3px 10px; border-radius:12px; font-size:11.5px; font-weight:800; text-transform:uppercase;">AVC Operations Analytics</span>
+          <h1 style="margin:8px 0 4px; font-size:26px; color:#fff;">Platform Conversion & Lead Telemetry</h1>
+          <p style="margin:0; font-size:14px; color:#cbd5e1;">Real-time funnel progression, candidate intake drop-offs, WhatsApp engagements, and guide downloads.</p>
+        </div>
+        <div class="action-btn-row">
+          <button class="btn-act" type="button" id="btn-refresh-metrics">🔄 Refresh</button>
+          <button class="btn-act" type="button" id="btn-export-json">📥 Export JSON</button>
+          <button class="btn-act danger" type="button" id="btn-clear-telemetry">🗑️ Clear Ledger</button>
+        </div>
+      </div>
+
+      <!-- Core Metrics 4-Box Grid -->
+      <div class="metrics-summary-grid">
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-total-events" style="color:#0284c7;">0</span>
+          <span class="metric-label">Total Telemetry Events</span>
+        </div>
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-form-starts" style="color:#f59e0b;">0</span>
+          <span class="metric-label">Form Starts Initiated</span>
+        </div>
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-form-completions" style="color:#10b981;">0</span>
+          <span class="metric-label">Profiles Registered (100% Free)</span>
+        </div>
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-conversion-rate" style="color:#d92332;">0%</span>
+          <span class="metric-label">Funnel Completion Rate</span>
+        </div>
+      </div>
+
+      <!-- Secondary Metrics Strip -->
+      <div class="metrics-summary-grid">
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-whatsapp-clicks" style="color:#25d366;">0</span>
+          <span class="metric-label">WhatsApp Outreach Clicks</span>
+        </div>
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-lead-downloads" style="color:#8b5cf6;">0</span>
+          <span class="metric-label">Lead Magnet Downloads</span>
+        </div>
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-recruiter-queries" style="color:#06b6d4;">0</span>
+          <span class="metric-label">Recruiter Identity Checks</span>
+        </div>
+        <div class="metric-card-box">
+          <span class="metric-val" id="metric-phone-calls" style="color:#ea580c;">0</span>
+          <span class="metric-label">Direct Phone Calls</span>
+        </div>
+      </div>
+
+      <!-- Funnel Flow Breakdown -->
+      <div class="funnel-container">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="margin:0 0 4px; font-size:18px; color:#071827;">Candidate Intake Funnel Progression</h3>
+            <p style="margin:0; font-size:13px; color:#64748b;">Step-by-step candidate drop-off analysis across the 4-Step Intake Wizard.</p>
+          </div>
+          <span id="funnel-drop-badge" style="background:#fee2e2; color:#991b1b; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:700;">Drop Rate Monitored</span>
+        </div>
+
+        <div class="funnel-bars-grid">
+          <div class="funnel-col">
+            <div class="funnel-num" id="f-step-1">0</div>
+            <div class="funnel-title">Step 1: Personal Info</div>
+          </div>
+          <div class="funnel-col">
+            <div class="funnel-num" id="f-step-2">0</div>
+            <div class="funnel-title">Step 2: Trade Select</div>
+          </div>
+          <div class="funnel-col">
+            <div class="funnel-num" id="f-step-3">0</div>
+            <div class="funnel-title">Step 3: Experience &amp; Passport</div>
+          </div>
+          <div class="funnel-col">
+            <div class="funnel-num" id="f-step-4">0</div>
+            <div class="funnel-title">Step 4: Declarations</div>
+          </div>
+          <div class="funnel-col" style="background:#ecfdf5; border-color:#a7f3d0;">
+            <div class="funnel-num" id="f-step-done" style="color:#059669;">0</div>
+            <div class="funnel-title" style="color:#065f46;">Token Generated</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Event Ledger Table -->
+      <div class="events-table-wrap">
+        <h3 style="margin:0 0 14px; font-size:18px; color:#071827;">Recent Telemetry Stream (Latest 50 Events)</h3>
+        <table class="events-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Event</th>
+              <th>Page Path</th>
+              <th>Device</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="telemetry-table-body">
+            <tr>
+              <td colspan="5" style="text-align:center; padding:20px; color:#64748b;">Loading telemetry data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <span>© 2026 Assignment Venue Center (AVC). All rights reserved.</span>
+        <span>Executive Operations &amp; Conversion Analytics</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const renderTelemetry = () => {
+        if (!window.AVCAnalytics) return;
+        const summary = window.AVCAnalytics.getSummary();
+        const ledger = window.AVCAnalytics.getLedger();
+
+        // Counts
+        const events = summary.events_breakdown || {};
+        const total = summary.total_events || 0;
+        const starts = events.form_start || 0;
+        const completes = events.form_complete || 0;
+        const rate = starts > 0 ? ((completes / starts) * 100).toFixed(1) + '%' : completes > 0 ? '100%' : '0%';
+
+        document.getElementById('metric-total-events').textContent = total;
+        document.getElementById('metric-form-starts').textContent = starts;
+        document.getElementById('metric-form-completions').textContent = completes;
+        document.getElementById('metric-conversion-rate').textContent = rate;
+
+        document.getElementById('metric-whatsapp-clicks').textContent = events.whatsapp_click || 0;
+        document.getElementById('metric-lead-downloads').textContent = events.lead_magnet_download || 0;
+        document.getElementById('metric-recruiter-queries').textContent = events.recruiter_verification_query || 0;
+        document.getElementById('metric-phone-calls').textContent = events.call_click || 0;
+
+        // Funnel
+        const flow = summary.funnel_flow || {};
+        document.getElementById('f-step-1').textContent = flow.step1 || 0;
+        document.getElementById('f-step-2').textContent = flow.step2 || 0;
+        document.getElementById('f-step-3').textContent = flow.step3 || 0;
+        document.getElementById('f-step-4').textContent = flow.step4 || 0;
+        document.getElementById('f-step-done').textContent = completes;
+
+        // Table
+        const tbody = document.getElementById('telemetry-table-body');
+        tbody.innerHTML = '';
+        if (ledger.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">No events recorded yet. Navigate through the site to generate events.</td></tr>';
+          return;
+        }
+
+        const reversed = [...ledger].reverse().slice(0, 50);
+        reversed.forEach((ev) => {
+          const tr = document.createElement('tr');
+          const time = new Date(ev.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          const detail = Object.entries(ev)
+            .filter(([k]) => !['event', 'timestamp', 'path', 'device', 'session_id', 'url'].includes(k))
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(' | ') || '-';
+
+          tr.innerHTML = `
+            <td style="font-family:monospace; font-size:12px;">${time}</td>
+            <td><span class="event-badge">${ev.event}</span></td>
+            <td>${ev.path || '/'}</td>
+            <td><span style="font-size:11px; text-transform:uppercase;">${ev.device || 'desktop'}</span></td>
+            <td style="font-size:12px; color:#475569;">${detail}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      };
+
+      renderTelemetry();
+
+      document.getElementById('btn-refresh-metrics').addEventListener('click', renderTelemetry);
+
+      document.getElementById('btn-export-json').addEventListener('click', () => {
+        const ledger = window.AVCAnalytics ? window.AVCAnalytics.getLedger() : [];
+        const blob = new Blob([JSON.stringify(ledger, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `AVC_Analytics_Ledger_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('btn-clear-telemetry').addEventListener('click', () => {
+        if (confirm('Clear all stored telemetry events in this browser?')) {
+          if (window.AVCAnalytics) window.AVCAnalytics.clearData();
+          renderTelemetry();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
