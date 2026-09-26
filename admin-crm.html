@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071827">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Executive Recruitment CRM &amp; Lead Console | Assignment Venue Center</title>
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="assets/site.css?v=20260807-p10">
+  <link rel="stylesheet" href="assets/company.css?v=20260807-p10">
+  <link rel="stylesheet" href="assets/forms-redesign.css?v=20260926-v3">
+  <style>
+    .crm-admin-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 16px 60px; }
+    .crm-hero { background: linear-gradient(135deg, #071827 0%, #0f2b48 100%); color: #fff; padding: 28px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .crm-hero h1 { font-size: 26px; margin: 0 0 6px; color: #fff; }
+    .crm-hero p { margin: 0; color: #94a3b8; font-size: 14px; }
+    
+    .crm-grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .crm-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .crm-card h3 { font-size: 16px; margin: 0 0 8px; color: #071827; display: flex; align-items: center; justify-content: space-between; }
+    .crm-card p { font-size: 13px; color: #475569; margin: 0 0 14px; line-height: 1.45; }
+    
+    .crm-btn-sm { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: all 0.15s ease; }
+    .crm-btn-primary { background: #071827; color: #fff; }
+    .crm-btn-primary:hover { background: #1e3a5f; }
+    .crm-btn-outline { background: #fff; border-color: #cbd5e1; color: #334155; }
+    .crm-btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
+    .crm-btn-success { background: #15803d; color: #fff; }
+    .crm-btn-success:hover { background: #166534; }
+    
+    .crm-table-wrap { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 24px; overflow-x: auto; }
+    .crm-table-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+    .crm-search-box { display: flex; gap: 8px; min-width: 280px; }
+    .crm-input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; flex: 1; }
+    
+    table.crm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.crm-table th { background: #f8fafc; text-align: left; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; color: #334155; font-weight: 700; white-space: nowrap; }
+    table.crm-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: middle; }
+    table.crm-table tr:hover { background: #f8fafc; }
+    
+    .status-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .status-badge-blue { background: #e0f2fe; color: #0369a1; }
+    .status-badge-green { background: #dcfce7; color: #15803d; }
+    .status-badge-amber { background: #fef3c7; color: #b45309; }
+    
+    .webhook-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .webhook-form { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    
+    .code-preview { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 6px; font-family: monospace; font-size: 12px; overflow-x: auto; max-height: 240px; margin: 12px 0; }
+  </style>
+</head>
+<body class="avc-grid-ui">
+<div class="topbar">
+  <div class="container topbar-inner">
+    <span>EXECUTIVE RECRUITMENT OPERATIONS / FOUNDER CONSOLE</span>
+    <div class="topbar-links">
+      <a href="https://assignmentvenuecentre.me">Public Site</a>
+      <a href="analytics-summary.html">Analytics Telemetry</a>
+      <a href="company-verification.html">Company Registry</a>
+    </div>
+  </div>
+</div>
+
+<main id="main" class="crm-admin-wrap">
+  <!-- HERO HEADER -->
+  <section class="crm-hero">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+      <div>
+        <span style="background:rgba(255,255,255,0.15); padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:inline-block;">Founder &amp; Head Console</span>
+        <h1>AVC Recruitment CRM &amp; Automation Hub</h1>
+        <p>Managed for <strong>Mehdi Hasan</strong> &bull; Ground Floor, Kamtaul Road, Madhupur, Tekatar, Darbhanga, Bihar - 847306</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="btn-export-csv" class="crm-btn-sm crm-btn-outline" style="background:#fff;">📥 Export Leads (CSV)</button>
+        <button id="btn-export-json" class="crm-btn-sm crm-btn-outline" style="background:#fff;">💾 Backup (JSON)</button>
+        <a href="https://wa.me/919473286356" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-success">💬 AVC WhatsApp Helpdesk</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOOGLE WORKSPACE MASTER ASSETS QUICK-LAUNCH -->
+  <h2 style="font-size:18px; margin:0 0 14px; color:#071827;">Connected Google Workspace Assets</h2>
+  <div class="crm-grid-cards">
+    <!-- Card 1 -->
+    <div class="crm-card">
+      <h3>
+        <span>Google Registration Form</span>
+        <span class="status-badge status-badge-green">Public Intake</span>
+      </h3>
+      <p>Official candidate questionnaire with Google Drive CV upload support. Linked across site buttons &amp; QR codes.</p>
+      <div style="display:flex; gap:8px;">
+        <a href="https://docs.google.com/forms/d/10VxnfNRb5Rdj8Mr5rUfRwm5pF4WO5rSW-eV73r2PNs4/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-primary">Edit Google Form ↗</a>
+        <a href="https://forms.gle/1nVwzXHiHV9Cjw4A9" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-outline">Open Live View ↗</a>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="crm-card">
+      <h3>
+        <span>Raw Responses Sheet</span>
+        <span class="status-badge status-badge-blue">577+ Submissions</span>
+      </h3>
+      <p>Direct sheet where form entries arrive in real-time. Monitored autonomously at 9 AM, 1 PM, and 5 PM IST.</p>
+      <a href="https://docs.google.com/spreadsheets/d/1V-9H3jhpS2Sy5bTqWIN3z88YPDjod5wzBKeJXqwskRI/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-primary">Open Responses Sheet ↗</a>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="crm-card">
+      <h3>
+        <span>Master Recruitment CRM</span>
+        <span class="status-badge status-badge-green">423 Verified Ready</span>
+      </h3>
+      <p>Cleaned talent pool organized by sector (Plant Operators, MEP, HSE, Instrumentation) with candidate IDs &amp; compliance flags.</p>
+      <a href="https://docs.google.com/spreadsheets/d/17yz3fMT7t4r3vna-auqsBr0HU1dQ8mIfsbBRJ9G0ufY/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-primary">Open Master CRM ↗</a>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="crm-card">
+      <h3>
+        <span>Client Submission Roster</span>
+        <span class="status-badge status-badge-amber">Bypass Protected</span>
+      </h3>
+      <p>All candidates with contact numbers stripped. Ready to download as Excel/PDF and email directly to GCC employers.</p>
+      <a href="https://docs.google.com/spreadsheets/d/1Mhv5iQ0L0J07SZ35eh1ADLm3X_02Kwz1vPxtnR1lDVM/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-primary">Open Client Roster ↗</a>
+    </div>
+  </div>
+
+  <!-- TARGETED CLIENT DOSSIERS -->
+  <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:8px; padding:16px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+    <div>
+      <strong style="font-size:14px; color:#0f172a;">Active Client Demand Dossiers:</strong>
+      <span style="font-size:13px; color:#475569; margin-left:8px;">Ready for immediate submission to GCC employers (No Contacts).</span>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="https://docs.google.com/spreadsheets/d/1Z7KdyOM0PdY_FHPiW0AA4QPxgU5AyZJwV-unevmO3yM/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-outline">⚡ Saudi 30 Electricians (DMD-SA-0001)</a>
+      <a href="https://docs.google.com/spreadsheets/d/1CCocY4svp0MOTD9XeBs3Bv_L7AzlXuVHDtLgZPB_e1M/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-outline">🧹 Oman 11 Cleaners (DMND-00007)</a>
+    </div>
+  </div>
+
+  <!-- WEBHOOK & APPS SCRIPT ENGINE SETTINGS -->
+  <section class="webhook-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div>
+        <h3 style="margin:0 0 4px; font-size:15px; color:#071827;">Google Apps Script Webhook &amp; Auto-Reply Engine</h3>
+        <p style="margin:0; font-size:12.5px; color:#64748b;">
+          Connect your Google Sheet's Apps Script Web App URL to receive website leads from <code>apply.html</code> and send instant auto-reply confirmation emails to applicants.
+        </p>
+      </div>
+      <button id="btn-toggle-script" class="crm-btn-sm crm-btn-outline">📜 View Apps Script Code</button>
+    </div>
+
+    <div class="webhook-form">
+      <input type="url" id="webhook-url-input" class="crm-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" style="min-width:320px;">
+      <button id="btn-save-webhook" class="crm-btn-sm crm-btn-primary">Save Webhook</button>
+      <button id="btn-test-webhook" class="crm-btn-sm crm-btn-outline">Test Connection</button>
+    </div>
+    <div id="webhook-status-msg" style="margin-top:8px; font-size:12.5px;"></div>
+
+    <!-- Collapsible Code Container -->
+    <div id="apps-script-preview-wrap" style="display:none; margin-top:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12.5px; font-weight:700; color:#334155;">Google Apps Script File: <code>scripts/AVC_CRM_AutoReply_and_API_Script.gs</code></span>
+        <button id="btn-copy-script" class="crm-btn-sm crm-btn-primary">📋 Copy Complete Script</button>
+      </div>
+      <div class="code-preview" id="apps-script-code-box">
+// Copy the full script from scripts/AVC_CRM_AutoReply_and_API_Script.gs in your local repository
+// and paste it into Google Sheet > Extensions > Apps Script.
+// Then click Deploy > New Deployment > Web App (Access: Anyone).
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE INGESTED LEADS TABLE -->
+  <section class="crm-table-wrap">
+    <div class="crm-table-head">
+      <div>
+        <h2 style="font-size:18px; margin:0 0 4px; color:#071827;">Website Ingested Candidate Leads (Local &amp; Webhook Buffer)</h2>
+        <span style="font-size:12.5px; color:#64748b;" id="leads-count-label">Loading registered candidate leads...</span>
+      </div>
+      <div class="crm-search-box">
+        <input type="text" id="lead-search-input" class="crm-input" placeholder="Search by name, trade, phone, or token...">
+        <button id="btn-clear-leads" class="crm-btn-sm crm-btn-outline" style="color:#b91c1c;">Clear Test Leads</button>
+      </div>
+    </div>
+
+    <!-- Trade Filter Pills -->
+    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;" id="trade-filter-bar">
+      <button class="crm-btn-sm crm-btn-primary" data-filter="all">All Leads</button>
+      <button class="crm-btn-sm crm-btn-outline" data-filter="crane">Crane &amp; Operators</button>
+      <button class="crm-btn-sm crm-btn-outline" data-filter="electrician">MEP &amp; Electricians</button>
+      <button class="crm-btn-sm crm-btn-outline" data-filter="instrument">Instrumentation</button>
+      <button class="crm-btn-sm crm-btn-outline" data-filter="welder">Welders &amp; Piping</button>
+      <button class="crm-btn-sm crm-btn-outline" data-filter="safety">HSE &amp; Safety</button>
+    </div>
+
+    <table class="crm-table">
+      <thead>
+        <tr>
+          <th>Ref Token</th>
+          <th>Applicant Name</th>
+          <th>Primary Trade</th>
+          <th>Experience</th>
+          <th>Passport</th>
+          <th>Contact &amp; District</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="candidate-leads-tbody">
+        <!-- Rendered dynamically -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- EMPLOYER SOURCING BRIEFS TABLE -->
+  <section class="crm-table-wrap">
+    <div class="crm-table-head">
+      <div>
+        <h2 style="font-size:18px; margin:0 0 4px; color:#071827;">Enterprise Employer Sourcing Briefs</h2>
+        <span style="font-size:12.5px; color:#64748b;" id="emp-count-label">B2B client demands submitted through <code>employer-requirement.html</code></span>
+      </div>
+    </div>
+
+    <table class="crm-table">
+      <thead>
+        <tr>
+          <th>Brief Token</th>
+          <th>Company Name</th>
+          <th>Authorized Contact</th>
+          <th>Country &amp; Industry</th>
+          <th>Trades &amp; Headcount</th>
+          <th>Interview Mode</th>
+          <th>Submission Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="employer-leads-tbody">
+        <!-- Rendered dynamically -->
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>&copy; <span data-year></span> Assignment Venue Center &bull; Executive Recruitment CRM</span>
+      <a href="https://assignmentvenuecentre.me">assignmentvenuecentre.me</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Webhook Settings Management
+    const webhookInput = document.getElementById('webhook-url-input');
+    const saveWebhookBtn = document.getElementById('btn-save-webhook');
+    const testWebhookBtn = document.getElementById('btn-test-webhook');
+    const webhookMsg = document.getElementById('webhook-status-msg');
+    const toggleScriptBtn = document.getElementById('btn-toggle-script');
+    const scriptWrap = document.getElementById('apps-script-preview-wrap');
+    const copyScriptBtn = document.getElementById('btn-copy-script');
+
+    const savedUrl = localStorage.getItem('avc_webhook_url') || '';
+    if (webhookInput && savedUrl) webhookInput.value = savedUrl;
+
+    if (saveWebhookBtn && webhookInput) {
+      saveWebhookBtn.addEventListener('click', () => {
+        const val = webhookInput.value.trim();
+        if (val) {
+          localStorage.setItem('avc_webhook_url', val);
+          webhookMsg.innerHTML = '<span style="color:#15803d; font-weight:700;">✅ Webhook URL saved successfully into browser storage.</span>';
+        } else {
+          localStorage.removeItem('avc_webhook_url');
+          webhookMsg.innerHTML = '<span style="color:#b91c1c;">Webhook URL cleared.</span>';
+        }
+      });
+    }
+
+    if (testWebhookBtn && webhookInput) {
+      testWebhookBtn.addEventListener('click', async () => {
+        const val = webhookInput.value.trim();
+        if (!val) {
+          alert('Please enter a Google Apps Script Web App URL first.');
+          return;
+        }
+        webhookMsg.innerHTML = '<span style="color:#0284c7;">Testing connection to Apps Script Web App...</span>';
+        try {
+          const resp = await fetch(val + '?q=ping', { mode: 'no-cors' });
+          webhookMsg.innerHTML = '<span style="color:#15803d; font-weight:700;">✅ Connection test request dispatched! The web app is reachable.</span>';
+        } catch (e) {
+          webhookMsg.innerHTML = '<span style="color:#b91c1c;">⚠️ Test failed: ' + e.message + '</span>';
+        }
+      });
+    }
+
+    if (toggleScriptBtn && scriptWrap) {
+      toggleScriptBtn.addEventListener('click', () => {
+        const isHidden = scriptWrap.style.display === 'none';
+        scriptWrap.style.display = isHidden ? 'block' : 'none';
+        toggleScriptBtn.textContent = isHidden ? '❌ Close Script Code' : '📜 View Apps Script Code';
+      });
+    }
+
+    if (copyScriptBtn) {
+      copyScriptBtn.addEventListener('click', () => {
+        const scriptCode = `// PASTE SCRIPTS/AVC_CRM_AUTOREPLY_AND_API_SCRIPT.GS HERE
+// File located at: scripts/AVC_CRM_AutoReply_and_API_Script.gs in your local repository.`;
+        navigator.clipboard.writeText(scriptCode).then(() => {
+          alert('Apps Script template copied! You can view the full file at scripts/AVC_CRM_AutoReply_and_API_Script.gs');
+        }).catch(() => {
+          alert('Please copy manually from scripts/AVC_CRM_AutoReply_and_API_Script.gs');
+        });
+      });
+    }
+
+    // 2. Candidate Leads Rendering
+    const candidateTbody = document.getElementById('candidate-leads-tbody');
+    const leadsCountLabel = document.getElementById('leads-count-label');
+    const searchInput = document.getElementById('lead-search-input');
+    const clearLeadsBtn = document.getElementById('btn-clear-leads');
+    const filterButtons = document.querySelectorAll('#trade-filter-bar button');
+
+    let candidateLedger = [];
+    try {
+      candidateLedger = JSON.parse(localStorage.getItem('avc_candidate_ledger') || '[]');
+    } catch (e) {}
+
+    // Seed sample records if empty so the UI is immediately demonstrative
+    if (candidateLedger.length === 0) {
+      candidateLedger = [
+        {
+          token: 'AVC-CAND-0423',
+          fullName: 'Aashif Ahmad',
+          phone: '7004991787',
+          email: 'aasifahmad651@gmail.com',
+          trade: 'Electrical Technician',
+          expTotal: '5 Years',
+          expGulf: '2 Years GCC',
+          passport: 'ECNR Ready (2036)',
+          district: 'Ranchi, Jharkhand',
+          status: 'Stage 2: Technical Pre-Screening',
+          displayDate: '24 Sep 2026'
+        },
+        {
+          token: 'AVC-CAND-0422',
+          fullName: 'Nikhil Velu Pillai Thankappan Pillai',
+          phone: '9845112233',
+          email: 'nikhilveetee@gmail.com',
+          trade: 'HSE Engineer (NEBOSH)',
+          expTotal: '16 Years',
+          expGulf: '14 Years Qatar',
+          passport: 'ECNR Ready (2031)',
+          district: 'Kerala / Qatar',
+          status: 'Stage 2: Technical Pre-Screening',
+          displayDate: '20 Sep 2026'
+        },
+        {
+          token: 'AVC-CAND-0421',
+          fullName: 'Ankit Kumar',
+          phone: '9471882233',
+          email: 'ankit.avc@gmail.com',
+          trade: 'Project & Resource Coordinator',
+          expTotal: '4 Years',
+          expGulf: 'India EPC',
+          passport: 'ECNR Ready',
+          district: 'Darbhanga, Bihar',
+          status: 'Stage 2: Technical Pre-Screening',
+          displayDate: '18 Sep 2026'
+        },
+        {
+          token: 'AVC-CAND-0420',
+          fullName: 'Talat Iqbal',
+          phone: '9871234567',
+          email: 'talatiqbal623@gmail.com',
+          trade: 'Electrical Technician',
+          expTotal: '8 Years',
+          expGulf: '8 Years Saudi Arabia (Jeddah)',
+          passport: 'ECNR Ready (2034)',
+          district: 'Jeddah / Bihar',
+          status: 'Stage 2: Technical Pre-Screening',
+          displayDate: '18 Sep 2026'
+        },
+        {
+          token: 'AVC-CAND-0419',
+          fullName: 'Manoj Uday Naik',
+          phone: '9880094729',
+          email: 'soulmanu11@gmail.com',
+          trade: 'Mechanic Technician',
+          expTotal: '3 Years',
+          expGulf: '3 Years Oman (Al Fajar)',
+          passport: 'ECNR Ready (2033)',
+          district: 'Karnataka / Oman',
+          status: 'Stage 2: Technical Pre-Screening',
+          displayDate: '12 Sep 2026'
+        }
+      ];
+      localStorage.setItem('avc_candidate_ledger', JSON.stringify(candidateLedger));
+    }
+
+    function renderCandidates(filter = 'all', query = '') {
+      if (!candidateTbody) return;
+      let filtered = candidateLedger;
+
+      if (filter !== 'all') {
+        const f = filter.toLowerCase();
+        filtered = filtered.filter(c => (c.trade || '').toLowerCase().includes(f));
+      }
+
+      if (query) {
+        const q = query.toLowerCase();
+        filtered = filtered.filter(c =>
+          (c.fullName || '').toLowerCase().includes(q) ||
+          (c.trade || '').toLowerCase().includes(q) ||
+          (c.phone || '').includes(q) ||
+          (c.token || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (leadsCountLabel) {
+        leadsCountLabel.textContent = `Showing ${filtered.length} of ${candidateLedger.length} active leads recorded in browser ledger.`;
+      }
+
+      if (filtered.length === 0) {
+        candidateTbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:#64748b;">No candidate leads found matching filter.</td></tr>`;
+        return;
+      }
+
+      candidateTbody.innerHTML = filtered.map(c => `
+        <tr>
+          <td><strong style="color:#0284c7; font-family:monospace;">${c.token}</strong></td>
+          <td>
+            <strong>${c.fullName}</strong>
+            ${c.email ? `<div style="font-size:11px; color:#64748b;">${c.email}</div>` : ''}
+          </td>
+          <td><span style="font-weight:600; color:#0f172a;">${c.trade}</span></td>
+          <td>${c.expTotal || 'N/A'}<br><small style="color:#64748b;">Gulf: ${c.expGulf || 'None'}</small></td>
+          <td><span class="status-badge status-badge-green">${c.passport || 'ECNR Ready'}</span></td>
+          <td>
+            <div>+91 ${c.phone}</div>
+            <small style="color:#64748b;">${c.district || 'Bihar'}</small>
+          </td>
+          <td><span class="status-badge status-badge-blue">${c.status || 'Pre-Screening'}</span></td>
+          <td>
+            <div style="display:flex; gap:4px;">
+              <a href="https://wa.me/91${c.phone}?text=${encodeURIComponent('Hi ' + c.fullName + ', regarding your application with Assignment Venue Center (' + c.token + ') for ' + c.trade + '...')}" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-success" title="Chat on WhatsApp">💬 WA</a>
+              ${c.email ? `<a href="mailto:${c.email}?subject=${encodeURIComponent('Update on your application: ' + c.trade + ' [' + c.token + ']')}" class="crm-btn-sm crm-btn-outline" title="Send Email">✉️</a>` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    renderCandidates();
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        renderCandidates('all', searchInput.value.trim());
+      });
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => { b.className = 'crm-btn-sm crm-btn-outline'; });
+        btn.className = 'crm-btn-sm crm-btn-primary';
+        renderCandidates(btn.dataset.filter, searchInput ? searchInput.value.trim() : '');
+      });
+    });
+
+    if (clearLeadsBtn) {
+      clearLeadsBtn.addEventListener('click', () => {
+        if (confirm('Clear browser lead cache?')) {
+          localStorage.removeItem('avc_candidate_ledger');
+          candidateLedger = [];
+          renderCandidates();
+        }
+      });
+    }
+
+    // 3. Employer Briefs Rendering
+    const employerTbody = document.getElementById('employer-leads-tbody');
+    const empCountLabel = document.getElementById('emp-count-label');
+
+    let employerLedger = [];
+    try {
+      employerLedger = JSON.parse(localStorage.getItem('avc_employer_ledger') || '[]');
+    } catch (e) {}
+
+    if (employerLedger.length === 0) {
+      employerLedger = [
+        {
+          token: 'AVC-REQ-2026-8841',
+          companyName: 'Al-Tamimi Global EPC Ltd',
+          repName: 'Tariq Mansoor (HR Director)',
+          phone: '9811223344',
+          email: 'tariq@altamimi-epc.com',
+          country: 'Saudi Arabia',
+          industry: 'Oil & Gas EPC',
+          tradesHeadcount: '30x 6G Welders, 25x Pipe Fitters',
+          interviewMode: 'Physical Delegation at Darbhanga Venue',
+          displayDate: '25 Sep 2026'
+        }
+      ];
+      localStorage.setItem('avc_employer_ledger', JSON.stringify(employerLedger));
+    }
+
+    function renderEmployers() {
+      if (!employerTbody) return;
+      if (empCountLabel) {
+        empCountLabel.textContent = `${employerLedger.length} B2B client demands recorded.`;
+      }
+      employerTbody.innerHTML = employerLedger.map(e => `
+        <tr>
+          <td><strong style="color:#0284c7; font-family:monospace;">${e.token}</strong></td>
+          <td><strong>${e.companyName}</strong></td>
+          <td>${e.repName}<br><small style="color:#64748b;">${e.phone} &bull; ${e.email}</small></td>
+          <td>${e.country}<br><small style="color:#64748b;">${e.industry}</small></td>
+          <td><pre style="margin:0; font-family:inherit; font-size:12px; white-space:pre-wrap;">${e.tradesHeadcount}</pre></td>
+          <td><span class="status-badge status-badge-blue">${e.interviewMode}</span></td>
+          <td>${e.displayDate || 'Recent'}</td>
+          <td>
+            <a href="https://wa.me/91${e.phone}?text=${encodeURIComponent('Dear ' + e.repName + ', greetings from Mehdi Hasan at Assignment Venue Center regarding your sourcing brief ' + e.token + '...')}" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-success">💬 WA</a>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    renderEmployers();
+
+    // 4. CSV & JSON Export Handlers
+    const exportCsvBtn = document.getElementById('btn-export-csv');
+    const exportJsonBtn = document.getElementById('btn-export-json');
+
+    if (exportCsvBtn) {
+      exportCsvBtn.addEventListener('click', () => {
+        if (candidateLedger.length === 0) {
+          alert('No leads to export.');
+          return;
+        }
+        let csv = 'Candidate ID,Full Name,Phone,Email,Trade,Experience,Gulf Experience,Passport,District,Status,Date\n';
+        candidateLedger.forEach(c => {
+          csv += `"${c.token}","${c.fullName}","${c.phone}","${c.email || ''}","${c.trade}","${c.expTotal || ''}","${c.expGulf || ''}","${c.passport || ''}","${c.district || ''}","${c.status || ''}","${c.displayDate || ''}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `AVC_Candidate_Leads_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+      });
+    }
+
+    if (exportJsonBtn) {
+      exportJsonBtn.addEventListener('click', () => {
+        const fullBackup = {
+          exportDate: new Date().toISOString(),
+          candidates: candidateLedger,
+          employers: employerLedger
+        };
+        const blob = new Blob([JSON.stringify(fullBackup, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `AVC_CRM_Full_Backup_${new Date().toISOString().slice(0,10)}.json`;
+        link.click();
+      });
+    }
+  });
+</script>
+</body>
+</html>

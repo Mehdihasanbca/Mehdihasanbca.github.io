@@ -232,6 +232,7 @@
       const fullName = (document.getElementById('candidate-name')?.value || '').trim();
       const rawPhone = (document.getElementById('candidate-phone')?.value || '').trim();
       const altPhone = (document.getElementById('candidate-alt-phone')?.value || '').trim();
+      const email = (document.getElementById('candidate-email')?.value || '').trim();
       const district = (document.getElementById('candidate-district')?.value || '').trim();
       const trade = (document.getElementById('candidate-trade')?.value || '').trim();
       const education = (document.getElementById('candidate-education')?.value || '').trim();
@@ -245,6 +246,56 @@
       const cleanPhone = sanitizePhone(rawPhone);
       const appRef = `AVC-APP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
+      // Save to local CRM candidate ledger
+      const candidateRecord = {
+        token: appRef,
+        fullName: fullName,
+        phone: cleanPhone,
+        altPhone: altPhone ? sanitizePhone(altPhone) : '',
+        email: email,
+        district: district,
+        trade: trade,
+        education: education,
+        expTotal: expTotal,
+        expGulf: expGulf,
+        passport: passport,
+        targetCountry: targetCountry,
+        jobRef: jobRef,
+        notes: notes,
+        timestamp: new Date().toISOString(),
+        displayDate: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        status: 'Stage 2: Technical Pre-Screening',
+        source: 'assignmentvenuecentre.me'
+      };
+
+      try {
+        const existingLedger = JSON.parse(localStorage.getItem('avc_candidate_ledger') || '[]');
+        existingLedger.unshift(candidateRecord);
+        if (existingLedger.length > 100) existingLedger.length = 100;
+        localStorage.setItem('avc_candidate_ledger', JSON.stringify(existingLedger));
+      } catch (err) {
+        console.warn('Local ledger save note:', err);
+      }
+
+      // Background Webhook Push to Google Apps Script (if configured)
+      const avcWebhookUrl = localStorage.getItem('avc_webhook_url');
+      if (avcWebhookUrl && avcWebhookUrl.startsWith('https://script.google.com/macros/s/')) {
+        try {
+          fetch(avcWebhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'candidate_application',
+              appRef: appRef,
+              ...candidateRecord
+            })
+          }).catch((e) => console.log('Apps Script webhook push note:', e));
+        } catch (fetchErr) {
+          // Non-blocking
+        }
+      }
+
       // Populate Success Card
       const refNode = document.getElementById('success-app-token');
       if (refNode) refNode.textContent = appRef;
@@ -255,6 +306,7 @@
           <dl>
             <dt>Applicant Name</dt><dd>${fullName}</dd>
             <dt>WhatsApp No.</dt><dd>+91 ${cleanPhone}</dd>
+            ${email ? `<dt>Email</dt><dd>${email}</dd>` : ''}
             <dt>Primary Trade</dt><dd>${trade}</dd>
             <dt>Experience</dt><dd>${expTotal} (Gulf: ${expGulf})</dd>
             <dt>Passport Status</dt><dd>${passport}</dd>
@@ -270,7 +322,7 @@
 *Application Ref:* ${appRef}
 *Full Name:* ${fullName}
 *WhatsApp No:* +91 ${cleanPhone}
-${altPhone ? `*Alternate No:* +91 ${sanitizePhone(altPhone)}\n` : ''}*Primary Trade:* ${trade}
+${altPhone ? `*Alternate No:* +91 ${sanitizePhone(altPhone)}\n` : ''}${email ? `*Email:* ${email}\n` : ''}*Primary Trade:* ${trade}
 *Total Experience:* ${expTotal}
 *Gulf Experience:* ${expGulf}
 *Passport Status:* ${passport}
@@ -411,6 +463,54 @@ ${notes ? `\nADDITIONAL NOTES:\n${notes}\n` : ''}
             showToast('Please select and copy the text manually.');
           }
         };
+      }
+
+      // Save to local CRM employer ledger
+      const empRecord = {
+        token: reqRef,
+        companyName: companyName,
+        repName: repName,
+        phone: cleanPhone,
+        email: email,
+        country: country,
+        industry: industry,
+        tradesHeadcount: tradesHeadcount,
+        interviewMode: interviewMode,
+        timeline: timeline,
+        salaryTerms: salaryTerms,
+        notes: notes,
+        timestamp: new Date().toISOString(),
+        displayDate: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        status: 'New Sourcing Brief',
+        source: refSource
+      };
+
+      try {
+        const empLedger = JSON.parse(localStorage.getItem('avc_employer_ledger') || '[]');
+        empLedger.unshift(empRecord);
+        if (empLedger.length > 50) empLedger.length = 50;
+        localStorage.setItem('avc_employer_ledger', JSON.stringify(empLedger));
+      } catch (err) {
+        console.warn('Local employer ledger save note:', err);
+      }
+
+      // Background Webhook Push to Google Apps Script (if configured)
+      const avcEmpWebhookUrl = localStorage.getItem('avc_webhook_url');
+      if (avcEmpWebhookUrl && avcEmpWebhookUrl.startsWith('https://script.google.com/macros/s/')) {
+        try {
+          fetch(avcEmpWebhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'employer_requirement',
+              reqToken: reqRef,
+              ...empRecord
+            })
+          }).catch((e) => console.log('Apps Script employer push note:', e));
+        } catch (fetchErr) {
+          // Non-blocking
+        }
       }
 
       // Switch views
@@ -594,21 +694,65 @@ ${notes ? `\nADDITIONAL NOTES:\n${notes}\n` : ''}
 
       const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
       statusResult.style.display = 'block';
+
+      // Check Local CRM Ledger
+      let foundRecord = null;
+      try {
+        const localLedger = JSON.parse(localStorage.getItem('avc_candidate_ledger') || '[]');
+        const cleanQ = q.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        foundRecord = localLedger.find(item => {
+          const itemToken = (item.token || '').toLowerCase();
+          const itemPhone = (item.phone || '').replace(/[^0-9]/g, '');
+          const itemName = (item.fullName || '').toLowerCase();
+          return itemToken.includes(cleanQ) || (cleanQ.length >= 6 && itemPhone.includes(cleanQ)) || itemName.includes(cleanQ);
+        });
+      } catch (err) {}
+
+      if (foundRecord) {
+        statusResult.innerHTML = `
+          <div style="display:flex; align-items:flex-start; gap:12px;">
+            <span style="font-size:24px;">✅</span>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+                <strong style="color:#065f46; font-size:15px;">Candidate Record Found: ${foundRecord.fullName}</strong>
+                <span style="background:#047857; color:#fff; font-size:11px; padding:2px 8px; border-radius:12px; font-weight:700;">Verified Intake</span>
+              </div>
+              <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:10px 12px; font-size:12.5px; color:#14532d; margin-bottom:10px; line-height:1.5;">
+                <strong>Application Ref:</strong> ${foundRecord.token} &bull; <strong>Trade:</strong> ${foundRecord.trade}<br>
+                <strong>Current Stage:</strong> <span style="font-weight:700; color:#047857;">${foundRecord.status || 'Stage 2: Technical Pre-Screening'}</span><br>
+                <strong>Registration Date:</strong> ${foundRecord.displayDate || today} &bull; <strong>District:</strong> ${foundRecord.district || 'Bihar'}
+              </div>
+              <p style="font-size:12.5px; color:#064e3b; margin:0 0 10px; line-height:1.5;">
+                Your candidate profile is active in AVC Darbhanga's sourcing pool. Sourcing coordinators are actively matching your qualifications with upcoming Gulf employer interview delegations.
+              </p>
+              <a href="https://wa.me/919473286356?text=${encodeURIComponent('Hi AVC, I am registered candidate ' + foundRecord.fullName + ' [Ref: ' + foundRecord.token + ']. Please update me regarding client interview schedules for ' + foundRecord.trade)}" target="_blank" rel="noopener noreferrer" class="button" style="background:#25D366; color:#fff; border:none; padding:6px 14px; font-size:12px; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+                <span>💬</span><span>Check Live Update on WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Default Sourcing Pool Status Card
       statusResult.innerHTML = `
         <div style="display:flex; align-items:flex-start; gap:12px;">
           <span style="font-size:22px;">🔍</span>
-          <div>
+          <div style="flex:1;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
               <strong style="color:#065f46; font-size:14.5px;">Application Status: Stage 2 - Pre-Screening Review</strong>
               <span style="background:#047857; color:#fff; font-size:11px; padding:2px 8px; border-radius:12px; font-weight:700;">Active in Sourcing Pool</span>
             </div>
             <div style="font-size:12.5px; color:#064e3b; margin-bottom:8px; line-height:1.5;">
               <strong>Query:</strong> ${q} &bull; <strong>System Check Date:</strong> ${today}<br>
-              <strong>Status Details:</strong> Your candidate profile is verified on our server. Our Darbhanga trade coordinators match profiles against upcoming client demands daily.
+              <strong>Status Details:</strong> Candidate reference verified. Our Darbhanga trade coordinators match registered profiles with incoming client demands and trade test schedules daily.
             </div>
-            <div style="background:#ffffff; border:1px solid #a7f3d0; border-radius:6px; padding:10px 12px; font-size:12px; color:#134e4a;">
-              <strong>Next Action:</strong> Keep your WhatsApp active on this number. You will receive an official notification with interview date and reporting token 3-5 days before client trade delegation arrives in Darbhanga.
+            <div style="background:#ffffff; border:1px solid #a7f3d0; border-radius:6px; padding:10px 12px; font-size:12px; color:#134e4a; margin-bottom:10px;">
+              <strong>Next Action:</strong> Keep your registered WhatsApp number active. Official notifications with interview dates and venue reporting tokens are sent 3-5 days before client delegations arrive at Darbhanga.
             </div>
+            <a href="https://wa.me/919473286356?text=${encodeURIComponent('Hi AVC, I want to verify my application status for query: ' + q)}" target="_blank" rel="noopener noreferrer" class="button" style="background:#25D366; color:#fff; border:none; padding:6px 14px; font-size:12px; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+              <span>💬</span><span>Connect with Helpdesk on WhatsApp</span>
+            </a>
           </div>
         </div>
       `;
