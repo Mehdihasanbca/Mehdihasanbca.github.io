@@ -202,10 +202,9 @@
   <!-- Hero -->
   <section class="track-hero">
     <div class="container">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <span style="background:rgba(37,99,235,0.3);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);padding:4px 12px;border-radius:4px;font-size:12px;font-weight:700;">RECRUITOS MULTI-SERVICE TELEMETRY</span>
-        <span style="background:rgba(234,179,8,0.2);color:#fde047;border:1px solid rgba(253,224,71,0.3);padding:4px 12px;border-radius:4px;font-size:12px;font-weight:700;">REAL-TIME LOOKUP</span>
-      </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="background:rgba(37,99,235,0.3);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);padding:4px 12px;border-radius:4px;font-size:12px;font-weight:700;">OFFICIAL OVERSEAS GUIDANCE PORTAL</span>
+        </div>
       <h1 class="track-title">Unified Overseas Recruitment Tracking Gateway</h1>
       <p class="track-lead">
         Track your application progress, practical trade test results, GAMCA medical clearance, and official eMigrate overseas deployment steps in one verified portal.
@@ -238,26 +237,33 @@
 
       <!-- Tab 1: Application Status -->
       <div class="track-tab-pane active" id="tab-app">
-        <h3 style="margin:0 0 6px;color:#0f172a;font-size:18px;">Track Candidate Application</h3>
-        <p style="margin:0;font-size:13.5px;color:#64748b;">Enter your Application Token (e.g. <code>AVC-APP-2026-XXXX</code>) or registered 10-digit WhatsApp number.</p>
-
-        <div class="track-input-group">
-          <input type="text" id="track-app-input" placeholder="e.g. AVC-APP-2026-1042 or 9473286356">
-          <button type="button" id="track-app-btn">Search Application</button>
+        <h3 style="margin:0 0 8px;color:#0f172a;font-size:18px;">Track Your Application Status</h3>
+        <p style="margin:0 0 16px;font-size:14px;color:#64748b;line-height:1.6;">Application records are maintained in our Google Sheet. After registering via the official form, contact AVC directly with your name and trade to get a status update.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+          <a href="https://wa.me/919473286356?text=Hello%20AVC,%20I%20applied%20recently.%20Please%20update%20me%20on%20my%20application%20status." target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;padding:12px 20px;border-radius:6px;font-weight:700;font-size:14px;text-decoration:none;">&#x1F4AC; WhatsApp: Get Status Update</a>
+          <a href="mailto:info@assignmentvenuecentre.me?subject=Application%20Status%20Enquiry" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#1e293b;border:1px solid #cbd5e1;padding:12px 20px;border-radius:6px;font-weight:700;font-size:14px;text-decoration:none;">&#x2709; Email AVC</a>
         </div>
-        <div class="track-result-area" id="track-app-result"></div>
+        <div style="margin-top:20px;padding:14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;">
+          <strong style="color:#1e40af;font-size:13px;">Haven't applied yet?</strong>
+          <p style="margin:6px 0 10px;font-size:13px;color:#334155;">Register through the official Google Form - free, no charges, Emigration Act 1983 compliant.</p>
+          <a href="apply.html" style="background:#2563eb;color:#fff;padding:8px 16px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;display:inline-block;">Apply Free (Rs.0) &rarr;</a>
+        </div>
       </div>
 
       <!-- Tab 2: Trade Test Verification -->
       <div class="track-tab-pane" id="tab-test">
-        <h3 style="margin:0 0 6px;color:#0f172a;font-size:18px;">Trade Test &amp; Scorecard Verification</h3>
-        <p style="margin:0;font-size:13.5px;color:#64748b;">Verify the authenticity of practical evaluation certificates issued at the Darbhanga testing campus.</p>
-
-        <div class="track-input-group">
-          <input type="text" id="track-test-input" placeholder="Enter Scorecard Ref or Candidate Passport No">
-          <button type="button" id="track-test-btn">Verify Scorecard</button>
+        <h3 style="margin:0 0 8px;color:#0f172a;font-size:18px;">Trade Test &amp; Scorecard Verification</h3>
+        <p style="margin:0 0 16px;font-size:14px;color:#64748b;line-height:1.6;">Practical trade test scorecards are issued on paper with an authorized examiner signature and client delegation stamp at the Darbhanga testing campus. To verify authenticity, contact AVC directly with the candidate name and date of test.</p>
+        <a href="https://wa.me/919473286356?text=Hello%20AVC,%20I%20want%20to%20verify%20a%20Trade%20Test%20Scorecard.%20Please%20guide%20me." target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;padding:12px 20px;border-radius:6px;font-weight:700;font-size:14px;text-decoration:none;">&#x1F4AC; WhatsApp: Verify Scorecard</a>
+        <div style="margin-top:20px;padding:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+          <strong style="color:#0f172a;font-size:13px;">What scorecards contain:</strong>
+          <ul style="margin:8px 0 0;padding-left:18px;font-size:13px;color:#475569;line-height:1.8;">
+            <li>Candidate name, passport number, trade</li>
+            <li>Practical test results per module (e.g. 6G Weld, 415V MEP)</li>
+            <li>Examiner signature and date</li>
+            <li>Client delegation stamp where applicable</li>
+          </ul>
         </div>
-        <div class="track-result-area" id="track-test-result"></div>
       </div>
 
       <!-- Tab 3: GAMCA Medical -->
@@ -286,19 +292,14 @@
     </div>
   </div>
 
-  <!-- Trust Badges & GCC Projects Marquee -->
-  <section style="background:#ffffff;padding:50px 0;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
-    <div class="container" style="text-align:center;">
-      <span style="color:#2563eb;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;">TRUSTED GULF PROJECT ECOSYSTEM</span>
-      <h2 style="font-size:24px;color:#0f172a;margin:8px 0 16px;">Sourcing &amp; Venue Partners for Major Overseas Contractors</h2>
-      <p style="color:#64748b;font-size:14.5px;max-width:680px;margin:0 auto 30px;">AVC pre-screens skilled technical manpower mobilized for leading industrial and infrastructure developments across the GCC.</p>
-
-      <div style="display:flex;justify-content:center;align-items:center;gap:30px;flex-wrap:wrap;opacity:0.85;">
-        <span style="font-weight:800;color:#0f172a;font-size:16px;background:#f1f5f9;padding:8px 16px;border-radius:6px;">Saudi Aramco Supply Chain</span>
-        <span style="font-weight:800;color:#0f172a;font-size:16px;background:#f1f5f9;padding:8px 16px;border-radius:6px;">ADNOC Certified Piping</span>
-        <span style="font-weight:800;color:#0f172a;font-size:16px;background:#f1f5f9;padding:8px 16px;border-radius:6px;">NEOM Infrastructure</span>
-        <span style="font-weight:800;color:#0f172a;font-size:16px;background:#f1f5f9;padding:8px 16px;border-radius:6px;">Qatar Energy Projects</span>
-        <span style="font-weight:800;color:#0f172a;font-size:16px;background:#f1f5f9;padding:8px 16px;border-radius:6px;">DP World Logistics</span>
+  <section style="background:#f8fafc;padding:40px 0;border-top:1px solid #e2e8f0;">
+    <div class="container" style="text-align:center;max-width:700px;margin:0 auto;">
+      <span style="color:#2563eb;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;">OFFICIAL GUIDANCE</span>
+      <h2 style="font-size:22px;color:#0f172a;margin:8px 0 12px;">Use Official Portals for Medical &amp; Visa Status</h2>
+      <p style="color:#64748b;font-size:14px;line-height:1.6;">For GAMCA medical and eMigrate visa clearance, always use the official government portals. AVC provides guidance only - never pay anyone to guarantee medical or visa clearance.</p>
+      <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:20px;">
+        <a href="https://wafid.com" target="_blank" rel="noopener noreferrer" style="background:#fff;border:1px solid #cbd5e1;color:#0f172a;padding:10px 20px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;">Wafid Medical Portal &rarr;</a>
+        <a href="https://emigrate.gov.in" target="_blank" rel="noopener noreferrer" style="background:#fff;border:1px solid #cbd5e1;color:#0f172a;padding:10px 20px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;">MEA eMigrate Portal &rarr;</a>
       </div>
     </div>
   </section>
@@ -366,57 +367,6 @@
     });
   });
 
-  // Track Application Logic
-  document.getElementById('track-app-btn')?.addEventListener('click', () => {
-    const val = (document.getElementById('track-app-input')?.value || '').trim();
-    const res = document.getElementById('track-app-result');
-    if (!val) { alert('Please enter token or phone'); return; }
-
-    let ledger = [];
-    try { ledger = JSON.parse(localStorage.getItem('avc_candidate_ledger') || '[]'); } catch (e) {}
-
-    const clean = val.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
-    const found = ledger.find(item => {
-      const t = (item.token || '').toLowerCase();
-      const p = (item.phone || '').toLowerCase();
-      return t === clean || p.includes(clean);
-    });
-
-    res.classList.add('active');
-    if (found) {
-      res.style.background = '#f0fdf4';
-      res.style.border = '1px solid #86efac';
-      res.innerHTML = `
-        <h4 style="margin:0 0 6px;color:#166534;">✅ Active Record Located</h4>
-        <p style="margin:0 0 4px;font-size:13px;color:#1e293b;"><strong>Candidate:</strong> ${found.fullName} | <strong>Trade:</strong> ${found.trade}</p>
-        <p style="margin:0 0 6px;font-size:13px;color:#1e293b;"><strong>Status:</strong> ${found.status || 'Stage 2: Technical Pre-Screening'}</p>
-        <a href="https://wa.me/919473286356?text=Hello%20AVC,%20my%20token%20is%20${encodeURIComponent(found.token)}.%20Please%20update%20me." target="_blank" rel="noopener noreferrer" style="color:#15803d;font-weight:700;font-size:12.5px;">💬 Chat on WhatsApp with Token ${found.token} →</a>
-      `;
-    } else {
-      res.style.background = '#eff6ff';
-      res.style.border = '1px solid #93c5fd';
-      res.innerHTML = `
-        <h4 style="margin:0 0 6px;color:#1e40af;">ℹ️ Master Database Search for "${val}"</h4>
-        <p style="margin:0 0 8px;font-size:13px;color:#334155;">Application records submitted via Google Form or in-person at Darbhanga campus are verified against the master register.</p>
-        <a href="https://wa.me/919473286356?text=Hello%20AVC%20Helpdesk,%20please%20verify%20my%20application%20status:%20${encodeURIComponent(val)}" target="_blank" rel="noopener noreferrer" style="background:#25D366;color:#fff;padding:8px 14px;border-radius:6px;font-weight:700;font-size:12.5px;text-decoration:none;display:inline-block;">💬 Connect to Desk on WhatsApp</a>
-      `;
-    }
-  });
-
-  // Track Trade Test
-  document.getElementById('track-test-btn')?.addEventListener('click', () => {
-    const val = (document.getElementById('track-test-input')?.value || '').trim();
-    const res = document.getElementById('track-test-result');
-    if (!val) { alert('Enter Scorecard Ref or Passport'); return; }
-    res.classList.add('active');
-    res.style.background = '#f8fafc';
-    res.style.border = '1px solid #cbd5e1';
-    res.innerHTML = `
-      <h4 style="margin:0 0 6px;color:#0f172a;">Practical Evaluation Verification</h4>
-      <p style="margin:0 0 6px;font-size:13px;color:#475569;">All scorecards issued at Darbhanga Testing Bays (Lincoln 6G welding, 415V switchgear, Chiller diagnostics) carry an authorized examiner signature and client delegation stamp.</p>
-      <a href="https://wa.me/919473286356?text=Hello%20AVC,%20please%20verify%20Trade%20Test%20Scorecard%20for:%20${encodeURIComponent(val)}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;font-weight:700;font-size:13px;">Click to verify Scorecard ${val} via Official Registry →</a>
-    `;
-  });
 
   // Track GAMCA
   document.getElementById('track-gamca-btn')?.addEventListener('click', () => {

@@ -102,9 +102,9 @@
     <div class="crm-card">
       <h3>
         <span>Raw Responses Sheet</span>
-        <span class="status-badge status-badge-blue">577+ Submissions</span>
+        <span class="status-badge status-badge-blue">Live Responses</span>
       </h3>
-      <p>Direct sheet where form entries arrive in real-time. Monitored autonomously at 9 AM, 1 PM, and 5 PM IST.</p>
+      <p>Direct sheet where form entries arrive in real-time. New responses arrive in real-time when candidates submit the form.</p>
       <a href="https://docs.google.com/spreadsheets/d/1V-9H3jhpS2Sy5bTqWIN3z88YPDjod5wzBKeJXqwskRI/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-primary">Open Responses Sheet ↗</a>
     </div>
 
@@ -112,7 +112,7 @@
     <div class="crm-card">
       <h3>
         <span>Master Recruitment CRM</span>
-        <span class="status-badge status-badge-green">423 Verified Ready</span>
+        <span class="status-badge status-badge-green">Master Talent Pool</span>
       </h3>
       <p>Cleaned talent pool organized by sector (Plant Operators, MEP, HSE, Instrumentation) with candidate IDs &amp; compliance flags.</p>
       <a href="https://docs.google.com/spreadsheets/d/17yz3fMT7t4r3vna-auqsBr0HU1dQ8mIfsbBRJ9G0ufY/edit" target="_blank" rel="noopener noreferrer" class="crm-btn-sm crm-btn-primary">Open Master CRM ↗</a>
@@ -330,76 +330,9 @@
       candidateLedger = JSON.parse(localStorage.getItem('avc_candidate_ledger') || '[]');
     } catch (e) {}
 
-    // Seed sample records if empty so the UI is immediately demonstrative
     if (candidateLedger.length === 0) {
-      candidateLedger = [
-        {
-          token: 'AVC-CAND-0423',
-          fullName: 'Aashif Ahmad',
-          phone: '7004991787',
-          email: 'aasifahmad651@gmail.com',
-          trade: 'Electrical Technician',
-          expTotal: '5 Years',
-          expGulf: '2 Years GCC',
-          passport: 'ECNR Ready (2036)',
-          district: 'Ranchi, Jharkhand',
-          status: 'Stage 2: Technical Pre-Screening',
-          displayDate: '24 Sep 2026'
-        },
-        {
-          token: 'AVC-CAND-0422',
-          fullName: 'Nikhil Velu Pillai Thankappan Pillai',
-          phone: '9845112233',
-          email: 'nikhilveetee@gmail.com',
-          trade: 'HSE Engineer (NEBOSH)',
-          expTotal: '16 Years',
-          expGulf: '14 Years Qatar',
-          passport: 'ECNR Ready (2031)',
-          district: 'Kerala / Qatar',
-          status: 'Stage 2: Technical Pre-Screening',
-          displayDate: '20 Sep 2026'
-        },
-        {
-          token: 'AVC-CAND-0421',
-          fullName: 'Ankit Kumar',
-          phone: '9471882233',
-          email: 'ankit.avc@gmail.com',
-          trade: 'Project & Resource Coordinator',
-          expTotal: '4 Years',
-          expGulf: 'India EPC',
-          passport: 'ECNR Ready',
-          district: 'Darbhanga, Bihar',
-          status: 'Stage 2: Technical Pre-Screening',
-          displayDate: '18 Sep 2026'
-        },
-        {
-          token: 'AVC-CAND-0420',
-          fullName: 'Talat Iqbal',
-          phone: '9871234567',
-          email: 'talatiqbal623@gmail.com',
-          trade: 'Electrical Technician',
-          expTotal: '8 Years',
-          expGulf: '8 Years Saudi Arabia (Jeddah)',
-          passport: 'ECNR Ready (2034)',
-          district: 'Jeddah / Bihar',
-          status: 'Stage 2: Technical Pre-Screening',
-          displayDate: '18 Sep 2026'
-        },
-        {
-          token: 'AVC-CAND-0419',
-          fullName: 'Manoj Uday Naik',
-          phone: '9880094729',
-          email: 'soulmanu11@gmail.com',
-          trade: 'Mechanic Technician',
-          expTotal: '3 Years',
-          expGulf: '3 Years Oman (Al Fajar)',
-          passport: 'ECNR Ready (2033)',
-          district: 'Karnataka / Oman',
-          status: 'Stage 2: Technical Pre-Screening',
-          displayDate: '12 Sep 2026'
-        }
-      ];
-      localStorage.setItem('avc_candidate_ledger', JSON.stringify(candidateLedger));
+      if (leadsCountLabel) leadsCountLabel.textContent = 'No candidate leads yet. Configure the Apps Script webhook to start capturing form submissions.';
+      if (candidateTbody) candidateTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;"><p style="margin:0 0 10px;font-size:14px;font-weight:600;">No leads yet</p><p style="margin:0;font-size:13px;">Once you set up the Google Apps Script webhook and candidates submit the form, their details will appear here automatically.</p></td></tr>';
     }
 
     function renderCandidates(filter = 'all', query = '') {
@@ -491,21 +424,8 @@
     } catch (e) {}
 
     if (employerLedger.length === 0) {
-      employerLedger = [
-        {
-          token: 'AVC-REQ-2026-8841',
-          companyName: 'Al-Tamimi Global EPC Ltd',
-          repName: 'Tariq Mansoor (HR Director)',
-          phone: '9811223344',
-          email: 'tariq@altamimi-epc.com',
-          country: 'Saudi Arabia',
-          industry: 'Oil & Gas EPC',
-          tradesHeadcount: '30x 6G Welders, 25x Pipe Fitters',
-          interviewMode: 'Physical Delegation at Darbhanga Venue',
-          displayDate: '25 Sep 2026'
-        }
-      ];
-      localStorage.setItem('avc_employer_ledger', JSON.stringify(employerLedger));
+      if (empCountLabel) empCountLabel.textContent = 'No employer briefs yet.';
+      if (employerTbody) employerTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:#64748b;">No employer sourcing briefs yet. Requirements submitted through the website form will appear here.</td></tr>';
     }
 
     function renderEmployers() {
