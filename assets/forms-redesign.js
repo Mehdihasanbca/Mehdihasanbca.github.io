@@ -82,6 +82,47 @@
         });
     }
 
+    // Direct Pre-fill from Eligibility Matcher or Deep-links
+    const tradeParam = (urlParams.get('trade') || '').trim().toLowerCase();
+    const countryParam = (urlParams.get('country') || '').trim().toLowerCase();
+    const expParam = (urlParams.get('exp') || '').trim().toLowerCase();
+    const passParam = (urlParams.get('passport') || '').trim().toLowerCase();
+
+    if (tradeParam && tradeSelect) {
+      Array.from(tradeSelect.options).forEach((opt) => {
+        if (opt.value.toLowerCase().includes(tradeParam) || tradeParam.includes(opt.value.toLowerCase())) {
+          tradeSelect.value = opt.value;
+        }
+      });
+    }
+
+    const countrySelect = document.getElementById('candidate-target-country');
+    if (countryParam && countrySelect) {
+      Array.from(countrySelect.options).forEach((opt) => {
+        if (opt.value.toLowerCase().includes(countryParam)) {
+          countrySelect.value = opt.value;
+        }
+      });
+    }
+
+    const expSelect = document.getElementById('candidate-exp-total');
+    if (expParam && expSelect) {
+      Array.from(expSelect.options).forEach((opt) => {
+        if (opt.value.toLowerCase().includes(expParam)) {
+          expSelect.value = opt.value;
+        }
+      });
+    }
+
+    const passSelect = document.getElementById('candidate-passport');
+    if (passParam && passSelect) {
+      Array.from(passSelect.options).forEach((opt) => {
+        if (opt.value.toLowerCase().includes(passParam)) {
+          passSelect.value = opt.value;
+        }
+      });
+    }
+
     // Wizard Navigation State
     let currentStep = 1;
     const totalSteps = 4;
@@ -975,5 +1016,126 @@ https://assignmentvenuecentre.me/apply.html
         window.open(`https://wa.me/919473286356?text=${waText}`, '_blank');
       });
     }
+  }
+
+  // 6. Interactive Gulf Trade & Eligibility Matcher Controller
+  const matcherTrade = document.getElementById('matcher-trade');
+  const matcherExp = document.getElementById('matcher-exp');
+  const matcherPassport = document.getElementById('matcher-passport');
+  const matcherCountry = document.getElementById('matcher-country');
+
+  if (matcherTrade && matcherExp && matcherCountry) {
+    const salaryVal = document.getElementById('matcher-salary-val');
+    const salaryInr = document.getElementById('matcher-salary-inr');
+    const probVal = document.getElementById('matcher-prob-val');
+    const probFill = document.getElementById('matcher-prob-fill');
+    const demandName = document.getElementById('matcher-demand-name');
+    const baySpec = document.getElementById('matcher-bay-spec');
+    const btnApply = document.getElementById('matcher-btn-apply');
+    const btnWa = document.getElementById('matcher-btn-wa');
+
+    const tradeProfiles = {
+      electrician: {
+        title: 'Building Electrician & Industrial Tech',
+        saudi: { gcc: 'SAR 1,800 - 2,500 + OT', inr: '≈ ₹40,000 - ₹55,000 / month' },
+        uae: { gcc: 'AED 1,800 - 2,400 + OT', inr: '≈ ₹41,000 - ₹54,000 / month' },
+        qatar: { gcc: 'QAR 1,900 - 2,600 + OT', inr: '≈ ₹43,000 - ₹59,000 / month' },
+        oman: { gcc: 'OMR 140 - 180 + OT', inr: '≈ ₹31,000 - ₹40,000 / month' },
+        defaultVacancy: 'AVC-KSA-8021 (Riyadh Commercial Infrastructure)',
+        bay: '415V Switchgear, Conduit & Motor Control Rig'
+      },
+      welder: {
+        title: '6G TIG & ARC Welder (Piping)',
+        saudi: { gcc: 'SAR 2,000 - 3,000 + OT', inr: '≈ ₹45,000 - ₹67,000 / month' },
+        uae: { gcc: 'AED 2,200 - 3,200 + OT', inr: '≈ ₹50,000 - ₹72,000 / month' },
+        qatar: { gcc: 'QAR 2,200 - 3,200 + OT', inr: '≈ ₹50,000 - ₹72,000 / month' },
+        oman: { gcc: 'OMR 160 - 220 + OT', inr: '≈ ₹35,000 - ₹48,000 / month' },
+        defaultVacancy: 'AVC-UAE-4019 (Dubai Oil & Gas Piping)',
+        bay: 'Calibrated Lincoln Electric 6G Pipe Welding Bay'
+      },
+      hvac: {
+        title: 'HVAC & Chiller Maintenance Technician',
+        saudi: { gcc: 'SAR 1,900 - 2,700 + OT', inr: '≈ ₹42,000 - ₹60,000 / month' },
+        uae: { gcc: 'AED 2,000 - 2,800 + OT', inr: '≈ ₹45,000 - ₹63,000 / month' },
+        qatar: { gcc: 'QAR 2,000 - 2,800 + OT', inr: '≈ ₹45,000 - ₹63,000 / month' },
+        oman: { gcc: 'OMR 150 - 200 + OT', inr: '≈ ₹33,000 - ₹44,000 / month' },
+        defaultVacancy: 'AVC-QAT-5022 (Doha Facility Maintenance)',
+        bay: 'Central Chiller & Split AC Troubleshooting Rig'
+      },
+      driver: {
+        title: 'Heavy Trailer & Equipment Driver',
+        saudi: { gcc: 'SAR 2,400 - 3,200 + Trip Allowance', inr: '≈ ₹53,000 - ₹71,000 / month' },
+        uae: { gcc: 'AED 2,200 - 2,800 + Trip Allowance', inr: '≈ ₹50,000 - ₹63,000 / month' },
+        qatar: { gcc: 'QAR 2,200 - 3,000 + Trip Allowance', inr: '≈ ₹50,000 - ₹68,000 / month' },
+        oman: { gcc: 'OMR 160 - 210 + Trip Allowance', inr: '≈ ₹35,000 - ₹46,000 / month' },
+        defaultVacancy: 'AVC-KSA-9041 (Jeddah Logistics Fleet)',
+        bay: 'Yard Maneuvering & Road Sign Simulator Check'
+      },
+      mason: {
+        title: 'Civil Mason / Tile Fixer / Plaster',
+        saudi: { gcc: 'SAR 1,400 - 1,800 + OT', inr: '≈ ₹31,000 - ₹40,000 / month' },
+        uae: { gcc: 'AED 1,400 - 1,800 + OT', inr: '≈ ₹32,000 - ₹41,000 / month' },
+        qatar: { gcc: 'QAR 1,500 - 1,900 + OT', inr: '≈ ₹34,000 - ₹43,000 / month' },
+        oman: { gcc: 'OMR 140 - 180 + OT', inr: '≈ ₹31,000 - ₹40,000 / month' },
+        defaultVacancy: 'AVC-OMN-3012 (Muscat Commercial Construction)',
+        bay: 'Block Work, Plaster Levelling & Tile Masonry Rig'
+      },
+      plumber: {
+        title: 'Plumber & Pipe Fitter',
+        saudi: { gcc: 'SAR 1,600 - 2,200 + OT', inr: '≈ ₹36,000 - ₹49,000 / month' },
+        uae: { gcc: 'AED 1,600 - 2,200 + OT', inr: '≈ ₹36,000 - ₹49,000 / month' },
+        qatar: { gcc: 'QAR 1,700 - 2,400 + OT', inr: '≈ ₹38,000 - ₹54,000 / month' },
+        oman: { gcc: 'OMR 130 - 170 + OT', inr: '≈ ₹29,000 - ₹38,000 / month' },
+        defaultVacancy: 'General MEP Plumbing Pool',
+        bay: 'PPR, HDPE & Copper Pressure Pipe Joint Rig'
+      },
+      cleaner: {
+        title: 'Facility Management / Cleaning',
+        saudi: { gcc: 'SAR 1,100 - 1,400 + Food', inr: '≈ ₹24,000 - ₹31,000 / month' },
+        uae: { gcc: 'AED 1,100 - 1,400 + Food', inr: '≈ ₹25,000 - ₹32,000 / month' },
+        qatar: { gcc: 'QAR 1,200 - 1,500 + Food', inr: '≈ ₹27,000 - ₹34,000 / month' },
+        oman: { gcc: 'OMR 100 - 130 + Food', inr: '≈ ₹22,000 - ₹29,000 / month' },
+        defaultVacancy: 'DMND-00007 (Oman Facility Cleaners)',
+        bay: 'Industrial Hygiene & Material Handling Desk'
+      }
+    };
+
+    function recalculateMatcher() {
+      const tradeKey = matcherTrade.value || 'electrician';
+      const countryKey = matcherCountry.value || 'saudi';
+      const expKey = matcherExp ? matcherExp.value : '2-4';
+      const passKey = matcherPassport ? matcherPassport.value : 'ecnr';
+
+      const profile = tradeProfiles[tradeKey] || tradeProfiles.electrician;
+      const salaryObj = profile[countryKey] || profile.saudi;
+
+      if (salaryVal) salaryVal.textContent = salaryObj.gcc;
+      if (salaryInr) salaryInr.textContent = salaryObj.inr;
+      if (demandName) demandName.textContent = profile.defaultVacancy;
+      if (baySpec) baySpec.textContent = profile.bay;
+
+      let score = 80;
+      if (expKey === 'fresher') score = 75;
+      else if (expKey === '2-4') score = 88;
+      else if (expKey === '5plus') score = 94;
+      else if (expKey === 'gulf') score = 98;
+
+      if (passKey === 'ecnr') score = Math.min(score + 2, 99);
+      if (probVal) probVal.textContent = `${score}% Match`;
+      if (probFill) probFill.style.width = `${score}%`;
+
+      const applyUrl = `apply.html?trade=${encodeURIComponent(profile.title)}&country=${encodeURIComponent(countryKey)}&exp=${encodeURIComponent(expKey)}&passport=${encodeURIComponent(passKey)}`;
+      if (btnApply) btnApply.href = applyUrl;
+
+      const waMsg = encodeURIComponent(`Hi AVC Coordinators, I checked my eligibility on your website for ${profile.title} (${countryKey.toUpperCase()}) with ${expKey} experience. When is the next interview drive in Darbhanga?`);
+      if (btnWa) btnWa.href = `https://wa.me/919473286356?text=${waMsg}`;
+    }
+
+    matcherTrade.addEventListener('change', recalculateMatcher);
+    if (matcherExp) matcherExp.addEventListener('change', recalculateMatcher);
+    if (matcherPassport) matcherPassport.addEventListener('change', recalculateMatcher);
+    matcherCountry.addEventListener('change', recalculateMatcher);
+
+    recalculateMatcher();
   }
 })();

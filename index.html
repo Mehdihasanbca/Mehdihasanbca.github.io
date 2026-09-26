@@ -422,6 +422,127 @@
       </div>
     </section>
 
+    <!-- Interactive Gulf Trade & Eligibility Matcher Widget -->
+    <section class="eligibility-matcher-section" id="eligibility-matcher-anchor" aria-label="Gulf Trade Eligibility Calculator">
+      <div class="container matcher-container">
+        <div class="matcher-head">
+          <span class="matcher-kicker">Interactive Candidate Tool</span>
+          <h2>Gulf Trade Eligibility &amp; Salary Matcher</h2>
+          <p>Select your trade, experience level, and preferred Gulf country to instantly calculate expected monthly earnings, selection probability, and matching interview delegations.</p>
+        </div>
+
+        <div class="matcher-card-grid">
+          <!-- Inputs Column -->
+          <div class="matcher-inputs-col">
+            <div class="matcher-form-group">
+              <label class="matcher-label" for="matcher-trade">
+                <span>1. Select Your Trade / Skill</span>
+                <span style="color:#0284c7; font-size:12px;">Technical Craft</span>
+              </label>
+              <select class="matcher-select" id="matcher-trade">
+                <option value="electrician">Building Electrician &amp; Industrial Tech</option>
+                <option value="welder">6G TIG &amp; ARC Welder (Piping / Structural)</option>
+                <option value="hvac">HVAC &amp; Chiller Maintenance Tech</option>
+                <option value="driver">Heavy Trailer &amp; Equipment Driver</option>
+                <option value="mason">Civil Mason / Tile Fixer / Plaster</option>
+                <option value="plumber">Plumber &amp; Pipe Fitter / Fabricator</option>
+                <option value="cleaner">Facility Management / Cleaning / Hospitality</option>
+              </select>
+            </div>
+
+            <div class="matcher-form-group">
+              <label class="matcher-label" for="matcher-country">
+                <span>2. Preferred Gulf Destination</span>
+                <span style="color:#0284c7; font-size:12px;">GCC Region</span>
+              </label>
+              <select class="matcher-select" id="matcher-country">
+                <option value="saudi">Saudi Arabia (KSA - Riyadh / Jeddah / Dammam)</option>
+                <option value="uae">United Arab Emirates (Dubai / Abu Dhabi)</option>
+                <option value="qatar">Qatar (Doha Commercial / Infrastructure)</option>
+                <option value="oman">Oman (Muscat EPC &amp; Facility)</option>
+              </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div class="matcher-form-group">
+                <label class="matcher-label" for="matcher-exp">
+                  <span>3. Experience</span>
+                </label>
+                <select class="matcher-select" id="matcher-exp">
+                  <option value="fresher">Fresher / ITI (India)</option>
+                  <option value="2-4" selected>2 - 4 Years (India)</option>
+                  <option value="5plus">5+ Years (Senior India)</option>
+                  <option value="gulf">Ex-Gulf Return (GCC)</option>
+                </select>
+              </div>
+
+              <div class="matcher-form-group">
+                <label class="matcher-label" for="matcher-passport">
+                  <span>4. Passport Type</span>
+                </label>
+                <select class="matcher-select" id="matcher-passport">
+                  <option value="ecnr" selected>ECNR (10th Pass+)</option>
+                  <option value="ecr">ECR Passport</option>
+                  <option value="applying">Applying / In Process</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="background:#f1f5f9; border-radius:8px; padding:12px 14px; font-size:12px; color:#475569; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:16px;">🛡️</span>
+              <span><strong>Zero Recruitment Fees:</strong> Registration and trade testing at AVC Darbhanga Venue is 100% free under the Emigration Act 1983.</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Assessment Card Column -->
+          <div class="matcher-output-col">
+            <div>
+              <div class="matcher-output-head">
+                <span class="matcher-output-badge">⚡ Instant AI Eligibility Match</span>
+                <div style="font-size:12px; color:#cbd5e1;">Target Delegation Assessment:</div>
+                <div id="matcher-demand-name" style="font-weight:800; font-size:14px; color:#ffffff; margin-top:2px;">
+                  AVC-KSA-8021 (Riyadh Commercial Infrastructure)
+                </div>
+              </div>
+
+              <div class="matcher-salary-box">
+                <span class="matcher-salary-label">Estimated Monthly Base Wages</span>
+                <span class="matcher-salary-val" id="matcher-salary-val">SAR 1,800 - 2,500 + OT</span>
+                <div class="matcher-salary-inr" id="matcher-salary-inr">≈ ₹40,000 - ₹55,000 / month in-hand</div>
+              </div>
+
+              <ul class="matcher-perks-list">
+                <li><span>✓</span> <span>Free Company Accommodation &amp; Transportation</span></li>
+                <li><span>✓</span> <span>Comprehensive Medical Insurance &amp; Flight Ticket</span></li>
+                <li><span>✓</span> <span id="matcher-bay-spec">415V Switchgear, Conduit &amp; Motor Control Rig</span></li>
+              </ul>
+
+              <div class="matcher-probability-meter">
+                <div class="meter-title-row">
+                  <span>Delegation Selection Readiness</span>
+                  <span id="matcher-prob-val" style="color:#34d399; font-weight:800;">88% Match</span>
+                </div>
+                <div class="meter-track">
+                  <div class="meter-fill" id="matcher-prob-fill" style="width: 88%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="matcher-actions">
+              <a href="apply.html?trade=Building%20Electrician%20%26%20Industrial%20Tech&country=saudi&exp=2-4&passport=ecnr" id="matcher-btn-apply" class="matcher-btn-apply">
+                <span>Apply with Pre-Selected Trade (100% Free)</span>
+                <span>➔</span>
+              </a>
+              <a href="https://wa.me/919473286356" target="_blank" rel="noopener noreferrer" id="matcher-btn-wa" class="matcher-btn-wa">
+                <span>💬</span>
+                <span>Ask Sourcing Coordinator on WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Why Choose AVC vs Traditional Brokers Comparison Section (Module 8) -->
     <section class="avc-comparison-section" id="why-choose-avc-anchor" aria-label="Why Choose Assignment Venue Center">
       <div class="container">
