@@ -118,6 +118,11 @@
       if (formAnchor) {
         formAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+
+      // Analytics telemetry
+      if (window.AVCAnalytics) {
+        window.AVCAnalytics.track('wizard_step_view', { step: step });
+      }
     };
 
     const validateStep = (step) => {
@@ -460,4 +465,315 @@ ${notes ? `\nADDITIONAL NOTES:\n${notes}\n` : ''}
       window.print();
     });
   });
+
+  /* ==========================================================================
+     5. RECRUITER IDENTITY VERIFICATION ENGINE
+     ========================================================================== */
+  const recruiterInput = document.getElementById('recruiter-query-input');
+  const recruiterBtn = document.getElementById('recruiter-verify-btn');
+  const recruiterResult = document.getElementById('recruiter-result-display');
+
+  if (recruiterBtn && recruiterInput && recruiterResult) {
+    const officialDirectory = [
+      {
+        type: 'phone',
+        key: '9473286356',
+        name: 'Mehdi Hasan',
+        role: 'Founder & Operations Director',
+        badge: 'Official AVC Operational Leadership Line'
+      },
+      {
+        type: 'phone',
+        key: '9155512396',
+        name: 'AVC Candidate Desk & Venue Dispatch',
+        role: 'Technical Pre-Screening & Candidate Logistics Desk',
+        badge: 'Official Ground Assessment Center Line'
+      },
+      {
+        type: 'email',
+        key: 'info@assignmentvenuecentre.me',
+        name: 'AVC General Corporate Desk',
+        role: 'Official Sourcing Inquiries & Delegations',
+        badge: 'Verified Corporate Mail Server'
+      },
+      {
+        type: 'email',
+        key: 'operations@assignmentvenuecentre.me',
+        name: 'AVC Operations & Venue Management',
+        role: 'Interview Scheduling & Verification Desk',
+        badge: 'Verified Corporate Mail Server'
+      }
+    ];
+
+    const verifyRecruiter = () => {
+      const raw = (recruiterInput.value || '').trim();
+      if (!raw) {
+        alert('Please enter a phone number or email address to verify.');
+        recruiterInput.focus();
+        return;
+      }
+
+      const cleanPhone = sanitizePhone(raw);
+      const cleanEmail = raw.toLowerCase();
+
+      // Check match
+      const matched = officialDirectory.find((item) => {
+        if (item.type === 'phone' && cleanPhone.includes(item.key)) return true;
+        if (item.type === 'email' && cleanEmail === item.key) return true;
+        return false;
+      });
+
+      if (window.AVCAnalytics) {
+        window.AVCAnalytics.track('recruiter_verification_query', {
+          query: raw,
+          is_matched: !!matched
+        });
+      }
+
+      recruiterResult.className = 'recruiter-result-box';
+      if (matched) {
+        recruiterResult.classList.add('valid');
+        recruiterResult.innerHTML = `
+          <div style="display:flex; align-items:flex-start; gap:12px;">
+            <span style="font-size:24px;">✅</span>
+            <div>
+              <strong style="font-size:15px; display:block; color:#14532d;">VERIFIED OFFICIAL AVC REPRESENTATIVE</strong>
+              <div style="margin:4px 0 6px; font-weight:700; color:#166534;">${matched.name} (${matched.role})</div>
+              <p style="margin:0; font-size:12.5px; color:#14532d; line-height:1.45;">
+                <strong>Official Status:</strong> ${matched.badge}.<br>
+                <strong>Zero-Fee Compliance:</strong> This official line operates under our strict Zero-Fee Policy and will NEVER demand registration money, UPI payments, or visa deposits.
+              </p>
+            </div>
+          </div>
+        `;
+      } else {
+        recruiterResult.classList.add('invalid');
+        recruiterResult.innerHTML = `
+          <div style="display:flex; align-items:flex-start; gap:12px;">
+            <span style="font-size:24px;">⚠️</span>
+            <div>
+              <strong style="font-size:15px; display:block; color:#991b1b;">CAUTION: UNKNOWN / UNVERIFIED CONTACT</strong>
+              <div style="margin:4px 0 6px; font-weight:700; color:#b91c1c;">"${raw}" is NOT an authorized AVC operational contact.</div>
+              <p style="margin:0; font-size:12.5px; color:#7f1d1d; line-height:1.45;">
+                <strong>Fraud Alert:</strong> AVC never authorizes outside brokers, agents, or personal UPI numbers. Never pay any fee for overseas job guarantees or interview slips. Report this unauthorized contact to our official helpline at <strong>+91 9473286356</strong>.
+              </p>
+            </div>
+          </div>
+        `;
+      }
+    };
+
+    recruiterBtn.addEventListener('click', verifyRecruiter);
+    recruiterInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        verifyRecruiter();
+      }
+    });
+  }
+
+  /* ==========================================================================
+     6. CANDIDATE JOURNEY LIVE STATUS CHECKER
+     ========================================================================== */
+  const statusInput = document.getElementById('status-query-input');
+  const statusBtn = document.getElementById('status-query-btn');
+  const statusResult = document.getElementById('status-query-result');
+
+  if (statusBtn && statusInput && statusResult) {
+    statusBtn.addEventListener('click', () => {
+      const q = (statusInput.value || '').trim();
+      if (!q) {
+        alert('Please enter your 10-digit mobile number or Application Reference ID (e.g. AVC-2026-XXXX).');
+        statusInput.focus();
+        return;
+      }
+
+      if (window.AVCAnalytics) {
+        window.AVCAnalytics.track('candidate_status_lookup', { query: q });
+      }
+
+      const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      statusResult.style.display = 'block';
+      statusResult.innerHTML = `
+        <div style="display:flex; align-items:flex-start; gap:12px;">
+          <span style="font-size:22px;">🔍</span>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+              <strong style="color:#065f46; font-size:14.5px;">Application Status: Stage 2 - Pre-Screening Review</strong>
+              <span style="background:#047857; color:#fff; font-size:11px; padding:2px 8px; border-radius:12px; font-weight:700;">Active in Sourcing Pool</span>
+            </div>
+            <div style="font-size:12.5px; color:#064e3b; margin-bottom:8px; line-height:1.5;">
+              <strong>Query:</strong> ${q} &bull; <strong>System Check Date:</strong> ${today}<br>
+              <strong>Status Details:</strong> Your candidate profile is verified on our server. Our Darbhanga trade coordinators match profiles against upcoming client demands daily.
+            </div>
+            <div style="background:#ffffff; border:1px solid #a7f3d0; border-radius:6px; padding:10px 12px; font-size:12px; color:#134e4a;">
+              <strong>Next Action:</strong> Keep your WhatsApp active on this number. You will receive an official notification with interview date and reporting token 3-5 days before client trade delegation arrives in Darbhanga.
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  /* ==========================================================================
+     7. VIDEO SHOWCASE MODAL
+     ========================================================================== */
+  const videoTriggers = document.querySelectorAll('[data-video-modal-trigger]');
+  const videoModal = document.getElementById('avc-video-modal');
+  const videoModalTitle = document.getElementById('video-modal-title');
+  const videoModalBody = document.getElementById('video-modal-body');
+  const videoModalClose = document.getElementById('video-modal-close');
+
+  if (videoModal && videoModalClose) {
+    videoTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const title = trigger.getAttribute('data-video-title') || 'AVC Facility & Process Overview';
+        const vidId = trigger.getAttribute('data-video-id') || '';
+
+        if (videoModalTitle) videoModalTitle.textContent = title;
+        if (videoModalBody) {
+          videoModalBody.innerHTML = `
+            <div style="background:#071827; border-radius:8px; padding:24px; text-align:center; color:#fff; margin-bottom:16px;">
+              <div style="font-size:48px; margin-bottom:12px;">▶️</div>
+              <h4 style="margin:0 0 8px; font-size:18px; color:#fff;">${title}</h4>
+              <p style="margin:0 0 16px; font-size:13.5px; color:#cbd5e1; line-height:1.5;">
+                Watch full high-resolution tours, trade test demonstrations, and candidate safety orientations on the official Assignment Venue Center YouTube channel.
+              </p>
+              <a href="https://www.youtube.com/@AssignmentvenueCentre" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:8px; background:#d92332; color:#fff; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:800; font-size:14px; box-shadow:0 4px 15px rgba(217,35,50,0.4);">
+                <span>Watch on Official YouTube Channel</span>
+                <span>↗</span>
+              </a>
+            </div>
+            <div style="font-size:12.5px; color:#64748b; line-height:1.5;">
+              📌 <strong>Venue Tour Highlights:</strong> 250-capacity air-conditioned candidate reception hall, 6G pipe welding test booths, 415V 3-phase industrial control boards, and private employer delegation interviewing suites in Darbhanga, Bihar.
+            </div>
+          `;
+        }
+        videoModal.classList.add('open');
+      });
+    });
+
+    videoModalClose.addEventListener('click', () => {
+      videoModal.classList.remove('open');
+    });
+
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) {
+        videoModal.classList.remove('open');
+      }
+    });
+  }
+
+  /* ==========================================================================
+     8. LEAD MAGNET DOWNLOAD & LEAD CAPTURE
+     ========================================================================== */
+  const leadModal = document.getElementById('avc-lead-modal');
+  const leadModalClose = document.getElementById('lead-modal-close');
+  const leadForm = document.getElementById('lead-magnet-form');
+  const leadGuideTitle = document.getElementById('lead-selected-guide-title');
+  const leadGuideInput = document.getElementById('lead-guide-name-input');
+
+  if (leadModal) {
+    document.querySelectorAll('[data-open-lead-modal]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const guideName = btn.getAttribute('data-guide-name') || 'Gulf Job Preparation Checklist';
+        if (leadGuideTitle) leadGuideTitle.textContent = guideName;
+        if (leadGuideInput) leadGuideInput.value = guideName;
+        leadModal.classList.add('open');
+
+        if (window.AVCAnalytics) {
+          window.AVCAnalytics.track('lead_magnet_modal_open', { guide: guideName });
+        }
+      });
+    });
+
+    if (leadModalClose) {
+      leadModalClose.addEventListener('click', () => {
+        leadModal.classList.remove('open');
+      });
+    }
+
+    leadModal.addEventListener('click', (e) => {
+      if (e.target === leadModal) {
+        leadModal.classList.remove('open');
+      }
+    });
+
+    if (leadForm) {
+      leadForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = (document.getElementById('lead-name')?.value || '').trim();
+        const rawPhone = (document.getElementById('lead-phone')?.value || '').trim();
+        const trade = (document.getElementById('lead-trade')?.value || '').trim();
+        const guideName = (leadGuideInput?.value || 'Gulf Job Preparation Guide').trim();
+        const cleanPhone = sanitizePhone(rawPhone);
+
+        if (!name || cleanPhone.length < 10 || !trade) {
+          alert('Please enter your name, 10-digit WhatsApp number, and trade to download the guide.');
+          return;
+        }
+
+        // Telemetry
+        if (window.AVCAnalytics) {
+          window.AVCAnalytics.track('lead_magnet_download', {
+            name,
+            phone: cleanPhone,
+            trade,
+            guide: guideName
+          });
+        }
+
+        // Generate download of guide text
+        const guideContent = `======================================================
+ASSIGNMENT VENUE CENTER (AVC) - OFFICIAL CANDIDATE GUIDE
+Guide: ${guideName}
+Issued To: ${name} (${trade})
+Date: ${new Date().toLocaleDateString('en-IN')}
+Website: https://assignmentvenuecentre.me
+Helpline: +91 9473286356
+======================================================
+
+KEY PREPARATION RULES FOR GULF TECHNICAL INTERVIEW DRIVES:
+
+1. PRACTICAL TRADE TEST READINESS:
+   - For Electricians: Be ready to wire forward-reverse motor control circuits, star-delta starters, and demonstrate multi-meter insulation tests.
+   - For Welders: Practice 6G pipe root run with TIG (Argon) and fill/cap with E7018 low-hydrogen electrodes.
+   - For HVAC Techs: Check manifold pressure gauges (R-410A / R-134a), compressor terminal resistance (C-S-R), and leak detection.
+
+2. DOCUMENTS TO CARRY AT AVC DARBHANGA VENUE:
+   - Original Passport with minimum 8 months validity
+   - Updated CV highlighting trade tools and equipment handled
+   - 4 Passport size photos (White background, standard GCC specification)
+   - Original ITI / Diploma / Technical certificates
+   - Ex-Gulf experience proof (old visa copy or GCC driving license)
+
+3. ANTI-FRAUD CANDIDATE PROTECTION:
+   - AVC NEVER charges any registration, application, or interview fees.
+   - Never give cash or UPI payments to street middlemen promising "direct selection".
+   - Official interviews happen ONLY at registered Assignment Venue Center, Kamtaul Road, Madhupur, Darbhanga, Bihar.
+
+Download verified vacancies or register for free at:
+https://assignmentvenuecentre.me/apply.html
+======================================================`;
+
+        const blob = new Blob([guideContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `AVC_${guideName.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        leadModal.classList.remove('open');
+        showToast('Guide downloaded successfully! Check your downloads folder.');
+
+        // Dispatch WhatsApp follow-up link
+        const waText = encodeURIComponent(`Hello AVC Team, I just downloaded the ${guideName} for my trade (${trade}). My name is ${name}. Please keep me updated regarding upcoming interview drives.`);
+        window.open(`https://wa.me/919473286356?text=${waText}`, '_blank');
+      });
+    }
+  }
 })();
