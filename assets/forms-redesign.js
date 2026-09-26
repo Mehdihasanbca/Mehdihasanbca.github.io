@@ -296,6 +296,34 @@
         }
       }
 
+      // Automated Direct Email Lead & Candidate Auto-Reply Dispatch (Zero-Manual)
+      try {
+        fetch('https://formsubmit.co/ajax/info@assignmentvenuecentre.me', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `New AVC Candidate Lead: ${fullName} (${trade}) - [${appRef}]`,
+            _replyto: email || 'info@assignmentvenuecentre.me',
+            _autoresponse: `Dear ${fullName},\n\nThank you for registering with Assignment Venue Center (Ref: ${appRef}).\n\nTrade: ${trade}\nExperience: ${expTotal} (Gulf: ${expGulf})\nPassport: ${passport}\n\nYour application has been logged in our talent pool. Zero recruitment fee is charged at AVC under the Emigration Act 1983. Our sourcing team will contact you via WhatsApp (+91 ${cleanPhone}) before upcoming client interviews in Darbhanga.\n\nHelpline: +91 9473286356 / info@assignmentvenuecentre.me\nAssignment Venue Center, Darbhanga, Bihar.`,
+            token: appRef,
+            name: fullName,
+            phone: cleanPhone,
+            alternatePhone: altPhone || 'None',
+            email: email || 'Not provided',
+            trade: trade,
+            education: education,
+            experience: `${expTotal} (Gulf: ${expGulf})`,
+            passport: passport,
+            targetCountry: targetCountry,
+            district: district,
+            notes: notes || 'None'
+          })
+        }).catch((err) => console.log('Email dispatch note:', err));
+      } catch (err) {}
+
       // Populate Success Card
       const refNode = document.getElementById('success-app-token');
       if (refNode) refNode.textContent = appRef;
@@ -512,6 +540,34 @@ ${notes ? `\nADDITIONAL NOTES:\n${notes}\n` : ''}
           // Non-blocking
         }
       }
+
+      // Automated Direct Email Lead & Employer Auto-Reply Dispatch (Zero-Manual)
+      try {
+        fetch('https://formsubmit.co/ajax/info@assignmentvenuecentre.me', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `New AVC Employer Manpower Brief: ${companyName} (${country}) - [${reqRef}]`,
+            _replyto: email || 'info@assignmentvenuecentre.me',
+            _autoresponse: `Dear ${repName || companyName},\n\nThank you for submitting your manpower requisition to Assignment Venue Center (Ref: ${reqRef}).\n\nRequisition Summary:\nCompany: ${companyName}\nAuthorized Contact: ${repName} (+91 ${cleanPhone})\nCountry of Deployment: ${country}\nIndustry: ${industry}\nTrades & Headcount: ${tradesHeadcount}\nInterview Mode: ${interviewMode}\nTimeline: ${timeline}\n\nOur Executive Director will contact you within 4 business hours to share candidate shortlists.\n\nExecutive Desk: +91 9473286356 / info@assignmentvenuecentre.me\nAssignment Venue Center, Darbhanga, Bihar.`,
+            token: reqRef,
+            company: companyName,
+            representative: repName,
+            phone: cleanPhone,
+            email: email || 'Not provided',
+            country: country,
+            industry: industry,
+            tradesHeadcount: tradesHeadcount,
+            interviewMode: interviewMode,
+            timeline: timeline,
+            salaryTerms: salaryTerms || 'As per norms',
+            notes: notes || 'None'
+          })
+        }).catch((err) => console.log('Employer email dispatch note:', err));
+      } catch (err) {}
 
       // Switch views
       employerForm.style.display = 'none';
