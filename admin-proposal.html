@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071827">
+  <meta name="robots" content="noindex,nofollow">
+  <title>B2B Manpower Commercial Proposal Generator | AVC Operations</title>
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="assets/site.css?v=20260926-v2">
+  <style>
+    @media print {
+      body { background: #fff !important; color: #000 !important; font-size: 12pt; }
+      .no-print { display: none !important; }
+      .proposal-sheet { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
+      @page { margin: 15mm; size: A4 portrait; }
+    }
+    body {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .generator-toolbar {
+      background: #071827;
+      color: #fff;
+      padding: 14px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .generator-toolbar h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-action {
+      background: #2563eb;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .btn-action.secondary {
+      background: #334155;
+    }
+    .btn-action.whatsapp {
+      background: #25D366;
+    }
+
+    /* Proposal Container */
+    .proposal-wrap {
+      max-width: 900px;
+      margin: 30px auto 60px;
+      padding: 0 16px;
+    }
+    .proposal-sheet {
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding: 48px;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Letterhead */
+    .proposal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+    }
+    .proposal-logo img {
+      max-height: 48px;
+    }
+    .company-reg-meta {
+      text-align: right;
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.5;
+    }
+    .proposal-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+      font-size: 13.5px;
+    }
+    .meta-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 16px;
+    }
+    .meta-box h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #2563eb;
+    }
+    .meta-field-row {
+      display: flex;
+      margin-bottom: 6px;
+    }
+    .meta-field-row label {
+      width: 130px;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .meta-field-row input, .meta-field-row select {
+      flex: 1;
+      padding: 4px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    /* Quotation Table */
+    .quote-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 28px;
+      font-size: 13.5px;
+    }
+    .quote-table th {
+      background: #071827;
+      color: #fff;
+      text-align: left;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .quote-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .quote-table td input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+    .quote-table td.num {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    /* Summary Totals */
+    .summary-box {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 30px;
+    }
+    .summary-table {
+      width: 320px;
+      font-size: 14px;
+    }
+    .summary-table tr td {
+      padding: 8px 12px;
+    }
+    .summary-table tr td:last-child {
+      text-align: right;
+      font-weight: 700;
+    }
+    .summary-table tr.grand-total {
+      background: #eff6ff;
+      border-top: 2px solid #2563eb;
+      font-size: 16px;
+      color: #1e40af;
+    }
+
+    /* Terms */
+    .terms-box {
+      background: #f8fafc;
+      border-radius: 6px;
+      padding: 18px 20px;
+      font-size: 12.5px;
+      color: #475569;
+      line-height: 1.6;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 36px;
+    }
+    .terms-box h4 {
+      margin: 0 0 8px;
+      color: #0f172a;
+      font-size: 13.5px;
+    }
+    .terms-box ol {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    /* Signature Block */
+    .sig-block {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px dashed #cbd5e1;
+    }
+    .sig-person h5 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .sig-person p {
+      margin: 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+<div class="generator-toolbar no-print">
+  <h1><span>📄</span> AVC Corporate Manpower Commercial Quotation Generator</h1>
+  <div class="toolbar-actions">
+    <button type="button" class="btn-action secondary" onclick="addCustomRow()">+ Add Line Item</button>
+    <button type="button" class="btn-action" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <button type="button" class="btn-action whatsapp" onclick="shareViaWhatsApp()">💬 Share on WhatsApp</button>
+    <a href="admin-crm.html" class="btn-action secondary">CRM Console</a>
+  </div>
+</div>
+
+<div class="proposal-wrap">
+  <div class="proposal-sheet" id="proposal-content">
+    <!-- Header Letterhead -->
+    <div class="proposal-header">
+      <div class="proposal-logo">
+        <img src="assets/avc-logo.png" alt="Assignment Venue Center official logo">
+        <p style="margin: 6px 0 0; font-size: 13px; color: #64748b; font-weight: 600;">Technical Testing Venue &amp; Sourcing Facility</p>
+      </div>
+      <div class="company-reg-meta">
+        <strong>ASSIGNMENT VENUE CENTER</strong><br>
+        Ground Floor, Kamtaul Road, Madhupur, Tekatar,<br>
+        Darbhanga, Bihar – 847306, India<br>
+        <strong>GSTIN:</strong> 10AOVPH3197L1ZI | <strong>Udyam:</strong> UDYAM-BR-10-0047094<br>
+        <strong>Email:</strong> info@assignmentvenuecentre.me | <strong>Phone:</strong> +91 9473286356
+      </div>
+    </div>
+
+    <!-- Meta Details Grid -->
+    <div class="proposal-meta-grid">
+      <div class="meta-box">
+        <h3>Client / Hiring Organization</h3>
+        <div class="meta-field-row">
+          <label>Company Name:</label>
+          <input type="text" id="client-name" value="Al Bawani Contracting Co.">
+        </div>
+        <div class="meta-field-row">
+          <label>Attention:</label>
+          <input type="text" id="client-person" value="Head of Talent Acquisition">
+        </div>
+        <div class="meta-field-row">
+          <label>Country / Base:</label>
+          <input type="text" id="client-country" value="Riyadh, Saudi Arabia (KSA)">
+        </div>
+        <div class="meta-field-row">
+          <label>Project / Ref:</label>
+          <input type="text" id="client-project" value="Commercial Infrastructure Expansion">
+        </div>
+      </div>
+
+      <div class="meta-box">
+        <h3>Proposal &amp; Commercial Info</h3>
+        <div class="meta-field-row">
+          <label>Proposal No:</label>
+          <input type="text" id="prop-number" value="AVC-PROP-2026-084">
+        </div>
+        <div class="meta-field-row">
+          <label>Date of Issue:</label>
+          <input type="text" id="prop-date" value="26 September 2026">
+        </div>
+        <div class="meta-field-row">
+          <label>Valid Through:</label>
+          <input type="text" id="prop-validity" value="30 Days from Issue">
+        </div>
+        <div class="meta-field-row">
+          <label>Currency:</label>
+          <select id="prop-currency" onchange="calculateTotals()">
+            <option value="INR" selected>INR (₹)</option>
+            <option value="SAR">SAR (Saudi Riyal)</option>
+            <option value="AED">AED (UAE Dirham)</option>
+            <option value="USD">USD ($)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commercial Breakdown Table -->
+    <table class="quote-table" id="quote-table">
+      <thead>
+        <tr>
+          <th style="width: 50%;">Service Description &amp; Scope</th>
+          <th style="width: 15%; text-align: center;">Qty</th>
+          <th style="width: 15%; text-align: right;">Unit Rate</th>
+          <th style="width: 20%; text-align: right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody id="quote-body">
+        <tr>
+          <td>
+            <input type="text" class="item-desc" value="Technical Trade Testing: 6G Pipe Welders (Lincoln TIG/ARC Bay + Coupon Prep)">
+          </td>
+          <td style="text-align: center;">
+            <input type="number" class="item-qty" value="30" min="1" oninput="calculateTotals()" style="text-align: center;">
+          </td>
+          <td style="text-align: right;">
+            <input type="number" class="item-rate" value="1800" min="0" oninput="calculateTotals()" style="text-align: right;">
+          </td>
+          <td class="num item-total">₹54,000</td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" class="item-desc" value="Technical Trade Testing: Industrial Electricians (415V Star-Delta Panel + Megger Test)">
+          </td>
+          <td style="text-align: center;">
+            <input type="number" class="item-qty" value="25" min="1" oninput="calculateTotals()" style="text-align: center;">
+          </td>
+          <td style="text-align: right;">
+            <input type="number" class="item-rate" value="1200" min="0" oninput="calculateTotals()" style="text-align: right;">
+          </td>
+          <td class="num item-total">₹30,000</td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" class="item-desc" value="Dual-Camera HD Video Test Recording &amp; Digital Dossier Archival per Candidate">
+          </td>
+          <td style="text-align: center;">
+            <input type="number" class="item-qty" value="55" min="1" oninput="calculateTotals()" style="text-align: center;">
+          </td>
+          <td style="text-align: right;">
+            <input type="number" class="item-rate" value="450" min="0" oninput="calculateTotals()" style="text-align: right;">
+          </td>
+          <td class="num item-total">₹24,750</td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" class="item-desc" value="Executive AC Interview Suite Hosting (High-speed fiber, conference amenities &amp; biometrics)">
+          </td>
+          <td style="text-align: center;">
+            <input type="number" class="item-qty" value="2" min="1" oninput="calculateTotals()" style="text-align: center;">
+          </td>
+          <td style="text-align: right;">
+            <input type="number" class="item-rate" value="8500" min="0" oninput="calculateTotals()" style="text-align: right;">
+          </td>
+          <td class="num item-total">₹17,000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Totals Summary -->
+    <div class="summary-box">
+      <table class="summary-table">
+        <tr>
+          <td>Subtotal:</td>
+          <td id="subtotal-val">₹125,750</td>
+        </tr>
+        <tr>
+          <td>GST (18% Applicable):</td>
+          <td id="gst-val">₹22,635</td>
+        </tr>
+        <tr class="grand-total">
+          <td>Grand Total:</td>
+          <td id="grand-total-val">₹148,385</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Statutory & Commercial Terms -->
+    <div class="terms-box">
+      <h4>Commercial Terms &amp; Statutory Compliance:</h4>
+      <ol>
+        <li><strong>Strict ₹0 Candidate Fee Policy:</strong> In compliance with the Indian Emigration Act 1983, AVC does not charge candidates any testing, application, or interview fees. All venue and evaluation costs are covered institutional B2B.</li>
+        <li><strong>90-Day Technical Replacement Guarantee:</strong> If any candidate deployed through AVC's verified testing process is certified technically incompetent within their 90-day probationary period, AVC provides a pre-tested replacement artisan free of venue testing charge.</li>
+        <li><strong>Payment Terms:</strong> 50% mobilization advance upon candidate roster confirmation; 50% balance upon delivery of testing video dossiers and interview sign-off.</li>
+        <li><strong>Bank Settlement:</strong> Wire transfers payable to Assignment Venue Center official current account (Bank details provided on formal invoice).</li>
+      </ol>
+    </div>
+
+    <!-- Signatures -->
+    <div class="sig-block">
+      <div class="sig-person">
+        <p>Prepared &amp; Verified by:</p>
+        <div style="height: 40px; margin: 6px 0; font-family: cursive; font-size: 20px; color: #1e3a8a;">Mehdi Hasan</div>
+        <h5>Mehdi Hasan</h5>
+        <p>Founder &amp; Business Head<br>Assignment Venue Center, Darbhanga</p>
+      </div>
+
+      <div class="sig-person" style="text-align: right;">
+        <p>Client Acceptance &amp; Stamp:</p>
+        <div style="height: 40px; margin: 6px 0;"></div>
+        <h5>Authorized Signatory</h5>
+        <p>Client Organization Stamp / Date</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function calculateTotals() {
+    const rows = document.querySelectorAll('#quote-body tr');
+    let subtotal = 0;
+    const curr = document.getElementById('prop-currency')?.value || 'INR';
+    const symbol = curr === 'INR' ? '₹' : (curr === 'USD' ? '$' : curr + ' ');
+
+    rows.forEach(row => {
+      const qty = parseFloat(row.querySelector('.item-qty')?.value || 0);
+      const rate = parseFloat(row.querySelector('.item-rate')?.value || 0);
+      const rowTotal = qty * rate;
+      subtotal += rowTotal;
+      const totalCell = row.querySelector('.item-total');
+      if (totalCell) {
+        totalCell.textContent = symbol + rowTotal.toLocaleString('en-IN');
+      }
+    });
+
+    const isGST = curr === 'INR';
+    const gst = isGST ? (subtotal * 0.18) : 0;
+    const grandTotal = subtotal + gst;
+
+    document.getElementById('subtotal-val').textContent = symbol + subtotal.toLocaleString('en-IN');
+    document.getElementById('gst-val').textContent = isGST ? symbol + gst.toLocaleString('en-IN') : 'N/A (Export)';
+    document.getElementById('grand-total-val').textContent = symbol + grandTotal.toLocaleString('en-IN');
+  }
+
+  function addCustomRow() {
+    const tbody = document.getElementById('quote-body');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" class="item-desc" placeholder="New Service or Logistical Scope"></td>
+      <td style="text-align:center;"><input type="number" class="item-qty" value="1" min="1" oninput="calculateTotals()" style="text-align:center;"></td>
+      <td style="text-align:right;"><input type="number" class="item-rate" value="1000" min="0" oninput="calculateTotals()" style="text-align:right;"></td>
+      <td class="num item-total">₹1,000</td>
+    `;
+    tbody.appendChild(tr);
+    calculateTotals();
+  }
+
+  function shareViaWhatsApp() {
+    const client = document.getElementById('client-name')?.value || 'Client';
+    const propNo = document.getElementById('prop-number')?.value || 'AVC-PROP';
+    const total = document.getElementById('grand-total-val')?.textContent || '';
+    const text = encodeURIComponent(
+      `Hello ${client} Team,\n\nPlease find the Commercial Manpower Sourcing & Testing Proposal (${propNo}) from Assignment Venue Center (Darbhanga, India).\n\nTotal Estimated Amount: ${total}\n\nIncludes 6G welding testing, 415V electrical switchgear lab, AC interview suites, and uncut video dossiers under strict ₹0 candidate fee compliance.\n\nHelpline: +91 9473286356 / info@assignmentvenuecentre.me`
+    );
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  }
+
+  document.addEventListener('DOMContentLoaded', calculateTotals);
+</script>
+</body>
+</html>
