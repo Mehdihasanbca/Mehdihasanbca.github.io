@@ -1138,4 +1138,106 @@ https://assignmentvenuecentre.me/apply.html
 
     recalculateMatcher();
   }
+
+  // 7. B2B Manpower Mobilization & Capacity Estimator Controller
+  const b2bTrade = document.getElementById('b2b-trade-cluster');
+  const b2bCount = document.getElementById('b2b-headcount');
+  const b2bCountry = document.getElementById('b2b-country');
+  const b2bFormat = document.getElementById('b2b-format');
+
+  if (b2bTrade && b2bCount) {
+    const slaSourcing = document.getElementById('b2b-sla-sourcing');
+    const slaMobilization = document.getElementById('b2b-sla-mobilization');
+    const bayAllocated = document.getElementById('b2b-bay-allocated');
+    const btnAutofill = document.getElementById('btn-b2b-autofill');
+
+    function updateB2BEstimates() {
+      const countVal = parseInt(b2bCount.value || '25', 10);
+      const tradeVal = b2bTrade.value || 'mep';
+
+      if (countVal <= 25) {
+        if (slaSourcing) slaSourcing.textContent = '24–48 Hours (Pre-Screened)';
+        if (slaMobilization) slaMobilization.textContent = '21–25 Days to Deployment';
+      } else if (countVal <= 50) {
+        if (slaSourcing) slaSourcing.textContent = '48–72 Hours (Pre-Screened)';
+        if (slaMobilization) slaMobilization.textContent = '25–30 Days to Deployment';
+      } else {
+        if (slaSourcing) slaSourcing.textContent = '3–5 Days (Staggered Batches)';
+        if (slaMobilization) slaMobilization.textContent = '30–35 Days to Deployment';
+      }
+
+      if (bayAllocated) {
+        if (tradeVal === 'welding') {
+          bayAllocated.textContent = 'Lincoln Electric 6G Pipe Welding Testing Bay (Calibrated)';
+        } else if (tradeVal === 'mep' || tradeVal === 'electrical') {
+          bayAllocated.textContent = '415V Industrial Switchgear & Motor Control Rig';
+        } else if (tradeVal === 'hvac') {
+          bayAllocated.textContent = 'Central Chiller & DX Air Conditioning Diagnostic Bench';
+        } else if (tradeVal === 'driver') {
+          bayAllocated.textContent = 'Trailer Maneuvering & Road Sign Simulator Rig';
+        } else {
+          bayAllocated.textContent = 'Multi-Craft Civil & Facility Demonstration Bay';
+        }
+      }
+    }
+
+    b2bTrade.addEventListener('change', updateB2BEstimates);
+    b2bCount.addEventListener('change', updateB2BEstimates);
+    if (b2bCountry) b2bCountry.addEventListener('change', updateB2BEstimates);
+    if (b2bFormat) b2bFormat.addEventListener('change', updateB2BEstimates);
+
+    if (btnAutofill) {
+      btnAutofill.addEventListener('click', () => {
+        const formTarget = document.getElementById('employer-requirement-form');
+        if (!formTarget) return;
+
+        const empTrades = document.getElementById('emp-trades-headcount');
+        const empCountry = document.getElementById('emp-country');
+        const empMode = document.getElementById('emp-interview-mode');
+
+        if (empTrades) {
+          const tradeName = b2bTrade.options[b2bTrade.selectedIndex].text;
+          empTrades.value = `${tradeName}: ${b2bCount.value} Candidates`;
+        }
+
+        if (empCountry && b2bCountry) {
+          empCountry.value = b2bCountry.value;
+        }
+
+        if (empMode && b2bFormat) {
+          empMode.value = b2bFormat.value;
+        }
+
+        formTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast('Corporate requirement parameters pre-filled into form below!');
+      });
+    }
+
+    updateB2BEstimates();
+  }
+
+  // 8. Smart WhatsApp Concierge Hub Controller
+  const waFloatingBtn = document.querySelector('.floating-whatsapp-cta');
+  const waCard = document.getElementById('wa-concierge-card');
+  const waCloseBtn = document.querySelector('.wa-concierge-close');
+
+  if (waFloatingBtn && waCard) {
+    waFloatingBtn.addEventListener('click', (e) => {
+      // Toggle card instead of direct navigation
+      e.preventDefault();
+      waCard.classList.toggle('open');
+    });
+
+    if (waCloseBtn) {
+      waCloseBtn.addEventListener('click', () => {
+        waCard.classList.remove('open');
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!waCard.contains(e.target) && !waFloatingBtn.contains(e.target)) {
+        waCard.classList.remove('open');
+      }
+    });
+  }
 })();

@@ -161,6 +161,100 @@
       
       <!-- Primary Column: Interactive Enterprise Form -->
       <div class="form-main-col">
+
+        <!-- B2B Manpower Mobilization & Capacity Estimator -->
+        <div class="b2b-estimator-wrap" id="b2b-estimator-anchor">
+          <div class="b2b-estimator-head">
+            <div>
+              <span class="b2b-estimator-badge">Enterprise Mobilization Estimator</span>
+              <h3 style="margin:4px 0 0; font-size:17px; color:#ffffff;">Calculate Sourcing Timelines &amp; Testing Facility Rig</h3>
+            </div>
+            <span style="font-size:12px; color:#cbd5e1;">Darbhanga Facility &bull; 250 Daily Capacity</span>
+          </div>
+
+          <div class="b2b-estimator-body">
+            <div class="b2b-estimator-inputs">
+              <div>
+                <label style="font-size:12.5px; font-weight:700; color:#0f172a; display:block; margin-bottom:4px;" for="b2b-trade-cluster">
+                  1. Trade Cluster
+                </label>
+                <select class="form-select" id="b2b-trade-cluster">
+                  <option value="mep">Electrical, BMS &amp; Industrial MEP</option>
+                  <option value="welding">6G TIG &amp; ARC Piping Welders</option>
+                  <option value="hvac">HVAC &amp; Chiller Maintenance Techs</option>
+                  <option value="driver">Heavy Trailer &amp; Equipment Drivers</option>
+                  <option value="civil">Civil Masons, Plasterers &amp; Steel Fixers</option>
+                  <option value="facility">Commercial Cleaning &amp; Facility Hygiene</option>
+                </select>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div>
+                  <label style="font-size:12.5px; font-weight:700; color:#0f172a; display:block; margin-bottom:4px;" for="b2b-headcount">
+                    2. Headcount
+                  </label>
+                  <select class="form-select" id="b2b-headcount">
+                    <option value="15">10 - 25 Technicians</option>
+                    <option value="35" selected>25 - 50 Technicians</option>
+                    <option value="75">50 - 100 Technicians</option>
+                    <option value="150">100+ Bulk Mobilization</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style="font-size:12.5px; font-weight:700; color:#0f172a; display:block; margin-bottom:4px;" for="b2b-country">
+                    3. Destination
+                  </label>
+                  <select class="form-select" id="b2b-country">
+                    <option value="Saudi Arabia (KSA)">Saudi Arabia (KSA)</option>
+                    <option value="United Arab Emirates (UAE)">UAE (Dubai/Abu Dhabi)</option>
+                    <option value="Qatar">Qatar</option>
+                    <option value="Oman">Oman</option>
+                    <option value="Kuwait">Kuwait</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style="font-size:12.5px; font-weight:700; color:#0f172a; display:block; margin-bottom:4px;" for="b2b-format">
+                  4. Selection &amp; Testing Format
+                </label>
+                <select class="form-select" id="b2b-format">
+                  <option value="Physical Client Delegation (Darbhanga Venue)">Physical Client Delegation (Darbhanga Venue)</option>
+                  <option value="Online / Video Technical Interview Desk">Online / Video Technical Interview Desk</option>
+                  <option value="AVC Certified Trade Scorecard Selection">AVC Certified Trade Scorecard Selection</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="b2b-estimator-metrics">
+              <div>
+                <div class="b2b-metric-item">
+                  <span class="b2b-metric-label">Pre-Screened Talent Dossier</span>
+                  <span class="b2b-metric-val" id="b2b-sla-sourcing" style="color:#0284c7;">48–72 Hours (Pre-Screened)</span>
+                </div>
+
+                <div class="b2b-metric-item">
+                  <span class="b2b-metric-label">Estimated Mobilization Window</span>
+                  <span class="b2b-metric-val" id="b2b-sla-mobilization" style="color:#10b981;">25–30 Days to Deployment</span>
+                </div>
+
+                <div class="b2b-metric-item">
+                  <span class="b2b-metric-label">Dedicated Testing Bay Allocated</span>
+                  <span style="font-size:13px; font-weight:700; color:#334155; display:block; margin-top:2px;" id="b2b-bay-allocated">
+                    415V Industrial Switchgear &amp; Motor Control Rig
+                  </span>
+                </div>
+              </div>
+
+              <button type="button" class="b2b-btn-autofill" id="btn-b2b-autofill">
+                <span>📋 Auto-Fill Into Requisition Form Below</span>
+                <span>➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <article class="form-card">
           <div class="form-card-head">
             <h2>Corporate Manpower Sourcing & Venue Intake</h2>
@@ -673,6 +767,51 @@
     </div>
   </section>
 </main>
+
+<!-- Smart WhatsApp Concierge Card -->
+<div class="wa-concierge-card" id="wa-concierge-card" aria-label="WhatsApp Quick Connect Concierge">
+  <div class="wa-concierge-head">
+    <div class="wa-concierge-title">
+      <span>💬</span>
+      <span>AVC WhatsApp Concierge</span>
+    </div>
+    <button type="button" class="wa-concierge-close" aria-label="Close Concierge">&times;</button>
+  </div>
+  <div class="wa-concierge-body">
+    <p class="wa-concierge-lead">
+      Connect directly with our Darbhanga Operations Helpdesk. Select how we can assist you:
+    </p>
+    <div class="wa-actions-list">
+      <a href="https://wa.me/919473286356?text=Hi%20AVC%20Executive%20Desk,%20I%20represent%20an%20employer%20and%20want%20to%20discuss%20manpower%20sourcing%20and%20venue%20booking." target="_blank" rel="noopener noreferrer" class="wa-action-item">
+        <span class="wa-action-icon">🏢</span>
+        <span>Employer: Sourcing &amp; Venue</span>
+      </a>
+      <a href="https://wa.me/919473286356?text=Hi%20AVC%20Helpdesk,%20I%20am%20a%20candidate%20and%20want%20to%20know%20about%20upcoming%20client%20interview%20dates%20in%20Darbhanga." target="_blank" rel="noopener noreferrer" class="wa-action-item">
+        <span class="wa-action-icon">👨‍🔧</span>
+        <span>Candidate: Upcoming Interviews</span>
+      </a>
+      <a href="#b2b-estimator-anchor" class="wa-action-item">
+        <span class="wa-action-icon">⏱️</span>
+        <span>Calculate Mobilization SLA</span>
+      </a>
+      <a href="company-verification.html" class="wa-action-item">
+        <span class="wa-action-icon">🏛️</span>
+        <span>Verify GSTIN &amp; MSME Badges</span>
+      </a>
+    </div>
+  </div>
+  <div class="wa-concierge-foot">
+    Executive Desk: +91 9473286356 &bull; info@assignmentvenuecentre.me
+  </div>
+</div>
+
+<!-- Floating WhatsApp CTA -->
+<a class="floating-whatsapp-cta" href="https://wa.me/919473286356?text=Hello%20AVC%20Executive%20Desk,%20I%20represent%20an%20employer%20and%20want%20to%20discuss%20manpower%20sourcing%20at%20Darbhanga%20Venue" target="_blank" rel="noopener noreferrer" aria-label="Connect with AVC Executive Desk on WhatsApp">
+  <svg class="wa-icon-svg" viewBox="0 0 24 24">
+    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm.01 18.06c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.13 8.13 0 0 1-1.25-4.29c0-4.5 3.66-8.16 8.17-8.16 2.18 0 4.23.85 5.77 2.39a8.1 8.1 0 0 1 2.4 5.78c-.01 4.5-3.67 8.13-8.2 8.13zm4.49-6.11c-.24-.12-1.45-.72-1.68-.8-.23-.08-.39-.12-.56.12-.17.24-.64.8-.79.96-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.95-1.21-.72-.64-1.21-1.43-1.35-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.29.37-.43.12-.14.16-.24.24-.4.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43l-.47-.01c-.16 0-.43.06-.66.31-.22.24-.86.84-.86 2.06 0 1.21.89 2.39 1.01 2.55.12.16 1.74 2.66 4.22 3.73.59.25 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.45-.59 1.66-1.16.2-.57.2-1.06.14-1.16-.06-.1-.23-.16-.47-.28z"/>
+  </svg>
+  <span class="wa-text">Employer Desk on WhatsApp</span>
+</a>
 
 <!-- Footer -->
 <footer class="footer">
