@@ -1,0 +1,106 @@
+{
+  "@context": "https://schema.org",
+  "@type": ["Organization", "EmploymentAgency", "LocalBusiness"],
+  "@id": "https://assignmentvenuecentre.me/#organization",
+  "mainEntityOfPage": "https://assignmentvenuecentre.me/company-profile",
+  "publishingPrinciples": "https://assignmentvenuecentre.me/trust-and-verification",
+  "name": "Assignment Venue Center",
+  "alternateName": ["AVC"],
+  "url": "https://assignmentvenuecentre.me",
+  "logo": "https://assignmentvenuecentre.me/images/brand/avc-logo-800.png",
+  "image": [
+    "https://assignmentvenuecentre.me/images/brand/avc-logo-1200.png",
+    "https://assignmentvenuecentre.me/images/google-business-qr.png",
+    "https://assignmentvenuecentre.me/images/google-review-qr.png"
+  ],
+  "email": "info@assignmentvenuecentre.me",
+  "telephone": "+91-1169310518",
+  "identifier": [
+    {
+      "@type": "PropertyValue",
+      "propertyID": "Udyam Registration Number",
+      "value": "UDYAM-BR-10-0047094"
+    }
+  ],
+  "description": "Assignment Venue Center is an India-based manpower sourcing and recruitment coordination business supporting candidate sourcing, employer demand intake, documentation coordination, visa process support, GAMCA/Wafid support, travel coordination, and public recruitment tools.",
+  "founder": {
+    "@type": "Person",
+    "name": "Mehdi Hasan",
+    "jobTitle": "Founder & CEO"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Tektar, SH 75, Kamtaul Road",
+    "addressLocality": "Darbhanga",
+    "addressRegion": "Bihar",
+    "postalCode": "847306",
+    "addressCountry": "IN"
+  },
+  "areaServed": ["IN", "SA", "QA", "AE", "KW", "OM", "BH"],
+  "knowsAbout": [
+    "manpower recruitment India",
+    "overseas recruitment coordination",
+    "Gulf jobs",
+    "Saudi jobs",
+    "Qatar jobs",
+    "Middle East manpower services",
+    "free job posting",
+    "resume maker",
+    "PDF tools",
+    "passport assistance",
+    "PCC support",
+    "ECR to ECNR guidance",
+    "GAMCA slip support",
+    "Wafid medical token support",
+    "Hajj packages India",
+    "Umrah packages India",
+    "Makkah and Madinah ziyarah support",
+    "air ticket coordination",
+    "visa documentation support"
+  ],
+  "serviceType": [
+    "Manpower sourcing",
+    "Recruitment coordination",
+    "Employer demand intake",
+    "Candidate registration",
+    "Agent coordination",
+    "Visa process support",
+    "Passport, PCC and ECNR documentation assistance",
+    "GAMCA/Wafid support",
+    "Hajj and Umrah package coordination",
+    "Travel coordination",
+    "Resume and PDF tools"
+  ],
+  "sameAs": [
+    "https://www.facebook.com/assignmentvenuecentre",
+    "https://www.linkedin.com/in/mehdihasan-avc",
+    "https://www.youtube.com/@AssignmentvenueCentre"
+  ],
+  "subjectOf": [
+    {
+      "@type": "CreativeWork",
+      "name": "AVC Corporate Brochure",
+      "url": "https://assignmentvenuecentre.me/AVC-Corporate-Brochure.html"
+    },
+    {
+      "@type": "WebPage",
+      "name": "AVC Trust and Verification",
+      "url": "https://assignmentvenuecentre.me/trust-and-verification"
+    },
+    {
+      "@type": "WebPage",
+      "name": "AVC Company Profile",
+      "url": "https://assignmentvenuecentre.me/company-profile"
+    }
+  ],
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "telephone": "+91-1169310518",
+      "email": "info@assignmentvenuecentre.me",
+      "contactType": "customer support",
+      "availableLanguage": ["English", "Hindi", "Urdu", "Arabic"],
+      "areaServed": ["IN", "SA", "QA", "AE", "KW", "OM", "BH"]
+    }
+  ]
+}

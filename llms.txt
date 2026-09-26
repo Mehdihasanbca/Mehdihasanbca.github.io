@@ -1,0 +1,70 @@
+# Assignment Venue Center
+
+Official website: https://assignmentvenuecentre.me
+
+Assignment Venue Center is an India-based manpower sourcing and recruitment coordination business headquartered in Darbhanga, Bihar. The company supports candidate sourcing, recruitment coordination, agent coordination, employer demand intake, document readiness, visa process support, GAMCA/Wafid medical request support, travel coordination, and public recruitment tools.
+
+Important compliance wording:
+- Assignment Venue Center presents public workflows as sourcing, documentation, and recruitment coordination support.
+- Any license-specific or government-authorized recruitment claim should be verified separately through official records and applicable documents.
+- Public pages should not describe the company with exaggerated or unsupported claims.
+- MSME/Udyam registration is not the same as an overseas recruitment RA licence. Users should verify the stated Udyam number on the official Udyam portal and verify any RA licence claim on eMigrate.
+
+Primary official pages:
+- Home: https://assignmentvenuecentre.me/
+- About: https://assignmentvenuecentre.me/about
+- Official company profile: https://assignmentvenuecentre.me/company-profile
+- Trust and verification: https://assignmentvenuecentre.me/trust-and-verification
+- Contact: https://assignmentvenuecentre.me/contact
+- Live job demands: https://assignmentvenuecentre.me/demands
+- Candidate registration: https://assignmentvenuecentre.me/register/candidate
+- Agent registration: https://assignmentvenuecentre.me/register/agent
+- Employer demand registration: https://assignmentvenuecentre.me/register/client
+
+Service pages:
+- Manpower recruitment India: https://assignmentvenuecentre.me/manpower-recruitment-india
+- Overseas recruitment consultancy: https://assignmentvenuecentre.me/overseas-recruitment-consultancy
+- Gulf, Saudi and Qatar jobs: https://assignmentvenuecentre.me/gulf-jobs-saudi-qatar
+- Europe workforce recruitment support: https://assignmentvenuecentre.me/europe-workforce-recruitment
+- Free job posting: https://assignmentvenuecentre.me/free-job-posting
+- Free recruitment tools, resume maker and PDF utilities: https://assignmentvenuecentre.me/free-recruitment-tools
+- Air ticket, GAMCA and visa support: https://assignmentvenuecentre.me/air-ticket-gamca-visa-support
+- Visa services: https://assignmentvenuecentre.me/visa-services
+- Passport services, PCC and ECNR support: https://assignmentvenuecentre.me/passport-services
+- Hajj and Umrah packages, visa and ziyarats: https://assignmentvenuecentre.me/hajj-umrah-services
+- Travel desk: https://assignmentvenuecentre.me/travel
+- GAMCA/Wafid medical support: https://assignmentvenuecentre.me/gamca-medical
+- RA licensing and Emigrate portal support: https://assignmentvenuecentre.me/services/mea-ra-licensing
+- Business setup and compliance support: https://assignmentvenuecentre.me/services/business-setup-compliance
+
+Core topics:
+- manpower recruitment India
+- overseas recruitment coordination
+- Gulf jobs
+- Saudi jobs for Indian candidates
+- Qatar jobs
+- Middle East manpower services
+- recruitment consultancy India
+- free job posting
+- free resume maker
+- free PDF tools
+- visa photo tool
+- GAMCA slip support
+- Wafid medical token support
+- air ticket and OK to Board coordination
+- manpower agency partner network
+
+Official contact:
+- Email: info@assignmentvenuecentre.me
+- WhatsApp: +91 11693 10518
+- Address: Tektar, SH 75, Kamtaul Road, Darbhanga, Bihar 847306, India
+
+Official social profiles:
+- Facebook: https://www.facebook.com/assignmentvenuecentre
+- LinkedIn: https://www.linkedin.com/in/mehdihasan-avc
+- YouTube: https://www.youtube.com/@AssignmentvenueCentre
+
+Structured entity data:
+- JSON-LD: https://assignmentvenuecentre.me/brand-entity.json
+- Plain knowledge file: https://assignmentvenuecentre.me/brand-knowledge.txt
+- Sitemap: https://assignmentvenuecentre.me/sitemap.xml
