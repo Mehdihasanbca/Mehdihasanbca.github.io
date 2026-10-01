@@ -1,3 +1,34 @@
+﻿/* ==================================================
+   GLOBAL ANALYTICS DEPLOYMENT (GA4, CLARITY, POSTHOG)
+   ================================================== */
+   
+// 1. Google Analytics 4 (GA4)
+(function() {
+  const script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX'; // Replace with actual ID
+  script.async = true;
+  document.head.appendChild(script);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX'); // Replace with actual ID
+})();
+
+// 2. Microsoft Clarity
+(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "PLACEHOLDER_CLARITY_ID");
+
+// 3. PostHog
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once set_config opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing start_session_recording stop_session_recording onSessionId set_person_profiles set_group_properties update_group_properties reset_group_properties get_group_properties reset_groups group".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('phc_PLACEHOLDER_POSTHOG_KEY', {
+    api_host:'https://us.i.posthog.com',
+    person_profiles: 'identified_only' // or 'always' to create profiles for anonymous users as well
+});
+
 /**
  * Assignment Venue Center (AVC)
  * Enterprise Client-Side Analytics & Conversion Telemetry Engine
@@ -60,7 +91,7 @@
 
     // Log to console in development
     if (window.location.hostname === 'localhost' || window.location.search.includes('debug=true')) {
-      console.log(`[AVC Analytics] 📊 ${eventName}`, params);
+      console.log(`[AVC Analytics] ðŸ“Š ${eventName}`, params);
     }
 
     // Dispatch custom DOM event
@@ -183,3 +214,4 @@
     });
   });
 })();
+
