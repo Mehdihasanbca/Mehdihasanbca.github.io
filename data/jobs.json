@@ -65,13 +65,13 @@
       "country": "UAE",
       "city": "Dubai",
       "category": "Mechanical & Technical",
-      "status": "closing-soon",
+      "status": "open",
       "salaryDisplay": "AED 2,200 - 3,000 + OT",
       "requirements": "6G certification or trade test clearance required. Gulf experience preferred.",
       "benefits": "Duty Food Provided + Company Housing + Visa",
       "publishedAt": "2026-08-13",
       "lastVerifiedAt": "2026-10-01",
-      "validThrough": "2026-09-30"
+      "validThrough": "2026-10-31"
     },
     {
       "id": "AVC-QAT-5022",
@@ -87,7 +87,7 @@
       "benefits": "Free Food Allowance + Accommodation + Transportation",
       "publishedAt": "2026-08-13",
       "lastVerifiedAt": "2026-10-01",
-      "validThrough": "2026-10-15"
+      "validThrough": "2026-11-15"
     },
     {
       "id": "AVC-KSA-9041",
