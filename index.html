@@ -100,6 +100,21 @@
           "bestRating": "5",
           "worstRating": "1"
         },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+            "opens": "09:00",
+            "closes": "18:00"
+          }
+        ],
+        "hasMap": "https://maps.google.com/maps?q=Kamtaul+Road+Madhupur+Darbhanga+Bihar+847306",
+        "sameAs": [
+          "https://www.youtube.com/@AssignmentvenueCentre",
+          "https://www.facebook.com/assignmentvenuecentre",
+          "https://whatsapp.com/channel/0029Vb7mJuWF1YlQJ0sKSn06",
+          "https://www.linkedin.com/in/mehdihasan-avc/"
+        ],
         "review": [
           {
             "@type": "Review",
@@ -128,12 +143,21 @@
             }
           }
         ],
-        "openingHoursSpecification": {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-          "opens": "09:30",
-          "closes": "18:30"
-        }
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+            "opens": "09:00",
+            "closes": "18:00"
+          }
+        ],
+        "hasMap": "https://maps.google.com/maps?q=Kamtaul+Road+Madhupur+Darbhanga+Bihar+847306",
+        "sameAs": [
+          "https://www.youtube.com/@AssignmentvenueCentre",
+          "https://www.facebook.com/assignmentvenuecentre",
+          "https://whatsapp.com/channel/0029Vb7mJuWF1YlQJ0sKSn06",
+          "https://www.linkedin.com/in/mehdihasan-avc/"
+        ]
       },
       {
         "@type": "FAQPage",
@@ -215,6 +239,42 @@
   .mobile-sticky-bar { display: flex; }
   .floating-whatsapp-cta { bottom: 80px; }
   body { padding-bottom: 72px; }
+}
+</style>
+<style>
+.trust-location-section { padding: 60px 0; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+.trust-location-header { text-align: center; max-width: 700px; margin: 0 auto 40px; }
+.trust-location-header h2 { font-size: clamp(22px, 3vw, 32px); color: #0f172a; margin: 8px 0 12px; }
+.trust-location-header p { color: #64748b; font-size: 15px; line-height: 1.6; }
+.trust-location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.trust-map-wrap { border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.trust-location-details { display: flex; flex-direction: column; gap: 20px; }
+.trust-address-block h3 { font-size: 18px; color: #0f172a; margin: 0 0 8px; }
+.trust-address-block p { color: #475569; font-size: 14px; line-height: 1.7; margin: 0; }
+.trust-location-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.trust-loc-pill { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #334155; font-weight: 600; }
+.trust-reg-strip { background: #071827; color: #cbd5e1; border-radius: 8px; padding: 14px 16px; font-size: 13px; display: flex; gap: 20px; flex-wrap: wrap; }
+@media (max-width: 768px) {
+  .trust-location-grid { grid-template-columns: 1fr; }
+  .trust-location-pillars { grid-template-columns: 1fr; }
+}
+</style>
+<style>
+.trust-location-section { padding: 60px 0; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+.trust-location-header { text-align: center; max-width: 700px; margin: 0 auto 40px; }
+.trust-location-header h2 { font-size: clamp(22px, 3vw, 32px); color: #0f172a; margin: 8px 0 12px; }
+.trust-location-header p { color: #64748b; font-size: 15px; line-height: 1.6; }
+.trust-location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.trust-map-wrap { border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.trust-location-details { display: flex; flex-direction: column; gap: 20px; }
+.trust-address-block h3 { font-size: 18px; color: #0f172a; margin: 0 0 8px; }
+.trust-address-block p { color: #475569; font-size: 14px; line-height: 1.7; margin: 0; }
+.trust-location-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.trust-loc-pill { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #334155; font-weight: 600; }
+.trust-reg-strip { background: #071827; color: #cbd5e1; border-radius: 8px; padding: 14px 16px; font-size: 13px; display: flex; gap: 20px; flex-wrap: wrap; }
+@media (max-width: 768px) {
+  .trust-location-grid { grid-template-columns: 1fr; }
+  .trust-location-pillars { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -1269,6 +1329,93 @@
       </div>
     </section>
   </main>
+
+    <!-- Trust Location Section: Google Maps + Office Proof -->
+    <section class="trust-location-section" aria-label="AVC Office Location and Verification">
+      <div class="container">
+        <div class="trust-location-header">
+          <span class="section-kicker">PHYSICAL OFFICE / DARBHANGA</span>
+          <h2>Visit Our Verified Office &amp; Interview Center</h2>
+          <p>AVC operates from a registered physical office in Darbhanga, Bihar. Walk-in candidates, employer delegations, and verification visits are welcome during business hours.</p>
+        </div>
+        <div class="trust-location-grid">
+          <div class="trust-map-wrap">
+            <iframe
+              src="https://maps.google.com/maps?q=Kamtaul+Road+Madhupur+Tekatar+Darbhanga+Bihar+847306+India&output=embed&z=15"
+              width="100%"
+              height="380"
+              style="border:0; border-radius:10px;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="AVC Office Location on Google Maps"
+            ></iframe>
+          </div>
+          <div class="trust-location-details">
+            <div class="trust-address-block">
+              <h3>Assignment Venue Center</h3>
+              <p>Ground Floor, Kamtaul Road<br>Madhupur, Tekatar<br>Darbhanga, Bihar — 847306</p>
+              <a href="https://maps.google.com/maps?q=Kamtaul+Road+Madhupur+Darbhanga+Bihar" target="_blank" rel="noopener noreferrer" class="button outline" style="margin-top:12px;display:inline-block;">Open in Google Maps ↗</a>
+            </div>
+            <div class="trust-location-pillars">
+              <div class="trust-loc-pill">✅ Registered Physical Office</div>
+              <div class="trust-loc-pill">✅ Walk-in Verification Available</div>
+              <div class="trust-loc-pill">✅ Trade Testing Campus</div>
+              <div class="trust-loc-pill">✅ Client Interview Suites</div>
+              <div class="trust-loc-pill">✅ Candidate Support Desk</div>
+              <div class="trust-loc-pill">🕐 Mon–Sat: 9 AM – 6 PM IST</div>
+            </div>
+            <div class="trust-reg-strip">
+              <div><strong>GSTIN:</strong> <a href="https://www.gstin.gov.in/" target="_blank" rel="noopener noreferrer" style="color:#2563eb;">10AOVPH3197L1ZI ↗</a></div>
+              <div><strong>Udyam:</strong> <a href="https://udyamregistration.gov.in/" target="_blank" rel="noopener noreferrer" style="color:#2563eb;">UDYAM-BR-10-0047094 ↗</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Trust Location Section: Google Maps + Office Proof -->
+    <section class="trust-location-section" aria-label="AVC Office Location and Verification">
+      <div class="container">
+        <div class="trust-location-header">
+          <span class="section-kicker">PHYSICAL OFFICE / DARBHANGA</span>
+          <h2>Visit Our Verified Office &amp; Interview Center</h2>
+          <p>AVC operates from a registered physical office in Darbhanga, Bihar. Walk-in candidates, employer delegations, and verification visits are welcome during business hours.</p>
+        </div>
+        <div class="trust-location-grid">
+          <div class="trust-map-wrap">
+            <iframe
+              src="https://maps.google.com/maps?q=Kamtaul+Road+Madhupur+Tekatar+Darbhanga+Bihar+847306+India&output=embed&z=15"
+              width="100%"
+              height="380"
+              style="border:0; border-radius:10px;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="AVC Office Location on Google Maps"
+            ></iframe>
+          </div>
+          <div class="trust-location-details">
+            <div class="trust-address-block">
+              <h3>Assignment Venue Center</h3>
+              <p>Ground Floor, Kamtaul Road<br>Madhupur, Tekatar<br>Darbhanga, Bihar — 847306</p>
+              <a href="https://maps.google.com/maps?q=Kamtaul+Road+Madhupur+Darbhanga+Bihar" target="_blank" rel="noopener noreferrer" class="button outline" style="margin-top:12px;display:inline-block;">Open in Google Maps ↗</a>
+            </div>
+            <div class="trust-location-pillars">
+              <div class="trust-loc-pill">✅ Registered Physical Office</div>
+              <div class="trust-loc-pill">✅ Walk-in Verification Available</div>
+              <div class="trust-loc-pill">✅ Trade Testing Campus</div>
+              <div class="trust-loc-pill">✅ Client Interview Suites</div>
+              <div class="trust-loc-pill">✅ Candidate Support Desk</div>
+              <div class="trust-loc-pill">🕐 Mon–Sat: 9 AM – 6 PM IST</div>
+            </div>
+            <div class="trust-reg-strip">
+              <div><strong>GSTIN:</strong> <a href="https://www.gstin.gov.in/" target="_blank" rel="noopener noreferrer" style="color:#2563eb;">10AOVPH3197L1ZI ↗</a></div>
+              <div><strong>Udyam:</strong> <a href="https://udyamregistration.gov.in/" target="_blank" rel="noopener noreferrer" style="color:#2563eb;">UDYAM-BR-10-0047094 ↗</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
   <!-- Master Corporate Footer -->
   <footer class="footer">
