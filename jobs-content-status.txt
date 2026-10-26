@@ -3,12 +3,13 @@ status: failed
 status=failed
 total=6
 active=6
-failures=1
+failures=2
 warnings=0
+failure=AVC-KSA-9041: active job is expired; close/hold it or extend only after re-verification
 failure=AVC-OMN-3012: active job is expired; close/hold it or extend only after re-verification
 live_checks:
 https://assignmentvenuecentre.me/jobs.html -> 200
 https://assignmentvenuecentre.me/data/jobs.json -> 200
 https://assignmentvenuecentre.me/assets/jobs.js -> 200
 live_fail=0
-checked_at_utc: 2026-10-25T09:14:51Z
+checked_at_utc: 2026-10-26T10:19:39Z
