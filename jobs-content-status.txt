@@ -15,4 +15,4 @@ https://assignmentvenuecentre.me/jobs.html -> 200
 https://assignmentvenuecentre.me/data/jobs.json -> 200
 https://assignmentvenuecentre.me/assets/jobs.js -> 200
 live_fail=0
-checked_at_utc: 2026-11-19T13:37:12Z
+checked_at_utc: 2026-11-20T13:17:12Z
